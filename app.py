@@ -199,7 +199,7 @@ class DiagramItem(QtGui.QGraphicsPolygonItem):
     def contextMenuEvent(self, event):
         self.scene().clearSelection()
         self.setSelected(True)
-        self.myContextMenu.exec_(event.screenPos())
+        #self.myContextMenu.exec_(event.screenPos())
 
     def itemChange(self, change, value):
         if change == QtGui.QGraphicsItem.ItemPositionChange:
@@ -353,11 +353,15 @@ class MainWindow(QtGui.QMainWindow):
         self.createMenus()
         self.createToolBox()
 
+
         self.scene = DiagramScene(self.itemMenu)
-        self.scene.setSceneRect(QtCore.QRectF(0, 0, 5000, 5000))
+        #self.scene.setSceneRect(QtCore.QRectF(0, 0, 5000, 5000))#填充右半部分
+        #import list
+        #self.scene.setSceneRect(list.MyDialog(None))
         self.scene.itemInserted.connect(self.itemInserted)
         self.scene.textInserted.connect(self.textInserted)
         self.scene.itemSelected.connect(self.itemSelected)
+
 
         layout = QtGui.QHBoxLayout()
         layout.addWidget(self.toolBox)
@@ -366,9 +370,9 @@ class MainWindow(QtGui.QMainWindow):
 
         self.widget = QtGui.QWidget()
         self.widget.setLayout(layout)
-
         self.setCentralWidget(self.widget)
-        self.setWindowTitle("Diagramscene")
+
+        self.setWindowTitle(u"bug客户端")
 
     def backgroundButtonGroupClicked(self, button):
         buttons = self.backgroundButtonGroup.buttons()
