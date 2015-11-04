@@ -354,19 +354,24 @@ class MainWindow(QtGui.QMainWindow):
         self.createToolBox()
 
 
-        self.scene = DiagramScene(self.itemMenu)
+        #DiagramScene(self.itemMenu)
         #self.scene.setSceneRect(QtCore.QRectF(0, 0, 5000, 5000))#填充右半部分
         #import list
         #self.scene.setSceneRect(list.MyDialog(None))
-        self.scene.itemInserted.connect(self.itemInserted)
-        self.scene.textInserted.connect(self.textInserted)
-        self.scene.itemSelected.connect(self.itemSelected)
+        #self.scene.itemInserted.connect(self.itemInserted)
+        #self.scene.textInserted.connect(self.textInserted)
+        #self.scene.itemSelected.connect(self.itemSelected)
 
+        import list
+        self.scene = list.MyDialog()
 
         layout = QtGui.QHBoxLayout()
         layout.addWidget(self.toolBox)
-        self.view = QtGui.QGraphicsView(self.scene)
-        layout.addWidget(self.view)
+        #self.view = QtGui.QGraphicsView(self.scene)
+        #layout.addWidget(self.view)
+
+
+        layout.addWidget(self.scene)
 
         self.widget = QtGui.QWidget()
         self.widget.setLayout(layout)
@@ -402,8 +407,12 @@ class MainWindow(QtGui.QMainWindow):
         if id == self.InsertTextButton:
             self.scene.setMode(DiagramScene.InsertText)
         else:
-            self.scene.setItemType(id)
-            self.scene.setMode(DiagramScene.InsertItem)
+        	print id
+        	pass
+            #self.scene.setItemType(id)
+
+            #self.scene.table_cur_index = id
+            #self.scene.setMode(DiagramScene.InsertItem)
 
     def deleteItem(self):
         for item in self.scene.selectedItems():
