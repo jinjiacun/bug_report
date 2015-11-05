@@ -6,7 +6,7 @@ import sip
 sip.setapi('QString', 2)
 
 import math
-
+from jim_list import MyDialog
 from PyQt4 import QtCore, QtGui
 
 try:
@@ -362,8 +362,8 @@ class MainWindow(QtGui.QMainWindow):
         #self.scene.textInserted.connect(self.textInserted)
         #self.scene.itemSelected.connect(self.itemSelected)
 
-        import list
-        self.scene = list.MyDialog()
+        import jim_list
+        self.scene = jim_list.MyDialog()
 
         layout = QtGui.QHBoxLayout()
         layout.addWidget(self.toolBox)
@@ -386,33 +386,29 @@ class MainWindow(QtGui.QMainWindow):
                 button.setChecked(False)
 
         text = button.text()
-        if text == "Blue Grid":
-            self.scene.setBackgroundBrush(QtGui.QBrush(QtGui.QPixmap(':/images/background1.png')))
-        elif text == "White Grid":
-            self.scene.setBackgroundBrush(QtGui.QBrush(QtGui.QPixmap(':/images/background2.png')))
-        elif text == "Gray Grid":
-            self.scene.setBackgroundBrush(QtGui.QBrush(QtGui.QPixmap(':/images/background3.png')))
+        #acttion触发
+        if text == u"项目列表":
+            self.scene.change_table('Project')
+        elif text == u"问题列表":
+            self.scene.change_table('Bug')
+        elif text == u"用户管理":
+            self.scene.change_table('Admin')
+        elif text == u"角色管理":
+            self.scene.change_table('Role')
+        elif text == u"部门管理":
+            self.scene.change_table('Part')
+        elif text == u"简历列表":
+            self.scene.change_table('Resume')
+        elif text == u"招聘管理":
+            self.scene.change_table('Positionhr')
+        elif text == u"日志列表":
+            self.scene.change_table('Buglog')
         else:
-            self.scene.setBackgroundBrush(QtGui.QBrush(QtGui.QPixmap(':/images/background4.png')))
+            pass
 
-        self.scene.update()
-        self.view.update()
 
-    def buttonGroupClicked(self, id):
-        buttons = self.buttonGroup.buttons()
-        for button in buttons:
-            if self.buttonGroup.button(id) != button:
-                button.setChecked(False)
-
-        if id == self.InsertTextButton:
-            self.scene.setMode(DiagramScene.InsertText)
-        else:
-        	print id
-        	pass
-            #self.scene.setItemType(id)
-
-            #self.scene.table_cur_index = id
-            #self.scene.setMode(DiagramScene.InsertItem)
+        #self.scene.update()
+        #self.view.update()
 
     def deleteItem(self):
         for item in self.scene.selectedItems():
@@ -527,87 +523,75 @@ class MainWindow(QtGui.QMainWindow):
                 "The <b>Diagram Scene</b> example shows use of the graphics framework.")
 
     def createToolBox(self):
-        self.buttonGroup = QtGui.QButtonGroup()
-        self.buttonGroup.setExclusive(False)
-        self.buttonGroup.buttonClicked[int].connect(self.buttonGroupClicked)
+         self.buttonGroup = QtGui.QButtonGroup()
+         self.buttonGroup.setExclusive(False)
 
-        self.toolBox = QtGui.QToolBox()
-        self.toolBox.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Ignored))
+         #########项目管理
+         self.backgroundButtonGroup = QtGui.QButtonGroup()
+         self.backgroundButtonGroup.buttonClicked.connect(self.backgroundButtonGroupClicked)
 
-        #------------------项目管理-------------------------------------------------
-       
-        layout = QtGui.QGridLayout()
-        layout.addWidget(self.createCellWidget(u"项目列表", DiagramItem.Conditional),
-                0, 0)
-        layout.addWidget(self.createCellWidget(u"问题列表", DiagramItem.Step), 0,
-                1)
-        textLayout = QtGui.QGridLayout()
-        textWidget = QtGui.QWidget()
-        textWidget.setLayout(textLayout)
-        layout.addWidget(textWidget, 1, 1)
+         backgroundLayout = QtGui.QGridLayout()
+         backgroundLayout.addWidget(self.createBackgroundCellWidget(u"项目列表",
+                ':/images/background1.png'), 0, 0)
+         backgroundLayout.addWidget(self.createBackgroundCellWidget(u"问题列表",
+                ':/images/background2.png'), 0, 1)
 
-        
-        layout.setRowStretch(3, 10)
-        layout.setColumnStretch(2, 10)
+         backgroundLayout.setRowStretch(2, 10)
+         backgroundLayout.setColumnStretch(2, 10)
 
-        itemWidget = QtGui.QWidget()
-        itemWidget.setLayout(layout)
+         backgroundWidget = QtGui.QWidget()
+         backgroundWidget.setLayout(backgroundLayout)
 
+         self.toolBox = QtGui.QToolBox()
+         self.toolBox.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Ignored))
+         self.toolBox.addItem(backgroundWidget, u"项目管理")
+         #########项目管理
 
-       	self.toolBox.setMinimumWidth(itemWidget.sizeHint().width())
-        self.toolBox.addItem(itemWidget, u"项目管理")
-        #------------------项目管理-------------------------------------------------
+         #########系统管理
+         #self.backgroundButtonGroup = QtGui.QButtonGroup()
+         #self.backgroundButtonGroup.buttonClicked.connect(self.backgroundButtonGroupClicked)
 
-        #------------------系统管理-------------------------------------------------
-        layout = QtGui.QGridLayout()
-        layout.addWidget(self.createCellWidget(u"用户管理", DiagramItem.Conditional),
-                0, 0)
-        layout.addWidget(self.createCellWidget(u"角色管理", DiagramItem.Step), 0,
-                1)
-        layout.addWidget(self.createCellWidget(u"部门管理", DiagramItem.Step), 1,
-                0)
-        textLayout = QtGui.QGridLayout()
-        textWidget = QtGui.QWidget()
-        textWidget.setLayout(textLayout)
-        layout.addWidget(textWidget, 1, 1)
+         backgroundLayout = QtGui.QGridLayout()
+         backgroundLayout.addWidget(self.createBackgroundCellWidget(u"用户管理",
+                ':/images/background1.png'), 0, 0)
+         backgroundLayout.addWidget(self.createBackgroundCellWidget(u"角色管理",
+                ':/images/background2.png'), 0, 1)
+         backgroundLayout.addWidget(self.createBackgroundCellWidget(u"部门管理",
+                ':/images/background2.png'), 1, 0)
 
-        
-        layout.setRowStretch(2, 10)
-        layout.setColumnStretch(3, 10)
+         backgroundLayout.setRowStretch(2, 10)
+         backgroundLayout.setColumnStretch(2, 10)
 
-        itemWidget = QtGui.QWidget()
-        itemWidget.setLayout(layout)
+         backgroundWidget = QtGui.QWidget()
+         backgroundWidget.setLayout(backgroundLayout)
 
+         self.toolBox.addItem(backgroundWidget, u"系统管理")
+         #########系统管理
+         backgroundLayout = QtGui.QGridLayout()
+         backgroundLayout.addWidget(self.createBackgroundCellWidget(u"简历列表",
+                ':/images/background1.png'), 0, 0)
+         backgroundLayout.addWidget(self.createBackgroundCellWidget(u"招聘管理",
+                ':/images/background2.png'), 0, 1)
 
-       	self.toolBox.setMinimumWidth(itemWidget.sizeHint().width())
-        self.toolBox.addItem(itemWidget, u"系统管理")
-        #------------------系统管理-------------------------------------------------
+         backgroundLayout.setRowStretch(2, 10)
+         backgroundLayout.setColumnStretch(2, 10)
 
-        #------------------简历管理-------------------------------------------------
-        layout = QtGui.QGridLayout()
-        layout.addWidget(self.createCellWidget(u"简历列表", DiagramItem.Conditional),
-                0, 0)
-        layout.addWidget(self.createCellWidget(u"招聘管理", DiagramItem.Step), 0,
-                1)
-        textLayout = QtGui.QGridLayout()
-        textWidget = QtGui.QWidget()
-        textWidget.setLayout(textLayout)
-        layout.addWidget(textWidget, 1, 1)
+         backgroundWidget = QtGui.QWidget()
+         backgroundWidget.setLayout(backgroundLayout)
 
-        
-        layout.setRowStretch(3, 10)
-        layout.setColumnStretch(2, 10)
+         self.toolBox.addItem(backgroundWidget, u"简历管理")
+         #########日志管理
+         backgroundLayout = QtGui.QGridLayout()
+         backgroundLayout.addWidget(self.createBackgroundCellWidget(u"日志列表",
+                ':/images/background1.png'), 0, 0)
 
-        itemWidget = QtGui.QWidget()
-        itemWidget.setLayout(layout)
+         backgroundLayout.setRowStretch(2, 10)
+         backgroundLayout.setColumnStretch(2, 10)
 
+         backgroundWidget = QtGui.QWidget()
+         backgroundWidget.setLayout(backgroundLayout)
 
-       	self.toolBox.setMinimumWidth(itemWidget.sizeHint().width())
-        self.toolBox.addItem(itemWidget, u"简历管理")
-		#------------------简历管理-------------------------------------------------        
-
-        #self.toolBox.addItem(backgroundWidget, u"系统管理")
-        #self.toolBox.addItem(backgroundWidget, u"简历管理")
+         self.toolBox.addItem(backgroundWidget, u"日志管理")
 
     def createActions(self):
         self.toFrontAction = QtGui.QAction(
