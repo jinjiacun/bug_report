@@ -18,34 +18,46 @@ class MyDialog(QDialog):
                   'Admin':[u'编号',u'用户账号',u'姓名',u'状态',u'角色',u'部门',u'添加日期'],
                   'Role':[u'编号',u'名称',u'权限'],
                   'Part':[u'编号',u'部门名称',u'创建人',u'添加日期'],
-                  'Resume':[u'编号',u'应聘人',u'联系方式',u'应聘岗位',u'应聘部门',u'进度',u'预约时间',u'状态',u'最后更新人',u'备注'],
-                  'Positionhr':[u'岗位',u'部门',u'状态',u'开启日期',u'发布人',u'要求']}
+                  'Resume':[u'编号',u'应聘人',u'联系方式',u'应聘岗位',u'应聘部门',u'进度',u'预约时间',u'状态',u'最后更新人',u'最后更新日期',u'备注'],
+                  'Positionhr':[u'岗位',u'部门',u'状态',u'开启日期',u'发布人',u'要求'],
+                  'Buglog':[]}
 
     #列表宽度
     table_width_list = {'Project':[100,200,100,150,500],
-                        'Bug':[100,100,100,100,100,100,100,100,100,100],
-                        'Admin':[100,100,100,100,100,100,100],
-                        'Role':[100,100,100],
-                        'Part':[100,100,100,100],
-                        'Resume':[100,100,100,100,100,100,100,100,100,100],
-                        'Positionhr':[100,100,100,100,100,100,100]}
+                        'Bug':[100,100,100,100,100,100,100,100,500,100],
+                        'Admin':[100,100,100,100,100,100,200],
+                        'Role':[100,100,500],
+                        'Part':[100,100,100,200],
+                        'Resume':[100,100,100,100,100,100,200,100,100,150,500],
+                        'Positionhr':[100,100,100,100,150,100,500],
+                        'Buglog':[]}
 
     #数据字段列表
     table_field_list = {'Project':['number','name','create','last_time','description'],
-                        'Bug':['number','project_id','get_member','project_mod_id','level','status','last_update','last_update_time','description','put_member'],
-                        'Admin':[u'number','admin_name','name','status','role','part','add_time'],
+                        'Bug':['number','project_id','get_member','project_mod_id','level','status','last_update','last_update_time','title','put_member'],
+                        'Admin':['number','admin_name','name','status','role','part','add_time'],
                         'Role':['number','name','resource'],
                         'Part':['number','name','create','add_time'],
-                        'Resume':['number','candidates','telephone','position_id','part_id','stage','stage_time','status','last','remartk'],
-                        'Positionhr':['name','part_id','status','start_time','create','description']}
+                        'Resume':['number','candidates','telephone','position_id','part_id','stage','stage_time','status','last','last_time','remartk'],
+                        'Positionhr':['name','part_id','status','start_time','create','description'],
+                        'Buglog':[]}
     #数据格式化表
-    table_format_list = {'Project':['%s','%s','%s','%s','%s'],
-                         'Bug':[],
-                         'Admin':[]}
+    '''0-数字,1-字符串,2-日期,3-人员,4-角色,5-项目,6-模块,7-优先级,8-bug状态,9-部门,10-用户状态,
+   11-资源替换,12-人事岗位,13-简历进度,14-base64解码
+   '''
+    table_format_list = {'Project':[1,1,3,2,1],
+                         'Bug':[1,5,3,6,7,8,3,2,1,3],
+                         'Admin':[1,1,1,10,4,9,2],
+                         'Role':[1,1,11],
+                         'Part':[1,1,3,2],
+                         'Resume':[1,1,1,12,9,13,2,10,3,2,1],
+                         'Positionhr':[1,9,10,2,3,1],
+                         'Buglog':[]}
     #
     table_action_list = {}
 
     table_cur_index = 'Admin'                         #数据列表索引
+    my_dict = {}
 
     def __init__(self, parent=None):  
         super(MyDialog, self).__init__(parent)
@@ -68,8 +80,19 @@ class MyDialog(QDialog):
         layout.addWidget(self.toolGroupBox)
         layout.addWidget(self.MyTable)  
         self.setLayout(layout)      
-        
+
+        self.init_dict()
+
         self.setWindowFlags(Qt.Window)
+
+    #初始化字典
+    def init_dict(self):
+        method  = 'Map.get_map'
+        content = {}
+        result = lib.lib_post(method, content)
+        MyDialog.my_dict = result['content']
+        print MyDialog.my_dict
+        pass
 
     def createWizard(self):
         self.wizardGroupBox = QGroupBox(u"引导操作")
@@ -87,12 +110,12 @@ class MyDialog(QDialog):
         pass
 
     #切换列表
-    def change_table(self, index=''):
+    def change_table(self, index=None):
         #MyDialog.table_cur_index = str(self.com_list.currentText())
-        if '' == index:
-            MyDialog.table_cur_index = str(self.com_list.currentText())
-        else:
+        if index:
             MyDialog.table_cur_index = index
+        else:
+            MyDialog.table_cur_index = str(self.com_list.currentText())
         i =j=0
 
         #情况内容
@@ -116,17 +139,19 @@ class MyDialog(QDialog):
             i = 0
             if rows >10:
                 rows = 10
+            self.MyTable.setRowCount(rows)
             for i in range(0, rows):
                 j = 0
                 for field in MyDialog.table_field_list[MyDialog.table_cur_index]:
-                    itemValue = "%s"%result['content']['list'][i][field]
+                    itemValue = lib.my_format(MyDialog.table_format_list[MyDialog.table_cur_index][j],
+                                              result['content']['list'][i][field],
+                                              MyDialog.my_dict)
                     newItem = QTableWidgetItem(itemValue)
                     #newItem.setText(itemValue)
                     newItem.setTextAlignment(Qt.AlignHCenter|Qt.AlignVCenter)
                     self.MyTable.setItem(i, j, newItem)
                     j += 1
                 i += 1
-        self.MyTable.setRowCount(rows)
 
     #筛选条件
     def createFilterGroupBox(self):
