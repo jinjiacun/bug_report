@@ -351,8 +351,8 @@ class MainWindow(QtGui.QMainWindow):
 
         self.createActions()
         self.createMenus()
+        self.createToolBar()
         self.createToolBox()
-
 
         #DiagramScene(self.itemMenu)
         #self.scene.setSceneRect(QtCore.QRectF(0, 0, 5000, 5000))#填充右半部分
@@ -378,6 +378,52 @@ class MainWindow(QtGui.QMainWindow):
         self.setCentralWidget(self.widget)
 
         self.setWindowTitle(u"bug客户端")
+
+    #创建工具栏
+    def createToolBar(self):
+        #self.exit=QtGui.QAction(u'退出',self)
+        #self.connect(self.exit, QtCore.SIGNAL('triggered()'), QtCore.SLOT('close()'))
+        self.toolbar = self.addToolBar('Exit')
+        #self.toolbar.addAction(self.exit)
+
+        #新增
+        self.add = QtGui.QAction(QtGui.QIcon('images/tool_Add1.png'), u'新增',self)
+        self.connect(self.add, QtCore.SIGNAL('triggered()'), self.handle_add)
+        self.toolbar.addAction(self.add)
+
+        #修改
+        self.edit = QtGui.QAction(QtGui.QIcon('images/tool_edit1.png'), u'修改',self)
+        self.connect(self.edit, QtCore.SIGNAL("triggered()"), self.handle_edit)
+        self.toolbar.addAction(self.edit)
+
+        #删除
+        self.delete = QtGui.QAction(QtGui.QIcon('images/tool_del.png'), u'删除',self)
+        self.connect(self.delete, QtCore.SIGNAL("triggered()"), self.handle_delete)
+        self.toolbar.addAction(self.delete)
+
+        #刷新
+        self.refresh = QtGui.QAction(QtGui.QIcon('images/tool_MB_0015_reload.png'), u'刷新',self)
+        self.connect(self.refresh, QtCore.SIGNAL("triggered()"), self.handle_refresh)
+        self.toolbar.addAction(self.refresh)
+        pass
+
+    #工具栏处理
+    def handle_add(self):
+        print 'add'
+        pass
+
+    def handle_edit(self):
+        print 'edit'
+        pass
+
+    def handle_delete(self):
+        print 'del'
+        pass
+
+    def handle_refresh(self):
+        print 'refresh'
+        pass
+    #工具栏处理
 
     def backgroundButtonGroupClicked(self, button):
         buttons = self.backgroundButtonGroup.buttons()
@@ -534,7 +580,7 @@ class MainWindow(QtGui.QMainWindow):
          backgroundLayout.addWidget(self.createBackgroundCellWidget(u"项目列表",
                 ':/images/background1.png'), 0, 0)
          backgroundLayout.addWidget(self.createBackgroundCellWidget(u"问题列表",
-                ':/images/background2.png'), 0, 1)
+                ':/images/background2.png'), 1, 0)
 
          backgroundLayout.setRowStretch(2, 10)
          backgroundLayout.setColumnStretch(2, 10)
@@ -555,11 +601,11 @@ class MainWindow(QtGui.QMainWindow):
          backgroundLayout.addWidget(self.createBackgroundCellWidget(u"用户管理",
                 ':/images/background1.png'), 0, 0)
          backgroundLayout.addWidget(self.createBackgroundCellWidget(u"角色管理",
-                ':/images/background2.png'), 0, 1)
-         backgroundLayout.addWidget(self.createBackgroundCellWidget(u"部门管理",
                 ':/images/background2.png'), 1, 0)
+         backgroundLayout.addWidget(self.createBackgroundCellWidget(u"部门管理",
+                ':/images/background2.png'), 2, 0)
 
-         backgroundLayout.setRowStretch(2, 10)
+         backgroundLayout.setRowStretch(3, 10)
          backgroundLayout.setColumnStretch(2, 10)
 
          backgroundWidget = QtGui.QWidget()
@@ -571,7 +617,7 @@ class MainWindow(QtGui.QMainWindow):
          backgroundLayout.addWidget(self.createBackgroundCellWidget(u"简历列表",
                 ':/images/background1.png'), 0, 0)
          backgroundLayout.addWidget(self.createBackgroundCellWidget(u"招聘管理",
-                ':/images/background2.png'), 0, 1)
+                ':/images/background2.png'), 1, 0)
 
          backgroundLayout.setRowStretch(2, 10)
          backgroundLayout.setColumnStretch(2, 10)

@@ -63,21 +63,21 @@ class MyDialog(QDialog):
         super(MyDialog, self).__init__(parent)
 
         #引导
-        self.createWizard()
+        #self.createWizard()
 
         self.createFilterGroupBox()
-        self.createToolGroupBox()
+       # self.createToolGroupBox()
         #self.init_data_project()
 
-        self.com_list.setCurrentIndex(2)
+#        self.com_list.setCurrentIndex(2)
 
         self.MyTable = QTableWidget()
         self.MyTable.setAlternatingRowColors(True)
 
         layout = QVBoxLayout()
-        layout.addWidget(self.wizardGroupBox)
+        #layout.addWidget(self.wizardGroupBox)
         layout.addWidget(self.filterGroupBox)
-        layout.addWidget(self.toolGroupBox)
+        #layout.addWidget(self.toolGroupBox)
         layout.addWidget(self.MyTable)  
         self.setLayout(layout)      
 
