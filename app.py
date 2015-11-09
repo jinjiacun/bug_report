@@ -8,6 +8,7 @@ sip.setapi('QString', 2)
 import math
 from jim_list import MyDialog
 from PyQt4 import QtCore, QtGui
+from jim_option import JimAdd
 
 try:
     import diagramscene_rc3
@@ -384,10 +385,12 @@ class MainWindow(QtGui.QMainWindow):
         #self.exit=QtGui.QAction(u'退出',self)
         #self.connect(self.exit, QtCore.SIGNAL('triggered()'), QtCore.SLOT('close()'))
         self.toolbar = self.addToolBar('Exit')
+        self.toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         #self.toolbar.addAction(self.exit)
 
         #新增
         self.add = QtGui.QAction(QtGui.QIcon('images/tool_Add1.png'), u'新增',self)
+        self.add.setIconText(u'新增')
         self.connect(self.add, QtCore.SIGNAL('triggered()'), self.handle_add)
         self.toolbar.addAction(self.add)
 
@@ -409,7 +412,8 @@ class MainWindow(QtGui.QMainWindow):
 
     #工具栏处理
     def handle_add(self):
-        print 'add'
+        self.add_dialog = JimAdd()
+        self.add_dialog.exec_()
         pass
 
     def handle_edit(self):
@@ -768,6 +772,6 @@ if __name__ == '__main__':
 
     mainWindow = MainWindow()
     mainWindow.setGeometry(100, 100, 800, 500)
-    mainWindow.show()
+    mainWindow.showMaximized()
 
     sys.exit(app.exec_())
