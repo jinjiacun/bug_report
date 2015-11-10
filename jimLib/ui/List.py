@@ -7,8 +7,8 @@ from PyQt4.QtGui  import *  #目测table的类应该是在qt.gui里面的
 from PyQt4.QtCore import *
 import math
 import time
-import lib
 import urllib
+from jimLib.lib.util import lib_post
 
 
 class MyDialog(QDialog):
@@ -89,7 +89,7 @@ class MyDialog(QDialog):
     def init_dict(self):
         method  = 'Map.get_map'
         content = {}
-        result = lib.lib_post(method, content)
+        result = lib_post(method, content)
         MyDialog.my_dict = result['content']
         print MyDialog.my_dict
         pass

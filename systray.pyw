@@ -138,7 +138,7 @@ class Window(QtGui.QDialog):
             event.ignore()
 
     def setIcon(self, index):
-        icon_path = os.getcwd();
+        icon_path = os.getcwd()
         #icon = QtGui.QIcon(os.path.join(icon_path+'/images/logo1_64.png'))
         #icon = QtGui.QIcon(':/images/bad.svg')
         if 0 == index:#unload

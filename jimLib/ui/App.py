@@ -6,6 +6,7 @@ import sip
 sip.setapi('QString', 2)
 
 import math
+import os
 from jimLib.ui.List import MyDialog
 from PyQt4 import QtCore, QtGui
 import jimLib.ui.Add
@@ -371,6 +372,12 @@ class MainWindow(QtGui.QMainWindow):
         #self.view = QtGui.QGraphicsView(self.scene)
         #layout.addWidget(self.view)
 
+        #托盘
+        self.trayIcon = QtGui.QSystemTrayIcon(self)
+        icon_path = os.getcwd()
+        icon = QtGui.QIcon(os.path.join(icon_path+'./images/un_load.png'))
+        self.trayIcon.setIcon(icon)
+        self.trayIcon.show()
 
         layout.addWidget(self.scene)
 
@@ -409,6 +416,30 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(self.refresh, QtCore.SIGNAL("triggered()"), self.handle_refresh)
         self.toolbar.addAction(self.refresh)
         pass
+
+    #设置消息
+    def set_message(self,message):
+        self.trayIcon.showMessage(message,
+                self.bodyEdit.toPlainText(), None,
+                self.durationSpinBox.value() * 1000)
+        pass
+
+    #切换托盘图片
+    def set_tray(self,index):
+        icon_path = os.getcwd()
+        if 0 == index:#unload
+            icon = QtGui.QIcon(os.path.join(icon_path+'/images/un_load.png'))
+        elif 1 == index:#load
+            icon = QtGui.QIcon(os.path.join(icon_path+'/images/normal.png'))
+        elif 2 == index:#err
+            icon = QtGui.QIcon(os.path.join(icon_path+'/images/error.png'))
+        elif 3 == index:#yellow warn
+            icon = QtGui.QIcon(os.path.join(icon_path+'/images/warn_yellow.png'))
+        elif 4 == index:#red warn
+            icon = QtGui.QIcon(os.path.join(icon_path+'/images/warn_red.png'))
+        self.trayIcon.setIcon(icon)
+        pass
+
 
     #工具栏处理
     def handle_add(self):

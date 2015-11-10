@@ -7,7 +7,6 @@ from PyQt4.QtGui  import *  #目测table的类应该是在qt.gui里面的
 from PyQt4.QtCore import *
 import math
 import time
-import lib
 import urllib
 import jimLib.widget.ListButton
 import jimLib.widget.TableTextButton
