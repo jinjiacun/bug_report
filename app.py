@@ -8,7 +8,7 @@ sip.setapi('QString', 2)
 import math
 from jim_list import MyDialog
 from PyQt4 import QtCore, QtGui
-from jim_option import JimAdd
+import jimLib.ui.Add
 
 try:
     import diagramscene_rc3
@@ -412,7 +412,7 @@ class MainWindow(QtGui.QMainWindow):
 
     #工具栏处理
     def handle_add(self):
-        self.add_dialog = JimAdd()
+        self.add_dialog = jimLib.ui.Add.Add()
         self.add_dialog.exec_()
         pass
 
