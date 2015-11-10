@@ -15,13 +15,18 @@ class ListButton(QtGui.QWidget):
         girdLayout = QtGui.QGridLayout()
         girdLayout.setMargin(0)
         #按钮
-        button1 = QtGui.QPushButton('+')
-        button1.setFixedWidth(20)
-        girdLayout.addWidget ( button1 , 0, 1)
+        btnAdd = QtGui.QPushButton('+')
+        btnAdd.setFixedWidth(20)
+        btnAdd.clicked.connect(self.openDialog)
+        girdLayout.addWidget (btnAdd , 0, 1)
         #列表
         list = QtGui.QListView()
         girdLayout.addWidget(list,0,0)
         self.setLayout( girdLayout)
+
+    def openDialog(self):
+        print 'opendialog'
+        pass
 
 if __name__ == '__main__':
     app = QtGui.QApplication([])

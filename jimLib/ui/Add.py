@@ -10,7 +10,7 @@ import time
 import lib
 import urllib
 import jimLib.widget.ListButton
-import jimLib.widget.ListTextButton
+import jimLib.widget.TableTextButton
 
 
 class Add(QDialog):
@@ -51,32 +51,86 @@ class Add(QDialog):
         layout.addRow(QLabel(u" 编号:"), QLabel())
         layout.addRow(QLabel(u"项目描述:"), QTextEdit())
         layout.addRow(QLabel(u"成员:"), jimLib.widget.ListButton.ListButton())
-        layout.addRow(QLabel(u"模块:"), jimLib.widget.ListTextButton.ListTextButton())
+        layout.addRow(QLabel(u"模块:"), jimLib.widget.TableTextButton.ListTextButton())
         self.formGroupBox.setLayout(layout)
 
     #添加bug
     def AddBugForm(self):
-        pass
+        layout = QFormLayout()
+
+        #bug添加
+        layout = QFormLayout()
+        layout.addRow(QLabel(u" 编号:"), QLabel())
+        layout.addRow(QLabel(u"<font color='red'>*</font>优先级:"), QTextEdit())
+        layout.addRow(QLabel(u"<font color='red'>*</font>状态:"), QTextEdit())
+        layout.addRow(QLabel(u"<font color='red'>*</font>所属项目:"), QTextEdit())
+        layout.addRow(QLabel(u"<font color='red'>*</font>所属模块:"), QTextEdit())
+        layout.addRow(QLabel(u"<font color='red'>*</font>受理人:"), QTextEdit())
+        layout.addRow(QLabel(u"<font color='red'>*</font>问题描述:"), QTextEdit())
+        layout.addRow(QLabel(u"操作过程:"), QTextEdit())
 
     #添加用户
     def AddUserForm(self):
-        pass
+        layout = QFormLayout()
+
+        #用户添加
+        layout = QFormLayout()
+        layout.addRow(QLabel(u" 编号:"), QLabel())
+        layout.addRow(QLabel(u"<font color='red'>*</font>用户帐号:"), QTextEdit())
+        layout.addRow(QLabel(u"<font color='red'>*</font>密码:"), QTextEdit())
+        layout.addRow(QLabel(u"<font color='red'>*</font>确认密码:"), QTextEdit())
+        layout.addRow(QLabel(u"<font color='red'>*</font>姓名:"), QTextEdit())
+        layout.addRow(QLabel(u"<font color='red'>*</font>状态:"), QTextEdit())
+        layout.addRow(QLabel(u"<font color='red'>*</font>部门:"), QTextEdit())
+        layout.addRow(QLabel(u"<font color='red'>*</font>角色:"), QTextEdit())
+        self.formGroupBox.setLayout(layout)
 
     #添加角色
     def AddRoleForm(self):
-        pass
+        layout = QFormLayout()
+
+        #角色添加
+        layout = QFormLayout()
+        layout.addRow(QLabel(u" 编号:"), QLabel())
+        layout.addRow(QLabel(u"<font color='red'>*</font>角色名称:"), QTextEdit())
+        layout.addRow(QLabel(u"<font color='red'>*</font>权限:"), QTextEdit())
+        self.formGroupBox.setLayout(layout)
 
     #添加部门
     def AddPartForm(self):
-        pass
+        layout = QFormLayout()
+
+        #部门添加
+        layout = QFormLayout()
+        layout.addRow(QLabel(u" 编号:"), QLabel())
+        layout.addRow(QLabel(u"<font color='red'>*</font>部门名称:"), QTextEdit())
+        self.formGroupBox.setLayout(layout)
 
     #添加简历
     def AddResumeForm(self):
-        pass
+        layout = QFormLayout()
+
+        #简历添加
+        layout = QFormLayout()
+        layout.addRow(QLabel(u" 编号:"), QLabel())
+        layout.addRow(QLabel(u"<font color='red'>*</font>应聘人:"), QTextEdit())
+        layout.addRow(QLabel(u"<font color='red'>*</font>联系方式:"), QTextEdit())
+        layout.addRow(QLabel(u"<font color='red'>*</font>应聘岗位:"), QTextEdit())
+        layout.addRow(QLabel(u"<font color='red'>*</font>应聘部门:"), QTextEdit())
+        layout.addRow(QLabel(u"<font color='red'>*</font>简历附件:"), QTextEdit())
+        layout.addRow(QLabel(u"备注:"), QTextEdit())
+        self.formGroupBox.setLayout(layout)
 
     #添加招聘岗位
     def AddPositionhrForm(self):
-        pass
+        layout = QFormLayout()
+
+        #招聘岗位添加
+        layout = QFormLayout()
+        layout.addRow(QLabel(u"<font color='red'>*</font>部门:"), QTextEdit())
+        layout.addRow(QLabel(u"<font color='red'>*</font>岗位:"), QTextEdit())
+        layout.addRow(QLabel(u"<font color='red'>*</font>要求:"), QTextEdit())
+        self.formGroupBox.setLayout(layout)
 
     def AddToolBar(self):
         self.horizontalGroupBox = QGroupBox(u"操作")
