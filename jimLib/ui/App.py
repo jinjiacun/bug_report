@@ -347,7 +347,7 @@ class DiagramScene(QtGui.QGraphicsScene):
 
 class MainWindow(QtGui.QMainWindow):
     InsertTextButton = 10
-
+    emit_python_list = QtCore.pyqtSignal(object)
     def __init__(self):
         super(MainWindow, self).__init__()
 
@@ -372,6 +372,8 @@ class MainWindow(QtGui.QMainWindow):
         #self.view = QtGui.QGraphicsView(self.scene)
         #layout.addWidget(self.view)
 
+        self.timer = QtCore.QTimer()
+
         #托盘
         self.trayIcon = QtGui.QSystemTrayIcon(self)
         icon_path = os.getcwd()
@@ -380,6 +382,7 @@ class MainWindow(QtGui.QMainWindow):
         self.trayIcon.show()
 
         layout.addWidget(self.scene)
+        self.emit_python_list.connect(self.deal_sig)
 
         self.widget = QtGui.QWidget()
         self.widget.setLayout(layout)
@@ -441,6 +444,41 @@ class MainWindow(QtGui.QMainWindow):
         self.trayIcon.setIcon(icon)
         pass
 
+    def my_time(self):
+        #定义定时器
+        self.timer.timeout.connect(self.flash)
+        self.timer.start(500)
+        self.flag = 0
+
+     #定时闪烁
+    def flash(self):
+        icon_path = os.getcwd();
+        icon = QtGui.QIcon(os.path.join(icon_path+'/images/warn_red.png'))
+        if 0 == self.flag:
+            self.flag = 1
+            self.trayIcon.setIcon(QtGui.QIcon())
+            #print 1
+        else:
+            self.flag = 0
+            self.trayIcon.setIcon(icon)
+            #print 0
+
+    def touch_sig(self,msg):
+        self.emit_python_list.emit(msg)
+
+    def deal_sig(self, msg):
+        if str(1) == str(msg):#高级警告
+            self.set_message(u'严重警告',u'严重bug')
+            self.set_tray(4)
+            #定时
+            self.timer.start()
+        elif str(0) == str(msg):#取消高级警告
+            self.set_tray(1)
+            self.timer.stop()
+        elif str(2) == str(msg):#一般警告
+            self.set_message(u'警告',u'有bug')
+            self.set_tray(3)
+            self.timer.stop()
 
     #工具栏处理
     def handle_add(self):
