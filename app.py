@@ -37,12 +37,13 @@ if __name__ == '__main__':
             print status
             if status:
                 #发送成功消息
-                mainWindow.set_message(message)
+                mainWindow.set_message(u'提示',message)
+                mainWindow.set_tray(1)
                 is_login_ok = True
                 break
             else:
                 #发送错误消息
-                mainWindow.set_message(message)
+                mainWindow.set_message(u'错误',message)
                 pass
 
 

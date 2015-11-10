@@ -13,14 +13,14 @@ class business():
             return ('',False)
 
         method = 'Admin.login'
-        content = {'admin_name':urllib.quote(user_name),'passwd':urllib.quote(passwd)}
+        content = {'admin_name':urllib.quote(user_name.encode('utf-8')),'passwd':urllib.quote(passwd.encode('utf-8'))}
         result  = lib_post(method, content)
         if 500 == result['status_code']:
             return (result['content'],False)
-        if 200 == result['status_code'] and 1 == result['content']['is_success']:
-            return ('成功登录',True)
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (u'成功登录',True)
 
-        return ('用户名或者密码错误!',False)
+        return (u'用户名或者密码错误!',False)
 
     #接受消息
     def receive_message(self,messge=''):

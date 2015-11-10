@@ -418,10 +418,11 @@ class MainWindow(QtGui.QMainWindow):
         pass
 
     #设置消息
-    def set_message(self,message):
-        self.trayIcon.showMessage(message,
-                self.bodyEdit.toPlainText(), None,
-                self.durationSpinBox.value() * 1000)
+    def set_message(self,title,message):
+        icon = QtGui.QSystemTrayIcon.MessageIcon(QtGui.QStyle.SP_MessageBoxInformation)
+        self.trayIcon.showMessage(title,
+                    message, icon,
+                    15 * 1000)
         pass
 
     #切换托盘图片
