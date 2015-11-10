@@ -56,7 +56,7 @@ def timestamp_datetime(value):
 13-简历进度
 14-base64解码
 '''
-def my_format(type, value,my_dict):
+def lib_format(type, value,my_dict):
     if 0 == type:
         return "%d"%value
     elif 1 == type:

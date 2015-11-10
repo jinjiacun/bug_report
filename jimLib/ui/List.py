@@ -9,6 +9,7 @@ import math
 import time
 import urllib
 from jimLib.lib.util import lib_post
+from jimLib.lib.util import lib_format
 
 
 class MyDialog(QDialog):
@@ -133,7 +134,7 @@ class MyDialog(QDialog):
         #绑定数据
         method  = MyDialog.table_cur_index+'.get_list'
         content = {'page_size':10}
-        result = lib.lib_post(method, content)
+        result = lib_post(method, content)
         if 200 == result['status_code']:
             rows = int(result['content']['record_count'])
             i = 0
@@ -143,7 +144,7 @@ class MyDialog(QDialog):
             for i in range(0, rows):
                 j = 0
                 for field in MyDialog.table_field_list[MyDialog.table_cur_index]:
-                    itemValue = lib.my_format(MyDialog.table_format_list[MyDialog.table_cur_index][j],
+                    itemValue = lib_format(MyDialog.table_format_list[MyDialog.table_cur_index][j],
                                               result['content']['list'][i][field],
                                               MyDialog.my_dict)
                     newItem = QTableWidgetItem(itemValue)
