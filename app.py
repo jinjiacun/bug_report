@@ -20,15 +20,25 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-def on_connect(client, userdata, rc):
-    #print("Connected with result code "+str(rc))
-    topic = "bug/%s"%user_name
-    client.subscribe(topic)
+class CMqtt():
+    topic = ''
+    def __init__(self,topic):
+        CMqtt.topic = topic
+        self.my_client = mqtt.Client()
+        self.my_client.on_connect = self.on_connect
+        self.my_client.on_message = self.on_message
+        self.my_client.connect("192.168.1.131", 1883, 60)
+        self.my_client.loop_start()
+        pass
 
-def on_message(client, userdata, msg):
-	#print(msg.topic+" "+str(msg.payload))
-    #调用消息提示
-    mainWindow.touch_sig(str(msg.payload))
+    def on_connect(self,client, userdata,flag, rc):
+        #print("Connected with result code "+str(rc))
+        client.subscribe(CMqtt.topic)
+
+    def on_message(self,client, userdata, msg):
+        #print(msg.topic+" "+str(msg.payload))
+        #调用消息提示
+        mainWindow.touch_sig(str(msg.payload))
 
     # pass
 
@@ -49,12 +59,15 @@ if __name__ == '__main__':
             #print "passwd:%s\n"%loginWindow.passwd
             #检查用户名和密码是否正确
             (message,status,admin_id) = my_business.login(loginWindow.user_name, loginWindow.passwd)
-            user_name = loginWindow.user_name
+            user_name = str(loginWindow.user_name)
             if status:
                 #发送成功消息
                 mainWindow.set_message(u'提示',message)
                 mainWindow.set_tray(1)
                 is_login_ok = True
+                #开启mqtt推送
+                my_mqtt = CMqtt("bug/"+user_name)
+                mainWindow.my_time()
                 #查询我的bug
                 (status,is_success,message) = my_business.get_my_bug(admin_id)
                 #500,,参数错误 | 200,0,严重错误 | 200,1,一般错误 | 200,-1,没有错误 | 其他查询失败
@@ -65,15 +78,6 @@ if __name__ == '__main__':
                 #发送错误消息
                 mainWindow.set_message(u'错误',message)
                 pass
-
-
-    #开启mqtt推送
-    my_client = mqtt.Client()
-    my_client.on_connect = on_connect
-    my_client.on_message = on_message
-    my_client.connect("192.168.1.131", 1883, 60)
-    my_client.loop_start()
-    mainWindow.my_time()
     #主界面
     mainWindow.setGeometry(100, 100, 800, 500)
     mainWindow.showMaximized()
