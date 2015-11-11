@@ -66,7 +66,7 @@ class Add(QDialog):
         layout.addRow(QLabel(u"项目描述:"), QTextEdit())
 
         layout.addRow(QLabel(u"成员:"), jimLib.widget.ListButton.ListButton())
-        layout.addRow(QLabel(u"模块:"), jimLib.widget.TableTextButton.ListTextButton())
+        layout.addRow(QLabel(u"模块:"), jimLib.widget.TableTextButton.TableTextButton())
         self.formGroupBox.setLayout(layout)
 
     #添加bug

@@ -74,3 +74,15 @@ class business():
     '''
     def get_number(self,module_index=0):
         return 'XM-000001'
+
+    #获取字典
+    def get_dict(self):
+        method = 'Map.get_map'
+        content = {}
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,'参数错误')
+        elif 200 == result['status_code']:
+            return (True,result['content'])
+
+        return (False,'其他错误')

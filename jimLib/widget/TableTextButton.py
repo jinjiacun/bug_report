@@ -2,7 +2,6 @@
 import sys
 from PyQt4 import QtGui
 from PyQt4 import QtCore
-from jimLib.widget.PushButtonEx import PushButtonEx
 
 '''
 一个listwidget、单行文本编辑器和一个按钮
@@ -59,6 +58,7 @@ class TableTextButton(QtGui.QWidget):
 
     def delText(self):
         item = self.list.item(self.list.currentRow(),0)
+        self.data.remove(item.text())
         #移除数据
         self.list.removeRow(self.list.currentRow())
         pass
