@@ -482,7 +482,7 @@ class MainWindow(QtGui.QMainWindow):
 
     #工具栏处理
     def handle_add(self):
-        self.add_dialog = jimLib.ui.Add.Add()
+        self.add_dialog = jimLib.ui.Add.Add(self,self.scene.table_cur_index,self.scene.table_cur_index)
         self.add_dialog.exec_()
         pass
 
@@ -506,23 +506,31 @@ class MainWindow(QtGui.QMainWindow):
                 button.setChecked(False)
 
         text = button.text()
+        my_module_list = {'Project':0,
+                          'Bug':1,
+                          'Admin':2,
+                          'Role':3,
+                          'Part':4,
+                          'Resume':5,
+                          'Positionhr':6,
+                          'Buglog':7}
         #acttion触发
         if text == u"项目列表":
-            self.scene.change_table('Project')
+            self.scene.change_table(my_module_list['Project'])
         elif text == u"问题列表":
-            self.scene.change_table('Bug')
+            self.scene.change_table(my_module_list['Bug'])
         elif text == u"用户管理":
-            self.scene.change_table('Admin')
+            self.scene.change_table(my_module_list['Admin'])
         elif text == u"角色管理":
-            self.scene.change_table('Role')
+            self.scene.change_table(my_module_list['Role'])
         elif text == u"部门管理":
-            self.scene.change_table('Part')
+            self.scene.change_table(my_module_list['Part'])
         elif text == u"简历列表":
-            self.scene.change_table('Resume')
+            self.scene.change_table(my_module_list['Resume'])
         elif text == u"招聘管理":
-            self.scene.change_table('Positionhr')
+            self.scene.change_table(my_module_list['Positionhr'])
         elif text == u"日志列表":
-            self.scene.change_table('Buglog')
+            self.scene.change_table(my_module_list['Buglog'])
         else:
             pass
 

@@ -12,6 +12,7 @@ from jimLib.widget.ListButton import ListButton
 from jimLib.widget.TableTextButton import TableTextButton
 from jimLib.widget.TableComButton import TableComButton
 from jimLib.widget.MulCheckedBox import MulCheckedBox
+from jimLib.widget.FileUpload import FileUpload
 from jimLib.lib.business import business
 from jimLib.lib.util import Dict
 
@@ -21,7 +22,7 @@ class Add(QDialog):
     title_index = 0
     module = ''
     module_index = 0
-    def __init__(self, parent=None,title_index=3,module_index=3):
+    def __init__(self, parent=None,title_index=0,module_index=0):
         super(Add, self).__init__(parent)
         mainLayout = QVBoxLayout()
 
@@ -147,26 +148,44 @@ class Add(QDialog):
     #添加部门
     def AddPartForm(self):
         layout = QFormLayout()
-
+        my_business = business()
+        number = my_business.get_number(Add.module_index)
         #部门添加
         layout = QFormLayout()
-        layout.addRow(QLabel(u" 编号:"), QLabel())
-        layout.addRow(QLabel(u"<font color='red'>*</font>部门名称:"), QTextEdit())
+        self.number = QLabel(number)
+        layout.addRow(QLabel(u" 编号:"), self.number)
+        self.name = QLineEdit()
+        layout.addRow(QLabel(u"<font color='red'>*</font>部门名称:"), self.name)
         self.formGroupBox.setLayout(layout)
 
     #添加简历
     def AddResumeForm(self):
         layout = QFormLayout()
-
+        my_business = business()
+        number = my_business.get_number(Add.module_index)
         #简历添加
         layout = QFormLayout()
-        layout.addRow(QLabel(u" 编号:"), QLabel())
-        layout.addRow(QLabel(u"<font color='red'>*</font>应聘人:"), QTextEdit())
-        layout.addRow(QLabel(u"<font color='red'>*</font>联系方式:"), QTextEdit())
-        layout.addRow(QLabel(u"<font color='red'>*</font>应聘岗位:"), QTextEdit())
-        layout.addRow(QLabel(u"<font color='red'>*</font>应聘部门:"), QTextEdit())
-        layout.addRow(QLabel(u"<font color='red'>*</font>简历附件:"), QTextEdit())
-        layout.addRow(QLabel(u"备注:"), QTextEdit())
+        self.number = QLabel(number)
+        layout.addRow(QLabel(u" 编号:"), self.number)
+        self.candidates = QLineEdit()
+        layout.addRow(QLabel(u"<font color='red'>*</font>应聘人:"), self.candidates)
+        self.telephone = QLineEdit()
+        layout.addRow(QLabel(u"<font color='red'>*</font>联系方式:"), self.telephone)
+        self.position_id = QComboBox()
+        (status,content) = my_business.get_dict()
+        if status:
+            for (key,value) in content['positionhr'].items():
+                self.position_id.addItems([value])
+        layout.addRow(QLabel(u"<font color='red'>*</font>应聘岗位:"), self.position_id)
+        self.part_id = QComboBox()
+        if status:
+            for (key,value) in content['part'].items():
+                self.part_id.addItems([value])
+        layout.addRow(QLabel(u"<font color='red'>*</font>应聘部门:"), self.part_id)
+        self.accessories = FileUpload()
+        layout.addRow(QLabel(u"<font color='red'>*</font>简历附件:"), self.accessories)
+        self.remark = QTextEdit()
+        layout.addRow(QLabel(u"备注:"), self.remark)
         self.formGroupBox.setLayout(layout)
 
     #添加招聘岗位
@@ -175,9 +194,18 @@ class Add(QDialog):
 
         #招聘岗位添加
         layout = QFormLayout()
-        layout.addRow(QLabel(u"<font color='red'>*</font>部门:"), QTextEdit())
-        layout.addRow(QLabel(u"<font color='red'>*</font>岗位:"), QTextEdit())
-        layout.addRow(QLabel(u"<font color='red'>*</font>要求:"), QTextEdit())
+        self.part_id = QComboBox()
+        my_business = business()
+        (status,content) = my_business.get_dict()
+        if status:
+            for (key,item) in content['part'].items():
+                self.part_id.addItems([item])
+        layout.addRow(QLabel(u"<font color='red'>*</font>部门:"), self.part_id)
+
+        self.name = QLineEdit()
+        layout.addRow(QLabel(u"<font color='red'>*</font>岗位:"),self.name)
+        self.description = QTextEdit()
+        layout.addRow(QLabel(u"<font color='red'>*</font>要求:"), self.description)
         self.formGroupBox.setLayout(layout)
 
     def AddToolBar(self):

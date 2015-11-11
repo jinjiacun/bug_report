@@ -10,6 +10,7 @@ import time
 import urllib
 from jimLib.lib.util import lib_post
 from jimLib.lib.util import lib_format
+from jimLib.lib.util import Dict
 
 
 class MyDialog(QDialog):
@@ -57,7 +58,7 @@ class MyDialog(QDialog):
     #
     table_action_list = {}
 
-    table_cur_index = 'Admin'                         #数据列表索引
+    table_cur_index = 0                         #数据列表索引
     my_dict = {}
 
     def __init__(self, parent=None):
@@ -99,9 +100,9 @@ class MyDialog(QDialog):
         self.wizardGroupBox = QGroupBox(u"引导操作")
         layout = QHBoxLayout()
         self.com_list = QComboBox()
-        self.com_list.addItem('Project'),self.com_list.addItem('Bug'),self.com_list.addItem('Admin')
-        self.com_list.addItem('Role'),self.com_list.addItem('Part'),self.com_list.addItem('Resume')
-        self.com_list.addItem('Positionhr')
+        self.com_list.addItem('0'),self.com_list.addItem('1'),self.com_list.addItem('2')
+        self.com_list.addItem('3'),self.com_list.addItem('4'),self.com_list.addItem('5')
+        self.com_list.addItem('6')
         layout.addWidget(self.com_list)
 
         btn_change = QPushButton(u'切换测试')
@@ -111,28 +112,28 @@ class MyDialog(QDialog):
         pass
 
     #切换列表
-    def change_table(self, index=None):
+    def change_table(self, index=0):
         #MyDialog.table_cur_index = str(self.com_list.currentText())
-        if index:
+        if index>=0:
             MyDialog.table_cur_index = index
         else:
-            MyDialog.table_cur_index = str(self.com_list.currentText())
+            MyDialog.table_cur_index = int(self.com_list.currentText())
         i =j=0
 
         #情况内容
         self.MyTable.clear()
 
-        self.MyTable.setColumnCount(len(self.table_list[MyDialog.table_cur_index]))
-        self.MyTable.setHorizontalHeaderLabels(self.table_list[MyDialog.table_cur_index])
+        self.MyTable.setColumnCount(len(self.table_list[Dict.module_list[MyDialog.table_cur_index]]))
+        self.MyTable.setHorizontalHeaderLabels(self.table_list[Dict.module_list[MyDialog.table_cur_index]])
 
         #设置列宽度
-        for width in MyDialog.table_width_list[MyDialog.table_cur_index]:
-            self.MyTable.setColumnWidth(i, MyDialog.table_width_list[MyDialog.table_cur_index].__getitem__(i))
+        for width in MyDialog.table_width_list[Dict.module_list[MyDialog.table_cur_index]]:
+            self.MyTable.setColumnWidth(i, MyDialog.table_width_list[Dict.module_list[MyDialog.table_cur_index]].__getitem__(i))
             i += 1
 
 
         #绑定数据
-        method  = MyDialog.table_cur_index+'.get_list'
+        method  = Dict.module_list[MyDialog.table_cur_index]+'.get_list'
         content = {'page_size':10}
         result = lib_post(method, content)
         if 200 == result['status_code']:
@@ -143,8 +144,8 @@ class MyDialog(QDialog):
             self.MyTable.setRowCount(rows)
             for i in range(0, rows):
                 j = 0
-                for field in MyDialog.table_field_list[MyDialog.table_cur_index]:
-                    itemValue = lib_format(MyDialog.table_format_list[MyDialog.table_cur_index][j],
+                for field in MyDialog.table_field_list[Dict.module_list[MyDialog.table_cur_index]]:
+                    itemValue = lib_format(MyDialog.table_format_list[Dict.module_list[MyDialog.table_cur_index]][j],
                                               result['content']['list'][i][field],
                                               MyDialog.my_dict)
                     newItem = QTableWidgetItem(itemValue)

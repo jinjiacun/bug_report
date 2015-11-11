@@ -65,7 +65,7 @@ class business():
     #查询资源
     def get_resource_name(self):
         method = 'Resource.get_list'
-        content = {}
+        content = {'order':{'id':'asc'}}
         re_list = []
 
         result = lib_post(method,content)
