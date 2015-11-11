@@ -11,19 +11,22 @@ import urllib
 import jimLib.widget.ListButton
 import jimLib.widget.TableTextButton
 from jimLib.lib.business import business
+from jimLib.lib.util import Dict
 
 
 class Add(QDialog):
-    title_list  = [u'添加项目',u'添加bug',u'添加用户',u'添加角色',u'添加部门',u'添加简历',u'添加招聘']
-    module_list = ['Project','Bug','Admin','Role','Part','Resume','Positionhr']
     title = ''
+    title_index = 0
     module = ''
+    module_index = 0
     def __init__(self, parent=None,title_index=0,module_index=0):
         super(Add, self).__init__(parent)
         mainLayout = QVBoxLayout()
 
-        Add.title  = Add.title_list[title_index]
-        Add.module = Add.module_list[module_index]
+        Add.title  = Dict.title_list[title_index]
+        Add.module = Dict.module_list[module_index]
+        Add.title_index  = title_index
+        Add.module_index = module_index
 
         self.AddToolBar()
         self.formGroupBox = QGroupBox(u"表单:")
@@ -54,12 +57,12 @@ class Add(QDialog):
     #添加项目
     def AddProjectForm(self):
         layout = QFormLayout()
-        my_business = business
-        number = my_business.get_number(Add.module_list)
+        my_business = business()
+        number = my_business.get_number(Add.module_index)
         #项目添加
         layout = QFormLayout()
         layout.addRow(QLabel(u"<font color='red'>*</font>项目名称:"), QLineEdit())
-        layout.addRow(QLabel(u" 编号:"), QLabel())
+        layout.addRow(QLabel(u" 编号:"), QLabel(number))
         layout.addRow(QLabel(u"项目描述:"), QTextEdit())
 
         layout.addRow(QLabel(u"成员:"), jimLib.widget.ListButton.ListButton())

@@ -179,7 +179,7 @@ class MyDialog(QDialog):
     def init_data_project(self):
         method  = 'Project.get_list'
         content = {'page_size':20}
-        result = lib.lib_post(method, content)
+        result = lib_post(method, content)
         rows = int(result['content']['record_count'])
         self.MyTable = QTableWidget(rows, 5)
         self.MyTable.setHorizontalHeaderLabels([u'编号',u'项目名称',u'创建人',u'最后更新日期',u'项目描述'])
@@ -228,7 +228,7 @@ class MyDialog(QDialog):
         #keyword = urllib.quote(keyword.encode('utf-8'))
         method  = 'Project.get_list'
         content = {'page_size':20,'where':{'name':['like','$'+urllib.quote(keyword)+'$']}}
-        result  = lib.lib_post(method, content)
+        result  = lib_post(method, content)
         row_count = 0
         if 200 == result['status_code']:
             cur_row_count = self.MyTable.rowCount()

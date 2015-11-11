@@ -194,5 +194,10 @@ if __name__ == '__main__':
 #我的字典
 class Dict():
     #项目列表
+    title_list  = [u'添加项目',u'添加bug',u'添加用户',u'添加角色',u'添加部门',u'添加简历',u'添加招聘']
+    module_list = ['Project' ,'Bug'      ,'Admin'    ,'Role'     ,'Part'     ,'Resume'   ,'Positionhr']
+    prefix_list = ['XM-'     ,'XM-','XM-'  ,'XM-' ,'XM-' ,'XM-'    ,'XM-'        ]
+    name_list = []
+    number_prefix_list = []
     def __init__(self):
         pass
