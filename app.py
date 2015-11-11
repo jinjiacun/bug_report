@@ -66,6 +66,7 @@ if __name__ == '__main__':
                 #开启mqtt推送
                 my_mqtt = CMqtt("bug/"+user_name)
                 mainWindow.my_time()
+                mainWindow.timer.stop()
                 #查询我的bug
                 (status,is_success,message) = my_business.get_my_bug(admin_id)
                 #500,,参数错误 | 200,0,严重错误 | 200,1,一般错误 | 200,-1,没有错误 | 其他查询失败

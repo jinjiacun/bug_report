@@ -24,7 +24,7 @@ def lib_post(method,content):
     return result
 
 #日志文件
-def lib_log():
+def lib_log(type,message):
     return null
 
 #unix时间戳格式化显示
@@ -196,7 +196,7 @@ class Dict():
     #项目列表
     title_list  = [u'添加项目',u'添加bug',u'添加用户',u'添加角色',u'添加部门',u'添加简历',u'添加招聘']
     module_list = ['Project' ,'Bug'      ,'Admin'    ,'Role'     ,'Part'     ,'Resume'   ,'Positionhr']
-    prefix_list = ['XM-'     ,'XM-','XM-'  ,'XM-' ,'XM-' ,'XM-'    ,'XM-'        ]
+    prefix_list = ['XM-'     ,'WT-','YH-'  ,'JS-' ,'BM-' ,'JL-'    ,''        ]
     name_list = []
     number_prefix_list = []
     def __init__(self):

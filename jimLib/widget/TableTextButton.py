@@ -21,6 +21,8 @@ class TableTextButton(QtGui.QWidget):
         self.list.setFixedWidth(150)
         self.list.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.list.setEditTriggers(QtGui.QTableWidget.NoEditTriggers)
+        self.list.verticalHeader().setVisible(False)
+        self.list.horizontalHeader().setVisible(False)
         self.list.setHorizontalHeaderLabels([u'名称'])
         girdLayout.addWidget(self.list,0,0)
         self.setLayout( girdLayout)

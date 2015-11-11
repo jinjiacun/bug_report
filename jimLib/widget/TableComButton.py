@@ -28,6 +28,9 @@ class TableComButton(QtGui.QWidget):
         self.table = QtGui.QTableWidget(1,1)
         self.table.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.table.setEditTriggers(QtGui.QTableWidget.NoEditTriggers)
+        self.table.verticalHeader().setVisible(False)
+        self.table.horizontalHeader().setVisible(False)
+        #verticalHeader
         girdLayout.addWidget(self.table,0,0)
         self.setLayout( girdLayout)
         #下拉列表

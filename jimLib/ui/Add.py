@@ -8,8 +8,10 @@ from PyQt4.QtCore import *
 import math
 import time
 import urllib
-import jimLib.widget.ListButton
-import jimLib.widget.TableTextButton
+from jimLib.widget.ListButton import ListButton
+from jimLib.widget.TableTextButton import TableTextButton
+from jimLib.widget.TableComButton import TableComButton
+from jimLib.widget.MulCheckedBox import MulCheckedBox
 from jimLib.lib.business import business
 from jimLib.lib.util import Dict
 
@@ -19,7 +21,7 @@ class Add(QDialog):
     title_index = 0
     module = ''
     module_index = 0
-    def __init__(self, parent=None,title_index=0,module_index=0):
+    def __init__(self, parent=None,title_index=3,module_index=3):
         super(Add, self).__init__(parent)
         mainLayout = QVBoxLayout()
 
@@ -62,11 +64,12 @@ class Add(QDialog):
         #项目添加
         layout = QFormLayout()
         layout.addRow(QLabel(u"<font color='red'>*</font>项目名称:"), QLineEdit())
+        self.number = QLabel(number)
         layout.addRow(QLabel(u" 编号:"), QLabel(number))
         layout.addRow(QLabel(u"项目描述:"), QTextEdit())
 
-        layout.addRow(QLabel(u"成员:"), jimLib.widget.ListButton.ListButton())
-        layout.addRow(QLabel(u"模块:"), jimLib.widget.TableTextButton.TableTextButton())
+        layout.addRow(QLabel(u"成员:"), TableComButton())
+        layout.addRow(QLabel(u"模块:"), TableTextButton())
         self.formGroupBox.setLayout(layout)
 
     #添加bug
@@ -83,32 +86,62 @@ class Add(QDialog):
         layout.addRow(QLabel(u"<font color='red'>*</font>受理人:"), QTextEdit())
         layout.addRow(QLabel(u"<font color='red'>*</font>问题描述:"), QTextEdit())
         layout.addRow(QLabel(u"操作过程:"), QTextEdit())
+        self.formGroupBox.setLayout(layout)
 
     #添加用户
     def AddAdminForm(self):
         layout = QFormLayout()
-
+        my_business = business()
+        number = my_business.get_number(Add.module_index)
         #用户添加
         layout = QFormLayout()
-        layout.addRow(QLabel(u" 编号:"), QLabel())
-        layout.addRow(QLabel(u"<font color='red'>*</font>用户帐号:"), QTextEdit())
-        layout.addRow(QLabel(u"<font color='red'>*</font>密码:"), QTextEdit())
-        layout.addRow(QLabel(u"<font color='red'>*</font>确认密码:"), QTextEdit())
-        layout.addRow(QLabel(u"<font color='red'>*</font>姓名:"), QTextEdit())
-        layout.addRow(QLabel(u"<font color='red'>*</font>状态:"), QTextEdit())
-        layout.addRow(QLabel(u"<font color='red'>*</font>部门:"), QTextEdit())
-        layout.addRow(QLabel(u"<font color='red'>*</font>角色:"), QTextEdit())
+        self.number = QLabel(number)
+        layout.addRow(QLabel(u" 编号:"), self.number)
+        self.user_name = QLineEdit()
+        layout.addRow(QLabel(u"<font color='red'>*</font>用户帐号:"), self.user_name)
+        self.passwd = QLineEdit()
+        self.passwd.setEchoMode(QLineEdit.Password)
+        layout.addRow(QLabel(u"<font color='red'>*</font>密码:"), self.passwd)
+        self.re_passwd = QLineEdit()
+        self.re_passwd.setEchoMode(QLineEdit.Password)
+        layout.addRow(QLabel(u"<font color='red'>*</font>确认密码:"), self.re_passwd)
+        self.name = QLineEdit()
+        layout.addRow(QLabel(u"<font color='red'>*</font>姓名:"), self.name)
+        self.status = QComboBox()
+        self.status.addItems([u'正常'])
+        self.status.addItems([u'禁用'])
+        layout.addRow(QLabel(u"<font color='red'>*</font>状态:"), self.status)
+        self.part = QComboBox()
+        #查询部门
+        my_business = business()
+        (status,resule) = my_business.get_dict()
+        for (key,item) in resule['part'].items():
+            self.part.addItems([item])
+        layout.addRow(QLabel(u"<font color='red'>*</font>部门:"), self.part)
+        self.role = QComboBox()
+        for (key,item) in resule['role'].items():
+            self.role.addItems([item])
+        layout.addRow(QLabel(u"<font color='red'>*</font>角色:"), self.role)
         self.formGroupBox.setLayout(layout)
 
     #添加角色
     def AddRoleForm(self):
         layout = QFormLayout()
-
+        my_business = business()
+        number = my_business.get_number(Add.module_index)
         #角色添加
         layout = QFormLayout()
-        layout.addRow(QLabel(u" 编号:"), QLabel())
-        layout.addRow(QLabel(u"<font color='red'>*</font>角色名称:"), QTextEdit())
-        layout.addRow(QLabel(u"<font color='red'>*</font>权限:"), QTextEdit())
+        self.number = QLabel(number)
+        layout.addRow(QLabel(u" 编号:"), self.number)
+        self.name = QLineEdit()
+        layout.addRow(QLabel(u"<font color='red'>*</font>角色名称:"), self.name)
+        #查询资源
+        (status,content) = my_business.get_resource_name()
+        source_name_list = []
+        if status:
+            source_name_list = content
+        self.resource = MulCheckedBox(self,source_name_list)
+        layout.addRow(QLabel(u"<font color='red'>*</font>权限:"), self.resource)
         self.formGroupBox.setLayout(layout)
 
     #添加部门
