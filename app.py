@@ -32,11 +32,9 @@ class CMqtt():
         pass
 
     def on_connect(self,client, userdata,flag, rc):
-        #print("Connected with result code "+str(rc))
         client.subscribe(CMqtt.topic)
 
     def on_message(self,client, userdata, msg):
-        #print(msg.topic+" "+str(msg.payload))
         #调用消息提示
         mainWindow.touch_sig(str(msg.payload))
 
@@ -71,8 +69,15 @@ if __name__ == '__main__':
                 #查询我的bug
                 (status,is_success,message) = my_business.get_my_bug(admin_id)
                 #500,,参数错误 | 200,0,严重错误 | 200,1,一般错误 | 200,-1,没有错误 | 其他查询失败
-                if 500 == status:
-
+                if 500 == status:#500,,参数错误
+                    pass
+                elif 200 == status and 0 == is_success:#200,0,严重错误
+                    pass
+                elif 200 == status and 1 == is_success:#200,1,一般错误
+                    pass
+                elif 200 == status and -1 == is_success:#200,-1,没有错误
+                    pass
+                else:
                     pass
             else:
                 #发送错误消息

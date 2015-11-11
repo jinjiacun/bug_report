@@ -67,3 +67,14 @@ class business():
     #修改
 
     #删除
+
+    #获取编号
+    '''
+    通过获取当前要求模块的最大的id，在此基础上加一已返回
+    '''
+    def get_number(self,module_index=0):
+        module_list = ['Proejct','Bug','Admin','Role','Part','Resume','Positionhr']
+        prefix_list = ['XM-'     ,'XM-','XM-'  ,'XM-' ,'XM-' ,'XM-'    ,'XM-'        ]
+
+        return prefix_list[0]+'000001'
+        pass

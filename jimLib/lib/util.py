@@ -189,3 +189,10 @@ if __name__ == '__main__':
         print 'fail'
     '''
     #test post
+
+
+#我的字典
+class Dict():
+    #项目列表
+    def __init__(self):
+        pass

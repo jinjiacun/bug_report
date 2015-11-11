@@ -10,25 +10,38 @@ import time
 import urllib
 import jimLib.widget.ListButton
 import jimLib.widget.TableTextButton
+from jimLib.lib.business import business
 
 
 class Add(QDialog):
+    title_list  = [u'添加项目',u'添加bug',u'添加用户',u'添加角色',u'添加部门',u'添加简历',u'添加招聘']
+    module_list = ['Project','Bug','Admin','Role','Part','Resume','Positionhr']
     title = ''
-    module = ''#Project,Bug
-    def __init__(self, parent=None,title='',module=''):
+    module = ''
+    def __init__(self, parent=None,title_index=0,module_index=0):
         super(Add, self).__init__(parent)
         mainLayout = QVBoxLayout()
 
+        Add.title  = Add.title_list[title_index]
+        Add.module = Add.module_list[module_index]
+
         self.AddToolBar()
         self.formGroupBox = QGroupBox(u"表单:")
-        if 'Project' == module:
+        if 'Project' == Add.module:
             self.AddProjectForm()
-        elif 'Bug' == module:
+        elif 'Bug' == Add.module:
             self.AddBugForm()
-        elif 'User' == module:
-            self.AddUserForm()
-        elif 'Role' == module:
+        elif 'Admin' == Add.module:
+            self.AddAdminForm()
+        elif 'Role' == Add.module:
             self.AddRoleForm()
+        elif 'Part' == Add.module:
+            self.AddPartForm()
+        elif 'Resume' == Add.module:
+            self.AddResumeForm()
+        elif 'Positionhr' == Add.module:
+            self.AddPositionhrForm()
+
 
         mainLayout.addWidget(self.horizontalGroupBox)
         mainLayout.addWidget(self.formGroupBox)
@@ -36,19 +49,19 @@ class Add(QDialog):
         self.setFixedWidth(500)
         self.setFixedHeight(400)
         self.setWindowFlags(Qt.Window)
-        Add.title = title
-        Add.module = module
         self.setWindowTitle(Add.title)
 
     #添加项目
     def AddProjectForm(self):
         layout = QFormLayout()
-
+        my_business = business
+        number = my_business.get_number(Add.module_list)
         #项目添加
         layout = QFormLayout()
         layout.addRow(QLabel(u"<font color='red'>*</font>项目名称:"), QLineEdit())
         layout.addRow(QLabel(u" 编号:"), QLabel())
         layout.addRow(QLabel(u"项目描述:"), QTextEdit())
+
         layout.addRow(QLabel(u"成员:"), jimLib.widget.ListButton.ListButton())
         layout.addRow(QLabel(u"模块:"), jimLib.widget.TableTextButton.ListTextButton())
         self.formGroupBox.setLayout(layout)
@@ -69,7 +82,7 @@ class Add(QDialog):
         layout.addRow(QLabel(u"操作过程:"), QTextEdit())
 
     #添加用户
-    def AddUserForm(self):
+    def AddAdminForm(self):
         layout = QFormLayout()
 
         #用户添加
