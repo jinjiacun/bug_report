@@ -131,7 +131,6 @@ class MyDialog(QDialog):
             self.MyTable.setColumnWidth(i, MyDialog.table_width_list[Dict.module_list[MyDialog.table_cur_index]].__getitem__(i))
             i += 1
 
-
         #绑定数据
         method  = Dict.module_list[MyDialog.table_cur_index]+'.get_list'
         content = {'page_size':10}
