@@ -2,7 +2,6 @@
 import sys
 from PyQt4 import QtGui
 from PyQt4 import QtCore
-from jimLib.widget.CheckboxEx import CheckboxEx
 from jimLib.lib.util import lib_post
 
 import sys
@@ -30,8 +29,7 @@ class MulCheckedBox(QtGui.QWidget):
         print self.data
         #复选框
         for (key,item) in self.data.items():
-            print 'key:%s'%key
-            newCheckBox = CheckboxEx(self,item)
+            newCheckBox = QtGui.QCheckBox()
             newCheckBox.setText(key)
             newCheckBox.stateChanged.connect(self.my_select)
             newCheckBox.setFixedWidth(100)
@@ -41,22 +39,35 @@ class MulCheckedBox(QtGui.QWidget):
                 cols = 0
                 rows += 1
 
+        '''
+        btn = QtGui.QPushButton(u'测试')
+        btn.clicked.connect(self.test)
+        girdLayout.addWidget(btn,5,0)
+        '''
+
         self.setLayout( girdLayout)
+
+
+
+    def test(self):
+        print self.text()
 
     #选中
     def my_select(self,checked):
         checkbox = self.sender()
         if checked:
-            print checkbox.value()
-            #self.re_data.append(self.data[str(checkbox.value())])
+            self.re_data.append(self.data[unicode(checkbox.text())])
             pass
         else:
-            #self.re_data.remove(self.data[str(checkbox.value())])
+            self.re_data.remove(self.data[unicode(checkbox.text())])
             pass
         pass
 
     def text(self):
-        return self.re_data
+        tmp_list = []
+        for i in self.re_data:
+            tmp_list.append(str(i))
+        return ','.join(tmp_list)
 
 if __name__ == '__main__':
     app = QtGui.QApplication([])
