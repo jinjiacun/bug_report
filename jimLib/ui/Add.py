@@ -180,8 +180,9 @@ class Add(QDialog):
         self.position_id = QComboBox()
         (status,content) = my_business.get_dict()
         if status:
-            for (key,value) in content['positionhr'].items():
-                self.position_id.addItems([value])
+            if content.has_key('positionhr'):
+                for (key,value) in content['positionhr'].items():
+                    self.position_id.addItems([value])
         layout.addRow(QLabel(u"<font color='red'>*</font>应聘岗位:"), self.position_id)
         self.part_id = QComboBox()
         if status:
