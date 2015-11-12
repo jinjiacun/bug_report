@@ -64,7 +64,7 @@ if __name__ == '__main__':
                 mainWindow.set_tray(1)
                 is_login_ok = True
                 #开启mqtt推送
-                my_mqtt = CMqtt("bug/"+user_name)
+                my_mqtt = CMqtt("debug_bug/"+user_name)
                 mainWindow.my_time()
                 mainWindow.timer.stop()
                 #查询我的bug

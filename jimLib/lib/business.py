@@ -58,6 +58,118 @@ class business():
     def receive_message(self,messge=''):
         pass
 
+    #-----------------------添加-----------------------
+    #添加项目
+    '''data={'number':'','name':'','description':'','create':0}
+       mem_data={'project_id':0,'admin_id':[]}
+       mod_data={'project_id':0,'name':[]}
+   '''
+    def add_proejct(self,data={},mem_data={},mod_data={}):
+        project_id = 0
+        #添加项目
+        method = 'Project.add'
+        content = data
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            project_id = result['content']['id']
+        else:
+            return (False,u'项目添加失败')
+
+
+        #添加项目成员
+        #{'project_id':0,'admin_id':0}
+        if 0<len(mem_data['admin_id']):
+            for admin_id in mem_data['admin_id']:
+                method = 'Projectmem.add'
+                content = {'project_id':project_id,'admin_id':admin_id}
+                result = lib_post(method,mem_data)
+                if 500 == result['status_code']:
+                    return (False,result['content'])
+                if 200 == result['status_code'] and 0 == result['content']['is_success']:
+                    pass
+                else:
+                    return (False,u'添加项目成员失败')
+
+
+        #添加项目模块
+        if 0<len(mod_data['name']):
+            for name in mod_data['name']:
+                mod_data['project_id'] = project_id
+                method  = 'Projectmodule.add'
+                content = {'project_id':project_id,'name':name}
+                result = lib_post(method, content)
+                if 500 == result['status_code']:
+                    return (False,result['content'])
+                if 200 == result['status_code'] and 0 == result['content']['is_success']:
+                    pass
+                else:
+                    return (False,u'添加项目模块失败')
+
+        return (True,u'添加成功')
+
+    #添加bug
+    '''data={'number':'','level':0,'status':0,'proejct_id':0,'project_mod_id':0,
+            'get_member':0,'description':''}
+    '''
+    def add_bug(self,data={}):
+        method = 'Bug.add'
+        content = data
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'添加成功')
+
+        return (False,u'添加失败')
+
+
+    #添加用户
+    '''data={'number':0,'admin_name':'','passwd':'','status':0,'part':0,'role':0,
+            'position':0}
+    '''
+    def add_admin(self,data={}):
+        method = 'Admin.add'
+        content = data
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'添加成功')
+
+        return (False,u'添加失败')
+
+    #添加角色
+    '''data={'number':0,'name':'','resource':''}
+    '''
+    def add_role(self,data={}):
+        pass
+
+    #添加部门
+    '''data={'number':'','name':'','create':0}
+    '''
+    def add_part(self,data={}):
+        pass
+
+    #添加简历
+    '''data={'number':'','candidates':'','telephone':'','position_id':0,'part_id':0,
+            'accessories':0,'remark':''}
+    '''
+    def add_resume(self,data={}):
+        pass
+
+    #添加简历岗位
+    '''data={'part_id':0,'name':'','status':0,'description':'','start_time':0,'create':0}
+    '''
+    def add_positionhr(self,data={}):
+        pass
+
+    #-----------------------修改-----------------------
+
+    #-----------------------删除-----------------------
+
+
     #查询项目
 
     #查询bug
@@ -106,7 +218,7 @@ class business():
             lib_log(0,result['content'])
             return 'error'
         if 200 == result['status_code']:
-            if 0 <> result['content']['record_count']:
+            if 0 < int(result['content']['record_count']):
                 max_num = int(result['content']['list'][0]['id'])
                 max_num += 1
 

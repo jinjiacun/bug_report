@@ -11,6 +11,7 @@ def lib_post(method,content):
     data['method'] = method
     data['content'] = content
     data['token']   = '123'
+    data['debug']   = 1
     url = 'http://192.168.1.131/yms_api/index.php/Bugapi'
     post_data = urllib.urlencode(data)
     req = urllib2.urlopen(url, post_data)
@@ -74,11 +75,11 @@ def lib_format(type, value,my_dict):
                 return my_dict['admin'][str(value)]
             except:
                 return '----'
-    elif 4 == type:
+    elif 4 == type and my_dict.has_key('role'):
         return my_dict['role'][str(value)]
-    elif 5 == type:
+    elif 5 == type and my_dict.has_key('project'):
         return my_dict['project'][str(value)]
-    elif 6 == type:
+    elif 6 == type and my_dict.has_key['mod']:
         return my_dict['mod'][str(value)]
     elif 7 == type:
         if str(1) == str(value):
@@ -201,3 +202,8 @@ class Dict():
     number_prefix_list = []
     def __init__(self):
         pass
+
+#获取当前用户id
+def get_cur_admin_id():
+    pass
+    return 1

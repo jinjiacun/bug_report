@@ -15,6 +15,7 @@ from jimLib.widget.MulCheckedBox import MulCheckedBox
 from jimLib.widget.FileUpload import FileUpload
 from jimLib.lib.business import business
 from jimLib.lib.util import Dict
+from jimLib.lib.util import get_cur_admin_id
 
 
 class Add(QDialog):
@@ -22,6 +23,8 @@ class Add(QDialog):
     title_index = 0
     module = ''
     module_index = 0
+    status = False
+    message = ''
     def __init__(self, parent=None,title_index=0,module_index=0):
         super(Add, self).__init__(parent)
         mainLayout = QVBoxLayout()
@@ -115,13 +118,15 @@ class Add(QDialog):
         self.part = QComboBox()
         #查询部门
         my_business = business()
-        (status,resule) = my_business.get_dict()
-        for (key,item) in resule['part'].items():
-            self.part.addItems([item])
+        (status,result) = my_business.get_dict()
+        if result.has_key('part'):
+            for (key,item) in result['part'].items():
+                self.part.addItems([item])
         layout.addRow(QLabel(u"<font color='red'>*</font>部门:"), self.part)
         self.role = QComboBox()
-        for (key,item) in resule['role'].items():
-            self.role.addItems([item])
+        if result.has_key('role'):
+            for (key,item) in result['role'].items():
+                self.role.addItems([item])
         layout.addRow(QLabel(u"<font color='red'>*</font>角色:"), self.role)
         self.formGroupBox.setLayout(layout)
 
@@ -213,21 +218,88 @@ class Add(QDialog):
         self.horizontalGroupBox.setFixedHeight(50)
         layout = QHBoxLayout()
 
-        button = QPushButton(u'保存')
-        button.setFixedWidth(50)
-        layout.addWidget(button)
+        btn_save = QPushButton(u'保存')
+        btn_save.setFixedWidth(50)
+        btn_save.clicked.connect(self.SaveForm)
+        layout.addWidget(btn_save)
 
-        button = QPushButton(u'取消')
-        button.setFixedWidth(50)
-        layout.addWidget(button)
+        btn_cancel = QPushButton(u'取消')
+        btn_cancel.setFixedWidth(50)
+        btn_cancel.clicked.connect(self.Cancel)
+        layout.addWidget(btn_cancel)
 
-        button = QPushButton(u'返回')
-        button.setFixedWidth(50)
-        layout.addWidget(button)
+        btn_close = QPushButton(u'关闭')
+        btn_close.setFixedWidth(50)
+        btn_close.clicked.connect(self.Close)
+        layout.addWidget(btn_close)
 
         self.horizontalGroupBox.setLayout(layout)
         pass
 
+    def Cancel(self):
+        pass
+
+    def Close(self,event):
+        #self.emit(SIGNAL('closeEmitApp()'))
+        self.close()
+        pass
+    #-----------------保存-----------------------------
+    def SaveForm(self):
+        if 'Project' == Add.module:
+            self.SaveProejct()
+        elif 'Bug' == Add.module:
+            self.SaveBug()
+        elif 'Admin' == Add.module:
+            self.SaveAdmin()
+        elif 'Role' == Add.module:
+            self.SaveRole()
+        elif 'Part' == Add.module:
+            self.SavePart()
+        elif 'Resume' == Add.module:
+            self.SaveResume()
+        elif 'Positionhr' == Add.module:
+            self.SavePositionhr()
+        pass
+
+    #保存项目
+    def SaveProejct(self):
+        pass
+
+    #保存bug
+    def SaveBug(self):
+        pass
+
+    #保存用户
+    def SaveAdmin(self):
+        pass
+
+    #保存角色
+    def SaveRole(self):
+        pass
+
+    #保存部门
+    def SavePart(self):
+        data={'number':'','name':'','create':0}
+        my_business = business()
+
+        #组装数据
+        data['number'] = urllib.quote(self.number.text())
+        data['name']   = urllib.quote(self.name.text())
+        data['create'] = get_cur_admin_id()
+
+        (status,content) = my_business.add_positionhr(data)
+        if status:
+            #提示
+            Add.status = True
+        pass
+
+    #保存简历
+    def SaveResume(self):
+        pass
+
+    #保存简历岗位
+    def SavePositionhr(self):
+        pass
 
 if __name__ == '__main__':
     import sys
