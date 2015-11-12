@@ -17,7 +17,6 @@ from jimLib.lib.business import business
 from jimLib.lib.util import Dict
 from jimLib.lib.util import get_cur_admin_id
 
-
 class Add(QDialog):
     title = ''
     title_index = 0
@@ -28,11 +27,13 @@ class Add(QDialog):
     def __init__(self, parent=None,title_index=0,module_index=0):
         super(Add, self).__init__(parent)
         mainLayout = QVBoxLayout()
+        self.parent = parent
 
         Add.title  = Dict.title_list[title_index]
         Add.module = Dict.module_list[module_index]
         Add.title_index  = title_index
         Add.module_index = module_index
+
 
         self.AddToolBar()
         self.formGroupBox = QGroupBox(u"表单:")
@@ -219,6 +220,7 @@ class Add(QDialog):
         layout = QHBoxLayout()
 
         btn_save = QPushButton(u'保存')
+        self.connect(btn_save,SIGNAL("clicked()"),self,SLOT("accept()"))
         btn_save.setFixedWidth(50)
         btn_save.clicked.connect(self.SaveForm)
         layout.addWidget(btn_save)
@@ -283,14 +285,21 @@ class Add(QDialog):
         my_business = business()
 
         #组装数据
-        data['number'] = urllib.quote(self.number.text())
-        data['name']   = urllib.quote(self.name.text())
+        data['number'] = urllib.quote(str(self.number.text()))
+        data['name']   = urllib.quote(str(self.name.text()))
         data['create'] = get_cur_admin_id()
 
-        (status,content) = my_business.add_positionhr(data)
+        (status,content) = my_business.add_part(data)
+        print 'content:%s'%content
         if status:
-            #提示
+            Add.message = content
             Add.status = True
+            self.parent.set_message(u'提示',content)
+            return True
+        else:
+            Add.message = content
+            Add.status = False
+            self.parent.set_message(u'错误',content)
         pass
 
     #保存简历

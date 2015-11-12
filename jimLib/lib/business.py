@@ -144,26 +144,58 @@ class business():
     '''data={'number':0,'name':'','resource':''}
     '''
     def add_role(self,data={}):
-        pass
+        method = 'Role.add'
+        content = data
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'添加成功')
+
+        return (False,u'添加失败')
 
     #添加部门
     '''data={'number':'','name':'','create':0}
     '''
     def add_part(self,data={}):
-        pass
+        method = 'Part.add'
+        content = data
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'添加成功')
+
+        return (False,u'添加失败')
 
     #添加简历
     '''data={'number':'','candidates':'','telephone':'','position_id':0,'part_id':0,
             'accessories':0,'remark':''}
     '''
     def add_resume(self,data={}):
-        pass
+        method = 'Resume.add'
+        content = data
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'添加成功')
+
+        return (False,u'添加失败')
 
     #添加简历岗位
     '''data={'part_id':0,'name':'','status':0,'description':'','start_time':0,'create':0}
     '''
     def add_positionhr(self,data={}):
-        pass
+        method = 'Positionhr.add'
+        content = data
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'添加成功')
+
+        return (False,u'添加失败')
 
     #-----------------------修改-----------------------
 

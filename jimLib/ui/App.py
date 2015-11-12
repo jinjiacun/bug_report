@@ -9,7 +9,7 @@ import math
 import os
 from jimLib.ui.List import MyDialog
 from PyQt4 import QtCore, QtGui
-import jimLib.ui.Add
+from jimLib.ui.Add import Add
 
 class MainWindow(QtGui.QMainWindow):
     InsertTextButton = 10
@@ -148,9 +148,11 @@ class MainWindow(QtGui.QMainWindow):
 
     #工具栏处理
     def handle_add(self):
-        self.add_dialog = jimLib.ui.Add.Add(self,self.scene.table_cur_index,self.scene.table_cur_index)
+        self.add_dialog = Add(self,self.scene.table_cur_index,self.scene.table_cur_index)
         if self.add_dialog.exec_():
             #梳理返回值
+            if Add.status:
+                self.scene.change_table(self.scene.table_cur_index)
             pass
         pass
 

@@ -5,11 +5,6 @@
 import sip
 sip.setapi('QString', 2)
 
-try:
-    import diagramscene_rc3
-except ImportError:
-    import diagramscene_rc2
-
 from PyQt4 import QtGui
 from jimLib.ui.App import MainWindow
 from jimLib.ui.Login import login
