@@ -4,6 +4,8 @@ from jimLib.lib.util import lib_post
 import urllib
 from jimLib.lib.util import Dict
 from jimLib.lib.util import lib_log
+from jimLib.lib.util import lib_post_file
+from jimLib.lib.util import file_extension
 
 class business():
     def __init__(self):
@@ -196,6 +198,18 @@ class business():
 
         return (False,u'添加失败')
 
+    #上传文件
+    '''
+    '''
+    def file_upload(self,path=''):
+        method = 'Media.upload'
+        f_ext = file_extension(path)
+        f_ext = f_ext.replace('.','')
+        content = "{'field_name':'my','file_name':'normal','file_ext':'%s','module_sn':'011001'}"%f_ext
+        (status,content) = lib_post_file(method,content,path)
+        if status:
+            return (True,content)
+        return (False, content)
     #-----------------------修改-----------------------
 
     #-----------------------删除-----------------------

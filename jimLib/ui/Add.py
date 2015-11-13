@@ -384,7 +384,17 @@ class Add(QDialog):
         data['telephone']   = urllib.quote(str(self.telephone.text()))
         data['position_id'] = 1
         data['part_id']     = 1
-        data['accessories'] = 1
+        data['accessories'] = 0
+        #附件
+        (status,content) = my_business.file_upload(str(self.accessories.filename))
+        if status:
+            data['accessories'] = int(content['content']['id'])
+        else:
+            Add.message = content
+            Add.status = False
+            self.parent.set_message(u'错误',content)
+            return False
+
         data['remartk']      = urllib.quote(str(self.remark.toPlainText()))
         data['create']      = get_cur_admin_id()
 

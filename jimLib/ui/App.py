@@ -149,10 +149,11 @@ class MainWindow(QtGui.QMainWindow):
     #工具栏处理
     def handle_add(self):
         self.add_dialog = Add(self,self.scene.table_cur_index,self.scene.table_cur_index)
-        if self.add_dialog.exec_():
+        while self.add_dialog.exec_():
             #梳理返回值
             if Add.status:
                 self.scene.change_table(self.scene.table_cur_index)
+                break
             pass
         pass
 

@@ -61,10 +61,11 @@ def lib_post_file(method, content,path):
         resp = urllib2.urlopen(req, timeout=5)
         #get response
         qrcont=resp.read()
-        return qrcont
+        return (True,json.loads(qrcont))
     except Exception,e:
-        print 'http error'
-        pass
+        print e.message
+        return (False,'http error')
+    return (False,u'错误')
 
 import os.path
 #获取文件后缀名

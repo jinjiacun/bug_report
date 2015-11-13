@@ -3,6 +3,7 @@ import sys
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 from jimLib.lib.business import business
+import tkFileDialog
 
 '''
 一个image、一个按钮
@@ -26,15 +27,15 @@ class FileUpload(QtGui.QWidget):
         btnOpenDialog.clicked.connect(self.openFileDialog)
         btnOpenDialog.setFixedWidth(30)
         girdLayout.addWidget( btnOpenDialog , 0, 1)
+        self.filename = ''
 
     def openFileDialog(self):
+        self.filename = QtGui.QFileDialog.getOpenFileName()
+        self.lab.setText(self.filename)
         pass
 
     def text(self):
-        re_data = []
-        for key in self.display_data:
-            re_data.append(self.data[key])
-        return re_data
+        return self.filename
 
 if __name__ == '__main__':
     app = QtGui.QApplication([])
