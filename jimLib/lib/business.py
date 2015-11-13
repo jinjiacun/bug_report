@@ -126,8 +126,7 @@ class business():
 
 
     #添加用户
-    '''data={'number':0,'admin_name':'','passwd':'','name':'','status':0,'part':0,'role':0,
-            'position':0}
+    '''data={'number':0,'admin_name':'','passwd':'','name':'','status':0,'part':0,'role':0}
     '''
     def add_admin(self,data={}):
         method = 'Admin.add'
@@ -170,7 +169,7 @@ class business():
 
     #添加简历
     '''data={'number':'','candidates':'','telephone':'','position_id':0,'part_id':0,
-            'accessories':0,'remark':''}
+            'accessories':0,'remartk':'','create':0}
     '''
     def add_resume(self,data={}):
         method = 'Resume.add'

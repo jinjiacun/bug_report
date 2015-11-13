@@ -290,11 +290,61 @@ class Add(QDialog):
 
     #保存用户
     def SaveAdmin(self):
-        pass
+        data={'number':0,'admin_name':'','passwd':'','re_passwd':'','name':'','status':0,'part':0,'role':0}
+        my_business = business()
+
+        #组装数据
+        data['number']     = urllib.quote(str(self.number.text()))
+        data['admin_name'] = urllib.quote(str(self.user_name.text()))
+        data['passwd']    = urllib.quote(str(self.passwd.text()))
+        data['re_passwd'] = urllib.quote(str(self.re_passwd.text()))
+        data['name']       = urllib.quote(str(self.name.text()))
+        data['status']     = 0
+        data['part']       = 1
+        data['role']       = 2
+        #data['position']   = 1
+
+        if data['passwd'] != data['re_passwd']:
+            content = u'两次密码不一致'
+            Add.message = content
+            Add.status = False
+            self.parent.set_message(u'警告',content)
+            return False
+        data.pop('re_passwd')
+        (status,content) = my_business.add_admin(data)
+
+        print 'content:%s'%content
+        if status:
+            Add.message = content
+            Add.status = True
+            self.parent.set_message(u'提示',content)
+            return True
+        else:
+            Add.message = content
+            Add.status = False
+            self.parent.set_message(u'错误',content)
 
     #保存角色
     def SaveRole(self):
-        pass
+        data={'number':'','name':'','resource':0}
+        my_business = business()
+
+        #组装数据
+        data['number']   = urllib.quote(str(self.number.text()))
+        data['name']     = urllib.quote(str(self.name.text()))
+        data['resource'] = urllib.quote(str(self.resource.text()))
+
+        (status,content) = my_business.add_role(data)
+        print 'content:%s'%content
+        if status:
+            Add.message = content
+            Add.status = True
+            self.parent.set_message(u'提示',content)
+            return True
+        else:
+            Add.message = content
+            Add.status = False
+            self.parent.set_message(u'错误',content)
 
     #保存部门
     def SavePart(self):
@@ -321,11 +371,54 @@ class Add(QDialog):
 
     #保存简历
     def SaveResume(self):
-        pass
+        data={'number':'','candidates':'','telephone':'','position_id':0,'part_id':0,
+            'accessories':0,'remartk':'','create':0}
+        my_business = business()
+
+        #组装数据
+        data['number']      = urllib.quote(str(self.number.text()))
+        data['candidates']  = urllib.quote(str(self.candidates.text()))
+        data['telephone']   = urllib.quote(str(self.telephone.text()))
+        data['position_id'] = 1
+        data['part_id']     = 1
+        data['accessories'] = 1
+        data['remartk']      = urllib.quote(str(self.remark.toPlainText()))
+        data['create']      = get_cur_admin_id()
+
+        (status,content) = my_business.add_resume(data)
+        print 'content:%s'%content
+        if status:
+            Add.message = content
+            Add.status = True
+            self.parent.set_message(u'提示',content)
+            return True
+        else:
+            Add.message = content
+            Add.status = False
+            self.parent.set_message(u'错误',content)
 
     #保存简历岗位
     def SavePositionhr(self):
-        pass
+        data={'part_id':0,'name':'','description':'','create':0}
+        my_business = business()
+
+        #组装数据
+        data['part_id'] = 2
+        data['description'] = urllib.quote(str(self.description.toPlainText()))
+        data['name']   = urllib.quote(str(self.name.text()))
+        data['create'] = get_cur_admin_id()
+
+        (status,content) = my_business.add_positionhr(data)
+        print 'content:%s'%content
+        if status:
+            Add.message = content
+            Add.status = True
+            self.parent.set_message(u'提示',content)
+            return True
+        else:
+            Add.message = content
+            Add.status = False
+            self.parent.set_message(u'错误',content)
 
 if __name__ == '__main__':
     import sys
