@@ -206,7 +206,21 @@ class business():
 
     #查询bug
 
+
     #查询资源
+    def get_resource(self):
+        method = 'Resource.get_list'
+        content = {'order':{'id':'asc'}}
+        re_list = []
+
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code']:
+            if 0< int(str(result['content']['record_count'])):
+                return (True,result['content'])
+        return (False,'')
+
     def get_resource_name(self):
         method = 'Resource.get_list'
         content = {'order':{'id':'asc'}}

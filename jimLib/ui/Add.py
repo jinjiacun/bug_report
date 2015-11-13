@@ -143,10 +143,14 @@ class Add(QDialog):
         self.name = QLineEdit()
         layout.addRow(QLabel(u"<font color='red'>*</font>角色名称:"), self.name)
         #查询资源
-        (status,content) = my_business.get_resource_name()
-        source_name_list = []
+        (status,content) = my_business.get_resource()
+        source_name_list = {}
         if status:
-            source_name_list = content
+             rows = int(content['record_count'])
+             for i in range(0,rows-1):
+                 key = content['list'][i]['source_name']
+                 id  = content['list'][i]['id']
+                 source_name_list[key] = id
         self.resource = MulCheckedBox(self,source_name_list)
         layout.addRow(QLabel(u"<font color='red'>*</font>权限:"), self.resource)
         self.formGroupBox.setLayout(layout)
