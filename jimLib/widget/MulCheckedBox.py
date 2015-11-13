@@ -20,7 +20,7 @@ class MulCheckedBox(QtGui.QWidget):
         self.cur_row = -1
         if resource:
             self.data = resource
-        self.setWindowTitle("weather")
+        self.setWindowTitle(u"多个复选框")
         self.resize(200, 200)
         girdLayout = QtGui.QGridLayout()
         girdLayout.setMargin(0)
