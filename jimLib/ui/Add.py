@@ -13,6 +13,7 @@ from jimLib.widget.TableTextButton import TableTextButton
 from jimLib.widget.TableComButton import TableComButton
 from jimLib.widget.MulCheckedBox import MulCheckedBox
 from jimLib.widget.FileUpload import FileUpload
+from jimLib.widget.WebView import WebView
 from jimLib.lib.business import business
 from jimLib.lib.util import Dict
 from jimLib.lib.util import get_cur_admin_id
@@ -57,7 +58,7 @@ class Add(QDialog):
         mainLayout.addWidget(self.formGroupBox)
         self.setLayout(mainLayout)
         self.setFixedWidth(500)
-        self.setFixedHeight(400)
+        self.setFixedHeight(600)
         self.setWindowFlags(Qt.Window)
         self.setWindowTitle(Add.title)
 
@@ -80,18 +81,29 @@ class Add(QDialog):
     #添加bug
     def AddBugForm(self):
         layout = QFormLayout()
-
+        my_business = business()
+        number = my_business.get_number(Add.module_index)
         #bug添加
         layout = QFormLayout()
-        layout.addRow(QLabel(u" 编号:"), QLabel())
-        layout.addRow(QLabel(u"<font color='red'>*</font>优先级:"), QTextEdit())
-        layout.addRow(QLabel(u"<font color='red'>*</font>状态:"), QTextEdit())
-        layout.addRow(QLabel(u"<font color='red'>*</font>所属项目:"), QTextEdit())
-        layout.addRow(QLabel(u"<font color='red'>*</font>所属模块:"), QTextEdit())
-        layout.addRow(QLabel(u"<font color='red'>*</font>受理人:"), QTextEdit())
-        layout.addRow(QLabel(u"<font color='red'>*</font>问题描述:"), QTextEdit())
-        layout.addRow(QLabel(u"操作过程:"), QTextEdit())
+        self.number = QLabel(number)
+        layout.addRow(QLabel(u" 编号:"), self.number)
+        self.level = QComboBox()
+        layout.addRow(QLabel(u"<font color='red'>*</font>优先级:"), self.level)
+        self.status = QComboBox()
+        layout.addRow(QLabel(u"<font color='red'>*</font>状态:"), self.status)
+        self.project_id = QComboBox()
+        layout.addRow(QLabel(u"<font color='red'>*</font>所属项目:"), self.project_id)
+        self.project_mod_id = QComboBox()
+        layout.addRow(QLabel(u"<font color='red'>*</font>所属模块:"), self.project_mod_id)
+        self.get_member = QComboBox()
+        layout.addRow(QLabel(u"<font color='red'>*</font>受理人:"), self.get_member)
+        self.title = QTextEdit()
+        layout.addRow(QLabel(u"<font color='red'>*</font>问题描述:"), self.title)
+        self.description = WebView()
+        layout.addRow(QLabel(u"操作过程:"), self.description)
         self.formGroupBox.setLayout(layout)
+        self.formGroupBox.resize(600,700)
+        self.resize(600, 700)
 
     #添加用户
     def AddAdminForm(self):

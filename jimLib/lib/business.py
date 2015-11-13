@@ -126,7 +126,7 @@ class business():
 
 
     #添加用户
-    '''data={'number':0,'admin_name':'','passwd':'','status':0,'part':0,'role':0,
+    '''data={'number':0,'admin_name':'','passwd':'','name':'','status':0,'part':0,'role':0,
             'position':0}
     '''
     def add_admin(self,data={}):
