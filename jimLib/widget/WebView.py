@@ -49,7 +49,11 @@ class WebView(QWidget):
         self.webSettings.setAttribute(QWebSettings.JavascriptEnabled,True)
         self.webView.setPage(WebPage())
 
+        self.btnTest = QPushButton(u'测试')
+        self.connect(self.btnTest,SIGNAL("clicked()"),self.test)
+
         layout = QVBoxLayout()
+        layout.addWidget(self.btnTest)
         layout.addWidget(self.webView)
 
         self.setLayout(layout)
@@ -57,6 +61,15 @@ class WebView(QWidget):
     def createConnection(self):
         #调用查询
         self.search()
+
+    def test(self):
+        self.get_value()
+        print self.webView.page().mainFrame().toHtml()
+        pass
+
+    #触发js
+    def get_value(self):
+        self.webView.page().mainFrame().addToJavaScriptWindowObject('get_result',self)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

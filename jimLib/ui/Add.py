@@ -57,8 +57,8 @@ class Add(QDialog):
         mainLayout.addWidget(self.horizontalGroupBox)
         mainLayout.addWidget(self.formGroupBox)
         self.setLayout(mainLayout)
-        self.setFixedWidth(500)
-        self.setFixedHeight(600)
+        self.setFixedWidth(1000)
+        self.setFixedHeight(800)
         self.setWindowFlags(Qt.Window)
         self.setWindowTitle(Add.title)
 
