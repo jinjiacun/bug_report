@@ -13,7 +13,7 @@ from jimLib.widget.TableTextButton import TableTextButton
 from jimLib.widget.TableComButton import TableComButton
 from jimLib.widget.MulCheckedBox import MulCheckedBox
 from jimLib.widget.FileUpload import FileUpload
-from jimLib.widget.WebView import WebView
+from jimLib.widget.WebViewEx import WebViewEx
 from jimLib.lib.business import business
 from jimLib.lib.util import Dict
 from jimLib.lib.util import get_cur_admin_id
@@ -25,7 +25,7 @@ class Add(QDialog):
     module_index = 0
     status = False
     message = ''
-    def __init__(self, parent=None,title_index=0,module_index=0):
+    def __init__(self, parent=None,title_index=1,module_index=1):
         super(Add, self).__init__(parent)
         mainLayout = QVBoxLayout()
         self.parent = parent
@@ -99,7 +99,7 @@ class Add(QDialog):
         layout.addRow(QLabel(u"<font color='red'>*</font>受理人:"), self.get_member)
         self.title = QTextEdit()
         layout.addRow(QLabel(u"<font color='red'>*</font>问题描述:"), self.title)
-        self.description = WebView()
+        self.description = WebViewEx()
         layout.addRow(QLabel(u"操作过程:"), self.description)
         self.formGroupBox.setLayout(layout)
         self.formGroupBox.resize(600,700)
@@ -286,6 +286,9 @@ class Add(QDialog):
 
     #保存bug
     def SaveBug(self):
+        time.sleep(3)
+        print self.description.text()
+
         pass
 
     #保存用户
