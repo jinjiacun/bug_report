@@ -12,7 +12,7 @@ sys.setdefaultencoding('utf-8')
 列表中包含删除项目
 '''
 class TableComButton(QtGui.QWidget):
-    def __init__ (self, parent = None,data=None):
+    def __init__ (self, parent = None,data=None,display_data=None):
         super(TableComButton, self).__init__(parent)
         self.setWindowTitle(u"下拉列表")
         self.data = {}#总数据
@@ -32,12 +32,18 @@ class TableComButton(QtGui.QWidget):
         #verticalHeader
         girdLayout.addWidget(self.table,0,0)
         self.setLayout( girdLayout)
+
+        if display_data:
+            self.display_data = display_data
+            self.bind()
+
         #下拉列表
         self.combo = QtGui.QComboBox()
         print 'self.data'
         print self.data
         for key in self.data:
-            self.combo.addItems([key])
+            if key not in self.display_data:
+                self.combo.addItems([key])
         girdLayout.addWidget(self.combo,1,0)
         #按钮
         self.btnAdd = QtGui.QPushButton('+')
@@ -49,12 +55,29 @@ class TableComButton(QtGui.QWidget):
         self.btnDel.setFixedWidth(20)
         girdLayout.addWidget ( self.btnDel , 1, 2)
 
+
+
         #测试按钮
         '''
         btnTest = QtGui.QPushButton(u'测试')
         btnTest.clicked.connect(self.test)
         girdLayout.addWidget(btnTest,1,3)
         '''
+
+    #绑定数据
+    def bind(self):
+        #移除下拉表中已经在列表中显示的项目
+        #todo
+        #显示预先加入的数据
+        #移除字典及其下拉列表
+        self.table.setRowCount(len(self.display_data))
+        row = 0
+        print self.display_data
+        for item in self.display_data:
+            newItem = QtGui.QTableWidgetItem(item)
+            self.table.setItem(row, 0, newItem)
+            row += 1
+        pass
 
     def addText(self):
         self.display_data.append(str(self.combo.currentText()))
@@ -119,8 +142,9 @@ if __name__ == '__main__':
          for (key,value) in content['admin'].items():
              tmp_value = str(value)
              data[tmp_value] = int(str(key))
-    print data
-    window = TableComButton(None,data)
+    display_data = []
+    display_data.append('admin')
+    window = TableComButton(None,data,display_data)
     window.show()
     sys.exit(app.exec_())
 
