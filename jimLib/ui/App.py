@@ -232,10 +232,8 @@ class MainWindow(QtGui.QMainWindow):
         #self.view.update()
 
     def deleteItem(self):
-        for item in self.scene.selectedItems():
-            if isinstance(item, DiagramItem):
-                item.removeArrows()
-            self.scene.removeItem(item)
+        pass
+
 
     def pointerGroupClicked(self, i):
         self.scene.setMode(self.pointerTypeGroup.checkedId())

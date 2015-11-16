@@ -25,7 +25,7 @@ def lib_post(method,content):
     return result
 
 #post上传文件
-def lib_post_file(method, content,path):
+def lib_post_file(method, content,debug,path):
     #buld post body data
     boundary = '----------%s' % hex(int(time.time() * 1000))
     data = []
@@ -48,7 +48,7 @@ def lib_post_file(method, content,path):
     data.append('--%s--\r\n' % boundary)
 
     #http_url="http://192.168.1.131/yms_api/index.php/Bugapi?method=Media.upload&content={'field_name':'my','file_name':'normal','file_ext':'png','module_sn':'011001'}"
-    http_url="http://192.168.1.131/yms_api/index.php/Bugapi?method=%s&content=%s"%(method,content)
+    http_url="http://192.168.1.131/yms_api/index.php/Bugapi?method=%s&content=%s&debug=%d"%(method,content,debug)
     http_body='\r\n'.join(data)
     try:
         #buld http request

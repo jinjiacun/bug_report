@@ -76,52 +76,142 @@ class Edit(QDialog):
             self.close()
         #项目添加
         layout = QFormLayout()
-        layout.addRow(QLabel(u"<font color='red'>*</font>项目名称:"), QLineEdit())
+        self.name = QLineEdit()
+        self.name.setText(my_info['name'])
+        layout.addRow(QLabel(u"<font color='red'>*</font>项目名称:"), self.name)
         self.number = QLabel(my_info['number'])
         layout.addRow(QLabel(u" 编号:"), self.number)
-        layout.addRow(QLabel(u"项目描述:"), QTextEdit())
+        self.description = QTextEdit()
+        self.description.setText(my_info['description'])
+        layout.addRow(QLabel(u"项目描述:"), self.description)
 
-        layout.addRow(QLabel(u"成员:"), TableComButton())
-        layout.addRow(QLabel(u"模块:"), TableTextButton())
+        data ={}
+        (status,content) = my_business.get_dict()
+        if status:
+            if content.has_key('admin'):
+                for (key,value) in content['admin'].items():
+                    tmp_value = str(value)
+                    data[tmp_value] = int(str(key))
+        display_data = []
+        (status,content1) = my_business.get_project_mem_by_project_id(self.id)
+        if status:
+            for item in content1:
+                if content.has_key('admin'):
+                    display_data.append(content['admin'][unicode(item)])
+
+        self.project_mem = TableComButton(self,data,display_data)
+        layout.addRow(QLabel(u"<font color='red'>*</font>成员:"), self.project_mem)
+        data = []
+        (status,content) = my_business.get_project_mod_by_project_id(self.id)
+        if status:
+            for item in content:
+                data.append(item)
+        self.project_mod = TableTextButton(self,data)
+        layout.addRow(QLabel(u"<font color='red'>*</font>模块:"), self.project_mod)
         self.formGroupBox.setLayout(layout)
 
     #编辑bug
     def EditBugForm(self):
         layout = QFormLayout()
         my_business = business()
-        number = my_business.get_number(Edit.module_index)
+        (status,my_info) = my_business.get_bug_one_by_id(self.id)
+        if not status:
+            content = u'查询错误'
+            Edit.message = content
+            Edit.status = False
+            self.parent.set_message(u'警告',content)
+            self.close()
         #bug添加
         layout = QFormLayout()
-        self.number = QLabel(number)
+        self.number = QLabel(my_info['number'])
         layout.addRow(QLabel(u" 编号:"), self.number)
         self.level = QComboBox()
+        self.level.addItem(u'超高',QVariant(1))
+        '''
+        if 1 == my_info['level']:
+            self.level.setCurrentIndex(1)
+        '''
+        self.level.addItem(u'高',QVariant(2))
+        self.level.addItem(u'一般',QVariant(3))
+        index = self.level.findData(QVariant(my_info['level']))
+        self.level.setCurrentIndex(index)
         layout.addRow(QLabel(u"<font color='red'>*</font>优先级:"), self.level)
         self.status = QComboBox()
+        self.status.addItem(u'待解救',QVariant(1))
+        self.status.addItem(u'已解救',QVariant(2))
+        self.status.addItem(u'已关闭',QVariant(3))
+        index = self.level.findData(QVariant(my_info['status']))
+        self.status.setCurrentIndex(index)
         layout.addRow(QLabel(u"<font color='red'>*</font>状态:"), self.status)
         self.project_id = QComboBox()
+        (status,my_dict) = my_business.get_dict()
+        self.project_id.addItem(u'请选择项目',QVariant(0))
+        self.my_dict = my_dict
+        if my_dict.has_key('project'):
+            for (key,value) in my_dict['project'].items():
+                self.project_id.addItem(value,QVariant(key))
+        index = self.project_id.findData(QVariant(my_info['project_id']))
+        self.project_id.setCurrentIndex(index)
         layout.addRow(QLabel(u"<font color='red'>*</font>所属项目:"), self.project_id)
+        self.connect(self.project_id, SIGNAL('activated(int)'), self.onActivatedModule)
         self.project_mod_id = QComboBox()
         layout.addRow(QLabel(u"<font color='red'>*</font>所属模块:"), self.project_mod_id)
         self.get_member = QComboBox()
         layout.addRow(QLabel(u"<font color='red'>*</font>受理人:"), self.get_member)
+        self.onActivatedModule(my_info['project_id'])
+        index = self.project_mod_id.findData(QVariant(my_info['project_mod_id']))
+        self.project_mod_id.setCurrentIndex(index)
+        index = self.get_member.findData(QVariant(my_info['get_member']))
+        self.get_member.setCurrentIndex(index)
         self.title = QTextEdit()
+        self.title.setPlainText(my_info['title'])
         layout.addRow(QLabel(u"<font color='red'>*</font>问题描述:"), self.title)
-        self.description = WebViewEx()
+        self.description = WebViewEx(self,my_info['description'])
         layout.addRow(QLabel(u"操作过程:"), self.description)
         self.formGroupBox.setLayout(layout)
         self.formGroupBox.resize(600,700)
         self.resize(600, 700)
 
+    #级联关系(项目-模块)
+    def onActivatedModule(self, cuindex):
+        #print 'cuindex:%d'%cuindex
+        project_id = cuindex
+        if 0 >= project_id:
+            return
+        #查询项目下面的模块
+        my_business = business()
+        (status,content) = my_business.get_project_mod_by_project_id(project_id)
+        self.project_mod_id.clear()
+        self.project_mod_id.addItem(u'请选择项目模块',QVariant(0))
+        if status:
+            for (key,item) in content.items():
+                self.project_mod_id.addItem(unicode(key),QVariant(item))
+
+        #成员
+        (status,content) = my_business.get_project_mem_by_project_id(project_id)
+        self.get_member.clear()
+        self.get_member.addItem(u'请选择受理人',QVariant(0))
+        if status:
+            for item in content:
+                self.get_member.addItem(unicode(self.my_dict['admin'][str(item)]),QVariant(item))
+
     #编辑用户
     def EditAdminForm(self):
         layout = QFormLayout()
         my_business = business()
-        number = my_business.get_number(Edit.module_index)
+        (status,my_info) = my_business.get_admin_one_by_id(self.id)
+        if not status:
+            content = u'查询错误'
+            Edit.message = content
+            Edit.status = False
+            self.parent.set_message(u'警告',content)
+            self.close()
         #用户添加
         layout = QFormLayout()
-        self.number = QLabel(number)
+        self.number = QLabel(my_info['number'])
         layout.addRow(QLabel(u" 编号:"), self.number)
         self.user_name = QLineEdit()
+        self.user_name.setText(my_info['admin_name'])
         layout.addRow(QLabel(u"<font color='red'>*</font>用户帐号:"), self.user_name)
         self.passwd = QLineEdit()
         self.passwd.setEchoMode(QLineEdit.Password)
@@ -130,10 +220,13 @@ class Edit(QDialog):
         self.re_passwd.setEchoMode(QLineEdit.Password)
         layout.addRow(QLabel(u"<font color='red'>*</font>确认密码:"), self.re_passwd)
         self.name = QLineEdit()
+        self.name.setText(my_info['name'])
         layout.addRow(QLabel(u"<font color='red'>*</font>姓名:"), self.name)
         self.status = QComboBox()
-        self.status.addItems([u'正常'])
-        self.status.addItems([u'禁用'])
+        self.status.addItem(u'正常',QVariant(0))
+        self.status.addItem(u'禁用',QVariant(-1))
+        index = self.status.findData(QVariant(my_info['status']))
+        self.status.setCurrentIndex(index)
         layout.addRow(QLabel(u"<font color='red'>*</font>状态:"), self.status)
         self.part = QComboBox()
         #查询部门
@@ -141,12 +234,16 @@ class Edit(QDialog):
         (status,result) = my_business.get_dict()
         if result.has_key('part'):
             for (key,item) in result['part'].items():
-                self.part.addItems([item])
+                self.part.addItem(item,QVariant(key))
+        index = self.part.findData(QVariant(my_info['part']))
+        self.part.setCurrentIndex(index)
         layout.addRow(QLabel(u"<font color='red'>*</font>部门:"), self.part)
         self.role = QComboBox()
         if result.has_key('role'):
             for (key,item) in result['role'].items():
-                self.role.addItems([item])
+                self.role.addItem(item,QVariant(key))
+        index = self.role.findData(QVariant(my_info['role']))
+        self.role.setCurrentIndex(index)
         layout.addRow(QLabel(u"<font color='red'>*</font>角色:"), self.role)
         self.formGroupBox.setLayout(layout)
 
@@ -154,12 +251,19 @@ class Edit(QDialog):
     def EditRoleForm(self):
         layout = QFormLayout()
         my_business = business()
-        number = my_business.get_number(Edit.module_index)
+        (status,my_info) = my_business.get_role_one_by_id(self.id)
+        if not status:
+            content = u'查询错误'
+            Edit.message = content
+            Edit.status = False
+            self.parent.set_message(u'警告',content)
+            self.close()
         #角色添加
         layout = QFormLayout()
-        self.number = QLabel(number)
+        self.number = QLabel(my_info['number'])
         layout.addRow(QLabel(u" 编号:"), self.number)
         self.name = QLineEdit()
+        self.name.setText(my_info['name'])
         layout.addRow(QLabel(u"<font color='red'>*</font>角色名称:"), self.name)
         #查询资源
         (status,content) = my_business.get_resource()
@@ -170,7 +274,11 @@ class Edit(QDialog):
                  key = content['list'][i]['source_name']
                  id  = content['list'][i]['id']
                  source_name_list[key] = id
-        self.resource = MulCheckedBox(self,source_name_list)
+        check_data = []
+        tmp_list = my_info['resource'].split(',')
+        for item in tmp_list:
+            check_data.append(int(str(item)))
+        self.resource = MulCheckedBox(self,source_name_list,check_data)
         layout.addRow(QLabel(u"<font color='red'>*</font>权限:"), self.resource)
         self.formGroupBox.setLayout(layout)
 
@@ -198,36 +306,57 @@ class Edit(QDialog):
     def EditResumeForm(self):
         layout = QFormLayout()
         my_business = business()
-        number = my_business.get_number(Edit.module_index)
+        (status,my_info) = my_business.get_resume_one_by_id(self.id)
+        if not status:
+            content = u'查询错误'
+            Edit.message = content
+            Edit.status = False
+            self.parent.set_message(u'警告',content)
+            self.close()
         #简历添加
         layout = QFormLayout()
-        self.number = QLabel(number)
+        self.number = QLabel(my_info['number'])
         layout.addRow(QLabel(u" 编号:"), self.number)
         self.candidates = QLineEdit()
+        self.candidates.setText(my_info['candidates'])
         layout.addRow(QLabel(u"<font color='red'>*</font>应聘人:"), self.candidates)
         self.telephone = QLineEdit()
+        self.telephone.setText(my_info['telephone'])
         layout.addRow(QLabel(u"<font color='red'>*</font>联系方式:"), self.telephone)
         self.position_id = QComboBox()
         (status,content) = my_business.get_dict()
         if status:
             if content.has_key('positionhr'):
                 for (key,value) in content['positionhr'].items():
-                    self.position_id.addItems([value])
+                    self.position_id.addItem(value,QVariant(key))
+        index = self.position_id.findData(QVariant(my_info['position_id']))
+        self.position_id.setCurrentIndex(index)
         layout.addRow(QLabel(u"<font color='red'>*</font>应聘岗位:"), self.position_id)
         self.part_id = QComboBox()
         if status:
             for (key,value) in content['part'].items():
-                self.part_id.addItems([value])
+                self.part_id.addItem(value,QVariant(key))
+        index = self.part_id.findData(QVariant(my_info['part_id']))
+        self.part_id.setCurrentIndex(index)
         layout.addRow(QLabel(u"<font color='red'>*</font>应聘部门:"), self.part_id)
         self.accessories = FileUpload()
         layout.addRow(QLabel(u"<font color='red'>*</font>简历附件:"), self.accessories)
         self.remark = QTextEdit()
+        self.remark.setText(my_info['remartk'])
         layout.addRow(QLabel(u"备注:"), self.remark)
         self.formGroupBox.setLayout(layout)
 
     #编辑招聘岗位
-    def AddPositionhrForm(self):
+    def EditPositionhrForm(self):
         layout = QFormLayout()
+        my_business = business()
+        (status,my_info) = my_business.get_positionhr_one_by_id(self.id)
+        if not status:
+            content = u'查询错误'
+            Edit.message = content
+            Edit.status = False
+            self.parent.set_message(u'警告',content)
+            self.close()
 
         #招聘岗位添加
         layout = QFormLayout()
@@ -236,12 +365,16 @@ class Edit(QDialog):
         (status,content) = my_business.get_dict()
         if status:
             for (key,item) in content['part'].items():
-                self.part_id.addItems([item])
+                self.part_id.addItem(item,QVariant(key))
+        index = self.part_id.findData(QVariant(my_info['part_id']))
+        self.part_id.setCurrentIndex(index)
         layout.addRow(QLabel(u"<font color='red'>*</font>部门:"), self.part_id)
 
         self.name = QLineEdit()
+        self.name.setText(my_info['name'])
         layout.addRow(QLabel(u"<font color='red'>*</font>岗位:"),self.name)
         self.description = QTextEdit()
+        self.description.setText(my_info['description'])
         layout.addRow(QLabel(u"<font color='red'>*</font>要求:"), self.description)
         self.formGroupBox.setLayout(layout)
 

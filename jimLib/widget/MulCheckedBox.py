@@ -13,7 +13,7 @@ sys.setdefaultencoding('utf-8')
 列表中包含删除项目
 '''
 class MulCheckedBox(QtGui.QWidget):
-    def __init__ (self, parent = None,resource=None):
+    def __init__ (self, parent = None,resource=None,check_data=[]):
         super(MulCheckedBox, self).__init__(parent)
         self.re_data = []
         self.data = {}#资源名称-id的键值对
@@ -31,6 +31,8 @@ class MulCheckedBox(QtGui.QWidget):
         for (key,item) in self.data.items():
             newCheckBox = QtGui.QCheckBox()
             newCheckBox.setText(key)
+            if item in check_data:
+                newCheckBox.setChecked(True)
             newCheckBox.stateChanged.connect(self.my_select)
             newCheckBox.setFixedWidth(100)
             girdLayout.addWidget(newCheckBox,rows,cols)
@@ -82,6 +84,9 @@ if __name__ == '__main__':
         id  = result['content']['list'][i]['id']
         data[key] = id
         pass
-    window = MulCheckedBox(None,data)
+    check_data = []
+    check_data.append(2)
+    check_data.append(4)
+    window = MulCheckedBox(None,data,check_data)
     window.show()
     sys.exit(app.exec_())

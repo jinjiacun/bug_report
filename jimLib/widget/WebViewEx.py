@@ -13,7 +13,7 @@ getJsValue = """
 myWindow.showMessage(UE.getEditor('editor').getContent());
 """
 setJsValue = """
-UE.getEditor('editor').setContent('123');
+UE.getEditor('editor').setContent('%s');
 """
 
 class WebViewEx(QtWebKit.QWebView):
@@ -25,8 +25,9 @@ class WebViewEx(QtWebKit.QWebView):
         self.loadFinished.connect(self.on_loadFinished)
         self.load(QtCore.QUrl('http://192.168.1.131/bug/Ueditor/'))
         self.value = value
-
+        self.is_first = True
         self.message = ''
+        self.index = 0
 
     @QtCore.pyqtSlot(str)
     def showMessage(self, message):
@@ -35,7 +36,17 @@ class WebViewEx(QtWebKit.QWebView):
 
     @QtCore.pyqtSlot()
     def on_loadFinished(self):
+        if self.value:
+            if self.is_first:
+                print 'first'
+                self.page().mainFrame().evaluateJavaScript(setJsValue%self.value)
+                self.index += 1
+                print 'index:%d'%self.index
+                if self.index>4:
+                    self.is_first = False
+                #self.is_first = False
         self.page().mainFrame().evaluateJavaScript(getJsValue)
+
     @QtCore.pyqtSlot(result="int")
     def setValue(self):
         return self.value
@@ -49,7 +60,7 @@ if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     app.setApplicationName('myWindow')
 
-    main = WebViewEx(None,123)
+    main = WebViewEx(None,'abc')
     main.show()
 
     sys.exit(app.exec_())

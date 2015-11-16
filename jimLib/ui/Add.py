@@ -8,6 +8,7 @@ from PyQt4.QtCore import *
 import math
 import time
 import urllib
+import base64
 from jimLib.widget.ListButton import ListButton
 from jimLib.widget.TableTextButton import TableTextButton
 from jimLib.widget.TableComButton import TableComButton
@@ -98,14 +99,29 @@ class Add(QDialog):
         self.number = QLabel(number)
         layout.addRow(QLabel(u" 编号:"), self.number)
         self.level = QComboBox()
+        self.level.addItem(u'超高',QVariant(1))
+        self.level.addItem(u'高',QVariant(2))
+        self.level.addItem(u'一般',QVariant(3))
         layout.addRow(QLabel(u"<font color='red'>*</font>优先级:"), self.level)
         self.status = QComboBox()
+        self.status.addItem(u'待解救',QVariant(1))
+        self.status.addItem(u'已解救',QVariant(2))
+        self.status.addItem(u'已关闭',QVariant(3))
         layout.addRow(QLabel(u"<font color='red'>*</font>状态:"), self.status)
         self.project_id = QComboBox()
+        (status,my_dict) = my_business.get_dict()
+        self.project_id.addItem(u'请选择项目',QVariant(0))
+        self.my_dict = my_dict
+        if my_dict.has_key('project'):
+            for (key,value) in my_dict['project'].items():
+                self.project_id.addItem(value,QVariant(key))
         layout.addRow(QLabel(u"<font color='red'>*</font>所属项目:"), self.project_id)
+        self.connect(self.project_id, SIGNAL('activated(int)'), self.onActivatedModule)
         self.project_mod_id = QComboBox()
+        self.project_mod_id.addItem(u'请选择项目模块',QVariant(0))
         layout.addRow(QLabel(u"<font color='red'>*</font>所属模块:"), self.project_mod_id)
         self.get_member = QComboBox()
+        self.get_member.addItem(u'请选择受理人',QVariant(0))
         layout.addRow(QLabel(u"<font color='red'>*</font>受理人:"), self.get_member)
         self.title = QTextEdit()
         layout.addRow(QLabel(u"<font color='red'>*</font>问题描述:"), self.title)
@@ -114,6 +130,29 @@ class Add(QDialog):
         self.formGroupBox.setLayout(layout)
         self.formGroupBox.resize(600,700)
         self.resize(600, 700)
+
+    #级联关系(项目-模块)
+    def onActivatedModule(self, cuindex):
+        #print 'cuindex:%d'%cuindex
+        project_id = cuindex
+        if 0 >= project_id:
+            return
+        #查询项目下面的模块
+        my_business = business()
+        (status,content) = my_business.get_project_mod_by_project_id(project_id)
+        self.project_mod_id.clear()
+        self.project_mod_id.addItem(u'请选择项目模块',QVariant(0))
+        if status:
+            for (key,item) in content.items():
+                self.project_mod_id.addItem(unicode(key),QVariant(item))
+
+        #成员
+        (status,content) = my_business.get_project_mem_by_project_id(project_id)
+        self.get_member.clear()
+        self.get_member.addItem(u'请选择受理人',QVariant(0))
+        if status:
+            for item in content:
+                self.get_member.addItem(unicode(self.my_dict['admin'][str(item)]),QVariant(item))
 
     #添加用户
     def AddAdminForm(self):
@@ -323,15 +362,36 @@ class Add(QDialog):
             Add.message = content
             Add.status = False
             self.parent.set_message(u'错误',content)
-        pass
-        pass
 
     #保存bug
     def SaveBug(self):
-        time.sleep(3)
-        print self.description.text()
+        data={'number':'','title':'','level':0,'status':0,'project_id':0,'project_mod_id':0,
+            'get_member':0,'description':'','put_member':0}
+        my_business = business()
 
-        pass
+        #组装数据
+        data['number']        = urllib.quote(str(self.number.text()))
+        data['title']         = urllib.quote(str(self.title))
+        data['level']         = urllib.quote(str(self.level.itemData(self.level.currentIndex()).toPyObject()))
+
+        data['status']        = urllib.quote(str(self.status.itemData(self.status.currentIndex()).toPyObject()))
+        data['project_id']   = urllib.quote(str(self.project_id.itemData(self.project_id.currentIndex()).toPyObject()))
+        data['project_mod_id'] = urllib.quote(str(self.project_mod_id.itemData(self.project_mod_id.currentIndex()).toPyObject()))
+        data['get_member']   = urllib.quote(str(self.get_member.itemData(self.get_member.currentIndex()).toPyObject()))
+        time.sleep(3)
+        data['description']  =  base64.b64encode(self.description.text())
+        data['put_member']   = get_cur_admin_id()
+
+        (status,content) = my_business.add_bug(data)
+        if status:
+            Add.message = content
+            Add.status = True
+            self.parent.set_message(u'提示',content)
+            return True
+        else:
+            Add.message = content
+            Add.status = False
+            self.parent.set_message(u'错误',content)
 
     #保存用户
     def SaveAdmin(self):

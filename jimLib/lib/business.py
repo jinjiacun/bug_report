@@ -112,8 +112,8 @@ class business():
         return (True,u'添加成功')
 
     #添加bug
-    '''data={'number':'','level':0,'status':0,'proejct_id':0,'project_mod_id':0,
-            'get_member':0,'description':''}
+    '''data={'number':'','title':'','level':0,'status':0,'project_id':0,'project_mod_id':0,
+            'get_member':0,'description':'','put_member':0}
     '''
     def add_bug(self,data={}):
         method = 'Bug.add'
@@ -206,7 +206,8 @@ class business():
         f_ext = file_extension(path)
         f_ext = f_ext.replace('.','')
         content = "{'field_name':'my','file_name':'normal','file_ext':'%s','module_sn':'011001'}"%f_ext
-        (status,content) = lib_post_file(method,content,path)
+        debug = 1
+        (status,content) = lib_post_file(method,content,debug,path)
         if status:
             return (True,content)
         return (False, content)
@@ -224,6 +225,46 @@ class business():
             return (True,result['content'])
 
         return (False,u'查询失败')
+
+    #查询项目成员
+    def get_project_mem_by_project_id(self,project_id=0):
+        method = 'Projectmem.get_list'
+        content={'where':{'project_id':project_id}}
+        re_list = []
+        try:
+            result = lib_post(method,content)
+        except:
+            return (False,u'查询失败')
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0< result['content']['record_count']:
+            rows = int(str(result['content']['record_count']))
+            for row in (0,rows-1):
+                re_list.append(result['content']['list'][row]['admin_id'])
+            return (True,re_list)
+        return (False,[])
+
+    #查询项目模块
+    def get_project_mod_by_project_id(self,project_id=0):
+        method = 'Projectmodule.get_list'
+        content={'where':{'project_id':project_id}}
+        re_list = {}
+        try:
+            result = lib_post(method,content)
+        except:
+            return (False,u'查询失败')
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0< result['content']['record_count']:
+            rows = int(str(result['content']['record_count']))
+            for row in (0,rows-1):
+                key = str(result['content']['list'][row]['name'])
+                id = result['content']['list'][row]['id']
+                re_list[key] = id
+            return (True,re_list)
+        return (False,{})
+        pass
+
 
     #查询bug
     def get_bug_one_by_id(self,id):
