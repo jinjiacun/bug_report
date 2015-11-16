@@ -128,7 +128,7 @@ def lib_format(type, value,my_dict):
         return my_dict['role'][str(value)]
     elif 5 == type and my_dict.has_key('project'):
         return my_dict['project'][str(value)]
-    elif 6 == type and my_dict.has_key['mod']:
+    elif 6 == type and my_dict.has_key('mod'):
         return my_dict['mod'][str(value)]
     elif 7 == type:
         if str(1) == str(value):
