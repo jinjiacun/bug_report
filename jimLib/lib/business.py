@@ -210,10 +210,327 @@ class business():
         if status:
             return (True,content)
         return (False, content)
+
+    #-----------------------查询一条信息-----------------------
+    #查询项目
+    def get_project_one_by_id(self,id=0):
+        method = 'Project.get_info'
+        content={'id':id}
+        try:
+            result = lib_post(method,content)
+        except:
+            return (False,u'查询异常')
+        if 200 == result['status_code']:
+            return (True,result['content'])
+
+        return (False,u'查询失败')
+
+    #查询bug
+    def get_bug_one(self,id):
+        method = 'Bug.get_info'
+        content={'id':id}
+        try:
+            result = lib_post(method,content)
+        except:
+            return (False,u'查询异常')
+        if 200 == result['status_code']:
+            return (True,result['content'])
+
+        return (False,u'查询失败')
+
+    #查询用户
+    def get_admin_one(self,id):
+        method = 'Admin.get_info'
+        content={'id':id}
+        try:
+            result = lib_post(method,content)
+        except:
+            return (False,u'查询异常')
+        if 200 == result['status_code']:
+            return (True,result['content'])
+
+        return (False,u'查询失败')
+
+    #查询角色
+    def get_role_one(self,id):
+        method = 'Role.get_info'
+        content={'id':id}
+        try:
+            result = lib_post(method,content)
+        except:
+            return (False,u'查询异常')
+        if 200 == result['status_code']:
+            return (True,result['content'])
+
+        return (False,u'查询失败')
+
+    #查询部门
+    def get_part_one(self,id):
+        method = 'Part.get_info'
+        content={'id':id}
+        try:
+            result = lib_post(method,content)
+        except:
+            return (False,u'查询异常')
+        if 200 == result['status_code']:
+            return (True,result['content'])
+
+        return (False,u'查询失败')
+
+    #查询简历
+    def get_resume_one(self,id):
+        method = 'Resume.get_info'
+        content={'id':id}
+        try:
+            result = lib_post(method,content)
+        except:
+            return (False,u'查询异常')
+        if 200 == result['status_code']:
+            return (True,result['content'])
+
+        return (False,u'查询失败')
+
+    #查询招聘岗位
+    def get_positionhr_one(self,id):
+        method = 'Positionhr.get_info'
+        content={'id':id}
+        try:
+            result = lib_post(method,content)
+        except:
+            return (False,u'查询异常')
+        if 200 == result['status_code']:
+            return (True,result['content'])
+
+        return (False,u'查询失败')
+
     #-----------------------修改-----------------------
+    #更新项目
+    def update_project(self,data={},where={}):
+        method = 'Project.update'
+        content = {}
+        content['data'] = data
+        content['where'] = where
+        try:
+            result = lib_post(method,content)
+        except:
+            return (False,u'更新异常')
+
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'成功修改')
+
+        return (False,u'修改失败')
+
+    #更新bug
+    def update_bug(self,data={},where={}):
+        method = 'Bug.update'
+        content = {}
+        content['data'] = data
+        content['where'] = where
+        try:
+            result = lib_post(method,content)
+        except:
+            return (False,u'更新异常')
+
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'成功修改')
+
+        return (False,u'修改失败')
+
+    #更新用户
+    def update_admin(self,data={},where={}):
+        method = 'Admin.update'
+        content = {}
+        content['data'] = data
+        content['where'] = where
+        try:
+            result = lib_post(method,content)
+        except:
+            return (False,u'更新异常')
+
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'成功修改')
+
+        return (False,u'修改失败')
+
+    #更新角色
+    def update_role(self,data={},where={}):
+        method = 'Role.update'
+        content = {}
+        content['data'] = data
+        content['where'] = where
+        try:
+            result = lib_post(method,content)
+        except:
+            return (False,u'更新异常')
+
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'成功修改')
+
+        return (False,u'修改失败')
+
+    #更新部门
+    def update_part(self,data={},where={}):
+        method = 'Part.update'
+        content = {}
+        content['data'] = data
+        content['where'] = where
+        try:
+            result = lib_post(method,content)
+        except:
+            return (False,u'更新异常')
+
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'成功修改')
+
+        return (False,u'修改失败')
+
+    #更新简历
+    def update_resume(self,data={},where={}):
+        method = 'Resume.update'
+        content = {}
+        content['data'] = data
+        content['where'] = where
+        try:
+            result = lib_post(method,content)
+        except:
+            return (False,u'更新异常')
+
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'成功修改')
+
+        return (False,u'修改失败')
+
+    #更新招聘
+    def update_positionhr(self,data={},where={}):
+        method = 'Positionhr.update'
+        content = {}
+        content['data'] = data
+        content['where'] = where
+        try:
+            result = lib_post(method,content)
+        except:
+            return (False,u'更新异常')
+
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'成功修改')
+
+        return (False,u'修改失败')
 
     #-----------------------删除-----------------------
+    #删除项目
+    def delete_proejct(self,where={}):
+        method = 'Project.delete'
+        content = {}
+        content['where'] = where
 
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'成功删除')
+
+        return (False,u'删除失败')
+        pass
+
+    #删除bug
+    def delete_bug(self,where={}):
+        method = 'Bug.delete'
+        content = {}
+        content['where'] = where
+
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'成功删除')
+
+        return (False,u'删除失败')
+
+    #删除用户
+    def delete_admin(self,where={}):
+        method = 'Admin.delete'
+        content = {}
+        content['where'] = where
+
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'成功删除')
+
+        return (False,u'删除失败')
+
+    #删除角色
+    def delete_role(self,where={}):
+        method = 'Role.delete'
+        content = {}
+        content['where'] = where
+
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'成功删除')
+
+        return (False,u'删除失败')
+
+    #删除部门
+    def delete_part(self,where={}):
+        method = 'Part.delete'
+        content = {}
+        content['where'] = where
+
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'成功删除')
+
+        return (False,u'删除失败')
+
+    #删除简历
+    def delete_resume(self,where={}):
+        method = 'Resume.delete'
+        content = {}
+        content['where'] = where
+
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'成功删除')
+
+        return (False,u'删除失败')
+
+    #删除招聘岗位
+    def delete_positionhr(self,where={}):
+        method = 'Positionhr.delete'
+        content = {}
+        content['where'] = where
+
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'成功删除')
+
+        return (False,u'删除失败')
+
+    #-----------------------删除-----------------------
 
     #查询项目
 
