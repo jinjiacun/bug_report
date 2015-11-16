@@ -74,7 +74,7 @@ class TableTextButton(QtGui.QWidget):
         self.list.setRowCount(len(self.data))
         row = 0
         for item_text in self.data:
-            newItem = QtGui.QTableWidgetItem(item_text)
+            newItem = QtGui.QTableWidgetItem(unicode(item_text))
             newItem.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
             self.list.setItem(row, 0, newItem)
             row += 1

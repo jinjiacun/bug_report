@@ -15,45 +15,45 @@ from jimLib.lib.util import Dict
 
 class MyDialog(QDialog):
     #数据列表
-    table_list = {'Project':[u'编号',u'项目名称',u'创建人',u'最后更新时间',u'项目描述'],
-                  'Bug':[u'编号',u'所属项目',u'指派给',u'所属模块',u'优先级',u'状态',u'最后更新人',u'最后更新日期',u'描述',u'提交人'],
-                  'Admin':[u'编号',u'用户账号',u'姓名',u'状态',u'角色',u'部门',u'添加日期'],
-                  'Role':[u'编号',u'名称',u'权限'],
-                  'Part':[u'编号',u'部门名称',u'创建人',u'添加日期'],
-                  'Resume':[u'编号',u'应聘人',u'联系方式',u'应聘岗位',u'应聘部门',u'进度',u'预约时间',u'状态',u'最后更新人',u'最后更新日期',u'备注'],
-                  'Positionhr':[u'岗位',u'部门',u'状态',u'开启日期',u'发布人',u'要求'],
+    table_list = {'Project':['id',u'编号',u'项目名称',u'创建人',u'最后更新时间',u'项目描述'],
+                  'Bug':['id',u'编号',u'所属项目',u'指派给',u'所属模块',u'优先级',u'状态',u'最后更新人',u'最后更新日期',u'描述',u'提交人'],
+                  'Admin':['id',u'编号',u'用户账号',u'姓名',u'状态',u'角色',u'部门',u'添加日期'],
+                  'Role':['id',u'编号',u'名称',u'权限'],
+                  'Part':['id',u'编号',u'部门名称',u'创建人',u'添加日期'],
+                  'Resume':['id',u'编号',u'应聘人',u'联系方式',u'应聘岗位',u'应聘部门',u'进度',u'预约时间',u'状态',u'最后更新人',u'最后更新日期',u'备注'],
+                  'Positionhr':['id',u'岗位',u'部门',u'状态',u'开启日期',u'发布人',u'要求'],
                   'Buglog':[]}
 
     #列表宽度
-    table_width_list = {'Project':[100,200,100,150,500],
-                        'Bug':[100,100,100,100,100,100,100,150,500,100],
-                        'Admin':[100,100,100,100,100,100,200],
-                        'Role':[100,100,500],
-                        'Part':[100,100,100,200],
-                        'Resume':[100,100,100,100,100,100,150,100,100,150,350],
-                        'Positionhr':[100,100,100,150,100,500],
+    table_width_list = {'Project':[0,100,200,100,150,500],
+                        'Bug':[0,100,100,100,100,100,100,100,150,500,100],
+                        'Admin':[0,100,100,100,100,100,100,200],
+                        'Role':[0,100,100,500],
+                        'Part':[0,100,100,100,200],
+                        'Resume':[0,100,100,100,100,100,100,150,100,100,150,350],
+                        'Positionhr':[0,100,100,100,150,100,500],
                         'Buglog':[]}
 
     #数据字段列表
-    table_field_list = {'Project':['number','name','create','last_time','description'],
-                        'Bug':['number','project_id','get_member','project_mod_id','level','status','last_update','last_update_time','title','put_member'],
-                        'Admin':['number','admin_name','name','status','role','part','add_time'],
-                        'Role':['number','name','resource'],
-                        'Part':['number','name','create','add_time'],
-                        'Resume':['number','candidates','telephone','position_id','part_id','stage','stage_time','status','last','last_time','remartk'],
-                        'Positionhr':['name','part_id','status','start_time','create','description'],
+    table_field_list = {'Project':['id','number','name','create','last_time','description'],
+                        'Bug':['id','number','project_id','get_member','project_mod_id','level','status','last_update','last_update_time','title','put_member'],
+                        'Admin':['id','number','admin_name','name','status','role','part','add_time'],
+                        'Role':['id','number','name','resource'],
+                        'Part':['id','number','name','create','add_time'],
+                        'Resume':['id','number','candidates','telephone','position_id','part_id','stage','stage_time','status','last','last_time','remartk'],
+                        'Positionhr':['id','name','part_id','status','start_time','create','description'],
                         'Buglog':[]}
     #数据格式化表
     '''0-数字,1-字符串,2-日期,3-人员,4-角色,5-项目,6-模块,7-优先级,8-bug状态,9-部门,10-用户状态,
    11-资源替换,12-人事岗位,13-简历进度,14-base64解码
    '''
-    table_format_list = {'Project':[1,1,3,2,1],
-                         'Bug':[1,5,3,6,7,8,3,2,1,3],
-                         'Admin':[1,1,1,10,4,9,2],
-                         'Role':[1,1,11],
-                         'Part':[1,1,3,2],
-                         'Resume':[1,1,1,12,9,13,2,10,3,2,1],
-                         'Positionhr':[1,9,10,2,3,1],
+    table_format_list = {'Project':[0,1,1,3,2,1],
+                         'Bug':[0,1,5,3,6,7,8,3,2,1,3],
+                         'Admin':[0,1,1,1,10,4,9,2],
+                         'Role':[0,1,1,11],
+                         'Part':[0,1,1,3,2],
+                         'Resume':[0,1,1,1,12,9,13,2,10,3,2,1],
+                         'Positionhr':[0,1,9,10,2,3,1],
                          'Buglog':[]}
     #
     table_action_list = {}

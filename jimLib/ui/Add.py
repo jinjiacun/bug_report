@@ -69,13 +69,23 @@ class Add(QDialog):
         number = my_business.get_number(Add.module_index)
         #项目添加
         layout = QFormLayout()
-        layout.addRow(QLabel(u"<font color='red'>*</font>项目名称:"), QLineEdit())
+        self.name = QLineEdit()
+        layout.addRow(QLabel(u"<font color='red'>*</font>项目名称:"), self.name)
         self.number = QLabel(number)
-        layout.addRow(QLabel(u" 编号:"), QLabel(number))
-        layout.addRow(QLabel(u"项目描述:"), QTextEdit())
+        layout.addRow(QLabel(u" 编号:"), self.number)
+        self.description = QTextEdit()
+        layout.addRow(QLabel(u"项目描述:"), self.description)
 
-        layout.addRow(QLabel(u"成员:"), TableComButton())
-        layout.addRow(QLabel(u"模块:"), TableTextButton())
+        data ={}
+        (status,content) = my_business.get_dict()
+        if status:
+            for (key,value) in content['admin'].items():
+                tmp_value = str(value)
+                data[tmp_value] = int(str(key))
+        self.project_mem = TableComButton(self,data)
+        layout.addRow(QLabel(u"成员:"), self.project_mem)
+        self.project_mod = TableTextButton()
+        layout.addRow(QLabel(u"模块:"), self.project_mod)
         self.formGroupBox.setLayout(layout)
 
     #添加bug
@@ -282,6 +292,38 @@ class Add(QDialog):
 
     #保存项目
     def SaveProejct(self):
+        data={'number':'','name':'','description':'','create':0}
+        mem_data={'project_id':0,'admin_id':[]}
+        mod_data={'project_id':0,'name':[]}
+        my_business = business()
+
+        #组装数据
+        data['number']        = urllib.quote(str(self.number.text()))
+        data['name']          = urllib.quote(str(self.name.text()))
+        data['description']  = urllib.quote(str(self.description.toPlainText()))
+        data['create']        = get_cur_admin_id()
+
+        #项目成员
+        mem_data['admin_id'] = self.project_mem.text()
+
+        #项目模块
+        tmp_mod_data_name_list = self.project_mod.text()
+        mod_data_name_list = []
+        for item in tmp_mod_data_name_list:
+            mod_data_name_list.append(urllib.quote(item))
+        mod_data['name'] = mod_data_name_list
+
+        (status,content) = my_business.add_proejct(data,mem_data,mod_data)
+        if status:
+            Add.message = content
+            Add.status = True
+            self.parent.set_message(u'提示',content)
+            return True
+        else:
+            Add.message = content
+            Add.status = False
+            self.parent.set_message(u'错误',content)
+        pass
         pass
 
     #保存bug

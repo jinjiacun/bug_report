@@ -86,7 +86,7 @@ class business():
             for admin_id in mem_data['admin_id']:
                 method = 'Projectmem.add'
                 content = {'project_id':project_id,'admin_id':admin_id}
-                result = lib_post(method,mem_data)
+                result = lib_post(method,content)
                 if 500 == result['status_code']:
                     return (False,result['content'])
                 if 200 == result['status_code'] and 0 == result['content']['is_success']:
@@ -226,7 +226,7 @@ class business():
         return (False,u'查询失败')
 
     #查询bug
-    def get_bug_one(self,id):
+    def get_bug_one_by_id(self,id):
         method = 'Bug.get_info'
         content={'id':id}
         try:
@@ -239,7 +239,7 @@ class business():
         return (False,u'查询失败')
 
     #查询用户
-    def get_admin_one(self,id):
+    def get_admin_one_by_id(self,id):
         method = 'Admin.get_info'
         content={'id':id}
         try:
@@ -252,7 +252,7 @@ class business():
         return (False,u'查询失败')
 
     #查询角色
-    def get_role_one(self,id):
+    def get_role_one_by_id(self,id):
         method = 'Role.get_info'
         content={'id':id}
         try:
@@ -265,7 +265,7 @@ class business():
         return (False,u'查询失败')
 
     #查询部门
-    def get_part_one(self,id):
+    def get_part_one_by_id(self,id):
         method = 'Part.get_info'
         content={'id':id}
         try:
@@ -278,7 +278,7 @@ class business():
         return (False,u'查询失败')
 
     #查询简历
-    def get_resume_one(self,id):
+    def get_resume_one_by_id(self,id):
         method = 'Resume.get_info'
         content={'id':id}
         try:
@@ -291,7 +291,7 @@ class business():
         return (False,u'查询失败')
 
     #查询招聘岗位
-    def get_positionhr_one(self,id):
+    def get_positionhr_one_by_id(self,id):
         method = 'Positionhr.get_info'
         content={'id':id}
         try:

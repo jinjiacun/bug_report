@@ -25,10 +25,11 @@ class Edit(QDialog):
     module_index = 0
     status = False
     message = ''
-    def __init__(self, parent=None,title_index=1,module_index=1):
+    def __init__(self, parent=None,title_index=1,module_index=1,id=0):
         super(Edit, self).__init__(parent)
         mainLayout = QVBoxLayout()
         self.parent = parent
+        self.id = id
 
         Edit.title  = Dict.title_list[title_index]
         Edit.module = Dict.module_list[module_index]
@@ -39,19 +40,19 @@ class Edit(QDialog):
         self.AddToolBar()
         self.formGroupBox = QGroupBox(u"表单:")
         if 'Project' == Edit.module:
-            self.AddProjectForm()
+            self.EditProjectForm()
         elif 'Bug' == Edit.module:
-            self.AddBugForm()
+            self.EditBugForm()
         elif 'Admin' == Edit.module:
-            self.AddAdminForm()
+            self.EditAdminForm()
         elif 'Role' == Edit.module:
-            self.AddRoleForm()
+            self.EditRoleForm()
         elif 'Part' == Edit.module:
-            self.AddPartForm()
+            self.EditPartForm()
         elif 'Resume' == Edit.module:
-            self.AddResumeForm()
+            self.EditResumeForm()
         elif 'Positionhr' == Edit.module:
-            self.AddPositionhrForm()
+            self.EditPositionhrForm()
 
 
         mainLayout.addWidget(self.horizontalGroupBox)
@@ -66,12 +67,18 @@ class Edit(QDialog):
     def EditProjectForm(self,id):
         layout = QFormLayout()
         my_business = business()
-        number = my_business.get_number(Edit.module_index)
+        (status,my_info) = my_business.get_project_one_by_id(self.id)
+        if not status:
+            content = u'查询错误'
+            Edit.message = content
+            Edit.status = False
+            self.parent.set_message(u'警告',content)
+            self.close()
         #项目添加
         layout = QFormLayout()
         layout.addRow(QLabel(u"<font color='red'>*</font>项目名称:"), QLineEdit())
-        self.number = QLabel(number)
-        layout.addRow(QLabel(u" 编号:"), QLabel(number))
+        self.number = QLabel(my_info['number'])
+        layout.addRow(QLabel(u" 编号:"), self.number)
         layout.addRow(QLabel(u"项目描述:"), QTextEdit())
 
         layout.addRow(QLabel(u"成员:"), TableComButton())
@@ -82,7 +89,7 @@ class Edit(QDialog):
     def EditBugForm(self):
         layout = QFormLayout()
         my_business = business()
-        number = my_business.get_number(Add.module_index)
+        number = my_business.get_number(Edit.module_index)
         #bug添加
         layout = QFormLayout()
         self.number = QLabel(number)
@@ -109,7 +116,7 @@ class Edit(QDialog):
     def EditAdminForm(self):
         layout = QFormLayout()
         my_business = business()
-        number = my_business.get_number(Add.module_index)
+        number = my_business.get_number(Edit.module_index)
         #用户添加
         layout = QFormLayout()
         self.number = QLabel(number)
@@ -147,7 +154,7 @@ class Edit(QDialog):
     def EditRoleForm(self):
         layout = QFormLayout()
         my_business = business()
-        number = my_business.get_number(Add.module_index)
+        number = my_business.get_number(Edit.module_index)
         #角色添加
         layout = QFormLayout()
         self.number = QLabel(number)
@@ -171,12 +178,19 @@ class Edit(QDialog):
     def EditPartForm(self):
         layout = QFormLayout()
         my_business = business()
-        number = my_business.get_number(Add.module_index)
+        (status,my_info) = my_business.get_part_one_by_id(self.id)
+        if not status:
+            content = u'查询错误'
+            Edit.message = content
+            Edit.status = False
+            self.parent.set_message(u'警告',content)
+            self.close()
         #部门添加
         layout = QFormLayout()
-        self.number = QLabel(number)
+        self.number = QLabel(my_info['number'])
         layout.addRow(QLabel(u" 编号:"), self.number)
         self.name = QLineEdit()
+        self.name.setText(my_info['name'])
         layout.addRow(QLabel(u"<font color='red'>*</font>部门名称:"), self.name)
         self.formGroupBox.setLayout(layout)
 
@@ -184,7 +198,7 @@ class Edit(QDialog):
     def EditResumeForm(self):
         layout = QFormLayout()
         my_business = business()
-        number = my_business.get_number(Add.module_index)
+        number = my_business.get_number(Edit.module_index)
         #简历添加
         layout = QFormLayout()
         self.number = QLabel(number)
@@ -309,8 +323,8 @@ class Edit(QDialog):
 
         if data['passwd'] != data['re_passwd']:
             content = u'两次密码不一致'
-            Add.message = content
-            Add.status = False
+            Edit.message = content
+            Edit.status = False
             self.parent.set_message(u'警告',content)
             return False
         data.pop('re_passwd')
@@ -318,13 +332,13 @@ class Edit(QDialog):
 
         print 'content:%s'%content
         if status:
-            Add.message = content
-            Add.status = True
+            Edit.message = content
+            Edit.status = True
             self.parent.set_message(u'提示',content)
             return True
         else:
-            Add.message = content
-            Add.status = False
+            Edit.message = content
+            Edit.status = False
             self.parent.set_message(u'错误',content)
 
     #保存角色
@@ -340,13 +354,13 @@ class Edit(QDialog):
         (status,content) = my_business.add_role(data)
         print 'content:%s'%content
         if status:
-            Add.message = content
-            Add.status = True
+            Edit.message = content
+            Edit.status = True
             self.parent.set_message(u'提示',content)
             return True
         else:
-            Add.message = content
-            Add.status = False
+            Edit.message = content
+            Edit.status = False
             self.parent.set_message(u'错误',content)
 
     #保存部门
@@ -362,13 +376,13 @@ class Edit(QDialog):
         (status,content) = my_business.add_part(data)
         print 'content:%s'%content
         if status:
-            Add.message = content
-            Add.status = True
+            Edit.message = content
+            Edit.status = True
             self.parent.set_message(u'提示',content)
             return True
         else:
-            Add.message = content
-            Add.status = False
+            Edit.message = content
+            Edit.status = False
             self.parent.set_message(u'错误',content)
         pass
 
@@ -390,8 +404,8 @@ class Edit(QDialog):
         if status:
             data['accessories'] = int(content['content']['id'])
         else:
-            Add.message = content
-            Add.status = False
+            Edit.message = content
+            Edit.status = False
             self.parent.set_message(u'错误',content)
             return False
 
@@ -401,13 +415,13 @@ class Edit(QDialog):
         (status,content) = my_business.add_resume(data)
         print 'content:%s'%content
         if status:
-            Add.message = content
-            Add.status = True
+            Edit.message = content
+            Edit.status = True
             self.parent.set_message(u'提示',content)
             return True
         else:
-            Add.message = content
-            Add.status = False
+            Edit.message = content
+            Edit.status = False
             self.parent.set_message(u'错误',content)
 
     #保存简历岗位
@@ -424,19 +438,19 @@ class Edit(QDialog):
         (status,content) = my_business.add_positionhr(data)
         print 'content:%s'%content
         if status:
-            Add.message = content
-            Add.status = True
+            Edit.message = content
+            Edit.status = True
             self.parent.set_message(u'提示',content)
             return True
         else:
-            Add.message = content
-            Add.status = False
+            Edit.message = content
+            Edit.status = False
             self.parent.set_message(u'错误',content)
 
 if __name__ == '__main__':
     import sys
     app = QApplication(sys.argv)
-    myWindow = Add()
+    myWindow = Edit()
     #myWindow.show()
     myWindow.showMaximized()
     sys.exit(app.exec_())

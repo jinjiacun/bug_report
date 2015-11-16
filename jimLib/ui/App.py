@@ -10,6 +10,7 @@ import os
 from jimLib.ui.List import MyDialog
 from PyQt4 import QtCore, QtGui
 from jimLib.ui.Add import Add
+from jimLib.ui.Edit import Edit
 
 class MainWindow(QtGui.QMainWindow):
     InsertTextButton = 10
@@ -158,7 +159,21 @@ class MainWindow(QtGui.QMainWindow):
         pass
 
     def handle_edit(self):
-        print 'edit'
+        #获取当前模块的id
+        if -1 == self.scene.MyTable.currentRow():
+            item = self.scene.MyTable.item(0,0)
+            pass
+        else:
+            item = self.scene.MyTable.item(self.scene.MyTable.currentRow(),0)
+            pass
+        id = int(item.text())
+        self.add_dialog = Edit(self,self.scene.table_cur_index,self.scene.table_cur_index,id)
+        while self.add_dialog.exec_():
+            #梳理返回值
+            if Add.status:
+                self.scene.change_table(self.scene.table_cur_index)
+                break
+            pass
         pass
 
     def handle_delete(self):
