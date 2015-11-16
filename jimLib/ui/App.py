@@ -167,10 +167,10 @@ class MainWindow(QtGui.QMainWindow):
             item = self.scene.MyTable.item(self.scene.MyTable.currentRow(),0)
             pass
         id = int(item.text())
-        self.add_dialog = Edit(self,self.scene.table_cur_index,self.scene.table_cur_index,id)
-        while self.add_dialog.exec_():
+        self.edit_dialog = Edit(self,self.scene.table_cur_index,self.scene.table_cur_index,id)
+        while self.edit_dialog.exec_():
             #梳理返回值
-            if Add.status:
+            if Edit.status:
                 self.scene.change_table(self.scene.table_cur_index)
                 break
             pass

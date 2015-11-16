@@ -64,7 +64,7 @@ class Edit(QDialog):
         self.setWindowTitle(Edit.title)
 
     #编辑项目
-    def EditProjectForm(self,id):
+    def EditProjectForm(self):
         layout = QFormLayout()
         my_business = business()
         (status,my_info) = my_business.get_project_one_by_id(self.id)

@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 
@@ -8,9 +11,11 @@ from PyQt4 import QtCore
 列表中包含删除项目
 '''
 class TableTextButton(QtGui.QWidget):
-    def __init__ (self, parent = None):
+    def __init__ (self, parent = None,display_data=None):
         super(TableTextButton, self).__init__(parent)
         self.data = []
+        if display_data:
+            self.data = display_data
         self.cur_row = -1
         self.setWindowTitle("weather")
         self.resize(200, 200)
@@ -25,6 +30,11 @@ class TableTextButton(QtGui.QWidget):
         self.list.horizontalHeader().setVisible(False)
         self.list.setHorizontalHeaderLabels([u'名称'])
         girdLayout.addWidget(self.list,0,0)
+        row = 0
+        #预加载数据
+        if display_data:
+            self.bind()
+
         self.setLayout( girdLayout)
         #单行文本
         self.editText = QtGui.QLineEdit()
@@ -42,6 +52,8 @@ class TableTextButton(QtGui.QWidget):
         self.btnDel.clicked.connect(self.delText)
         self.btnDel.setFixedWidth(20)
         self.btnDel.setEnabled(False)
+        if display_data:
+            self.btnDel.setEnabled(True)
         girdLayout.addWidget(self.btnDel,1,2)
 
         #测试
@@ -85,13 +97,29 @@ class TableTextButton(QtGui.QWidget):
         else:
             self.btnDel.setEnabled(False)
 
+    #绑定数据
+    def bind(self):
+        #去重排序
+        my_data = sorted(set(self.data),key=self.data.index)
+        self.data = my_data
+
+        #设置行数
+        self.list.setRowCount(len(self.data))
+        row = 0
+        for item_text in self.data:
+            newItem = QtGui.QTableWidgetItem(unicode(item_text))
+            newItem.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
+            self.list.setItem(row, 0, newItem)
+            row += 1
+
 
     def delText(self):
         if -1 == self.list.currentRow():
             item = self.list.item(0,0)
         else:
             item = self.list.item(self.list.currentRow(),0)
-        self.data.remove(item.text())
+        #tmp_text = item.text()
+        self.data.remove(str(item.text()))
         #移除数据
         if -1 == self.list.currentRow():
             self.list.removeRow(0)
@@ -105,12 +133,22 @@ class TableTextButton(QtGui.QWidget):
     def text(self):
         return self.data
 
+    #修改更新
+    def toText(self):
+        pass
+
     def test(self):
         print self.text()
 
 if __name__ == '__main__':
     app = QtGui.QApplication([])
-    window = TableTextButton()
+    #显示数据
+    data = []
+    data.append('模块一')
+    data.append('模块二')
+    data.append('模块三')
+    window = TableTextButton(None,data)
+    #window = TableTextButton()
     window.show()
     sys.exit(app.exec_())
 
