@@ -44,8 +44,13 @@ class WebViewEx(QtWebKit.QWebView):
                 print 'index:%d'%self.index
                 if self.index>4:
                     self.is_first = False
+                    self.value = None
                 #self.is_first = False
         self.page().mainFrame().evaluateJavaScript(getJsValue)
+
+    def insertHTML(self,content):
+        self.page().mainFrame().evaluateJavaScript(setJsValue%content)
+        pass
 
     @QtCore.pyqtSlot(result="int")
     def setValue(self):

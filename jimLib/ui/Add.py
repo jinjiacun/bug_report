@@ -9,6 +9,7 @@ import math
 import time
 import urllib
 import base64
+import json
 from jimLib.widget.ListButton import ListButton
 from jimLib.widget.TableTextButton import TableTextButton
 from jimLib.widget.TableComButton import TableComButton
@@ -18,6 +19,8 @@ from jimLib.widget.WebViewEx import WebViewEx
 from jimLib.lib.business import business
 from jimLib.lib.util import Dict
 from jimLib.lib.util import get_cur_admin_id
+from jimLib.lib.util import upload_clipboard_pic
+from jimLib.lib.util import save_clipboard_image
 
 class Add(QDialog):
     title = ''
@@ -35,6 +38,7 @@ class Add(QDialog):
         Add.module = Dict.module_list[module_index]
         Add.title_index  = title_index
         Add.module_index = module_index
+        self.remote_message = {}
 
 
         self.AddToolBar()
@@ -130,6 +134,17 @@ class Add(QDialog):
         self.formGroupBox.setLayout(layout)
         self.formGroupBox.resize(600,700)
         self.resize(600, 700)
+
+    def myClip(self):
+        #print QApplication.clipboard().text()
+        print 'my clip test'
+        #self.description.insertHTML('123')
+        save_clipboard_image()
+        message = upload_clipboard_pic()
+        self.remote_message = list(message)
+        if self.remote_message[0]:
+            self.description.insertHTML('<img src="%s" alt="%s"/>'%(self.remote_message[1]['url'],self.remote_message[1]['title']))
+        pass
 
     #级联关系(项目-模块)
     def onActivatedModule(self, cuindex):
@@ -300,6 +315,13 @@ class Add(QDialog):
         btn_close.setFixedWidth(50)
         btn_close.clicked.connect(self.Close)
         layout.addWidget(btn_close)
+
+        btn_paste = QPushButton(u'粘贴')
+        btn_paste.setShortcut('Ctrl+V')
+        btn_paste.clicked.connect(self.myClip)
+        btn_paste.setVisible(False)
+        layout.addWidget(btn_paste)
+
 
         self.horizontalGroupBox.setLayout(layout)
         pass

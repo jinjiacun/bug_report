@@ -441,6 +441,7 @@ class Edit(QDialog):
     #保存用户
     def SaveAdmin(self):
         data={'number':0,'admin_name':'','passwd':'','re_passwd':'','name':'','status':0,'part':0,'role':0}
+		where = {'id':0}
         my_business = business()
 
         #组装数据
@@ -454,6 +455,8 @@ class Edit(QDialog):
         data['role']       = 2
         #data['position']   = 1
 
+        where['id']        = self.id
+
         if data['passwd'] != data['re_passwd']:
             content = u'两次密码不一致'
             Edit.message = content
@@ -461,7 +464,7 @@ class Edit(QDialog):
             self.parent.set_message(u'警告',content)
             return False
         data.pop('re_passwd')
-        (status,content) = my_business.add_admin(data)
+        (status,content) = my_business.update_admin(data,where)
 
         print 'content:%s'%content
         if status:
@@ -477,6 +480,7 @@ class Edit(QDialog):
     #保存角色
     def SaveRole(self):
         data={'number':'','name':'','resource':0}
+        where={'id':0}
         my_business = business()
 
         #组装数据
@@ -484,7 +488,9 @@ class Edit(QDialog):
         data['name']     = urllib.quote(str(self.name.text()))
         data['resource'] = urllib.quote(str(self.resource.text()))
 
-        (status,content) = my_business.add_role(data)
+        where['id'] = self.id
+
+        (status,content) = my_business.update_role(data,where)
         print 'content:%s'%content
         if status:
             Edit.message = content
@@ -499,6 +505,7 @@ class Edit(QDialog):
     #保存部门
     def SavePart(self):
         data={'number':'','name':'','create':0}
+        where={'id':0}
         my_business = business()
 
         #组装数据
@@ -506,7 +513,9 @@ class Edit(QDialog):
         data['name']   = urllib.quote(str(self.name.text()))
         data['create'] = get_cur_admin_id()
 
-        (status,content) = my_business.add_part(data)
+        where['id'] = self.id
+
+        (status,content) = my_business.update_part(data,where)
         print 'content:%s'%content
         if status:
             Edit.message = content
@@ -521,8 +530,8 @@ class Edit(QDialog):
 
     #保存简历
     def SaveResume(self):
-        data={'number':'','candidates':'','telephone':'','position_id':0,'part_id':0,
-            'accessories':0,'remartk':'','create':0}
+        data={'number':'','candidates':'','telephone':'','position_id':0,'part_id':0,'accessories':0,'remartk':'','create':0}		
+		where = {'id':0}
         my_business = business()
 
         #组装数据
@@ -531,21 +540,28 @@ class Edit(QDialog):
         data['telephone']   = urllib.quote(str(self.telephone.text()))
         data['position_id'] = 1
         data['part_id']     = 1
-        data['accessories'] = 0
+		
+
+
         #附件
-        (status,content) = my_business.file_upload(str(self.accessories.filename))
-        if status:
-            data['accessories'] = int(content['content']['id'])
-        else:
-            Edit.message = content
-            Edit.status = False
-            self.parent.set_message(u'错误',content)
-            return False
+        if self.accessories.filename != "":
+            (status,content) = my_business.file_upload(str(self.accessories.filename))
+            if status:
+                data['accessories'] = int(content['content']['id'])
+            else:
+                Edit.message = content
+                Edit.status = False
+                self.parent.set_message(u'错误',content)
+                return False
+		else:
+			data.pop('accessories')
 
         data['remartk']      = urllib.quote(str(self.remark.toPlainText()))
         data['create']      = get_cur_admin_id()
 
-        (status,content) = my_business.add_resume(data)
+        where['id'] = self.id
+
+        (status,content) = my_business.update_resume(data,where)
         print 'content:%s'%content
         if status:
             Edit.message = content
@@ -560,6 +576,7 @@ class Edit(QDialog):
     #保存简历岗位
     def SavePositionhr(self):
         data={'part_id':0,'name':'','description':'','create':0}
+        where = {'id':0}
         my_business = business()
 
         #组装数据
@@ -568,7 +585,9 @@ class Edit(QDialog):
         data['name']   = urllib.quote(str(self.name.text()))
         data['create'] = get_cur_admin_id()
 
-        (status,content) = my_business.add_positionhr(data)
+        where['id'] = self.id
+
+        (status,content) = my_business.update_positionhr(data,where)
         print 'content:%s'%content
         if status:
             Edit.message = content
