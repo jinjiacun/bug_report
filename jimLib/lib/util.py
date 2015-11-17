@@ -67,6 +67,17 @@ def lib_post_file(method, content,debug,path):
         return (False,'http error')
     return (False,u'错误')
 
+#文件下载
+def file_down(url,path):
+    print "downloading with urllib2"
+    #url = 'http://www.pythontab.com/test/demo.zip'
+    f = urllib2.urlopen(url)
+    data = f.read()
+    #with open("demo2.zip", "wb") as code:
+    with open(path, "wb") as code:
+        code.write(data)
+    pass
+
 import os.path
 #获取文件后缀名
 def file_extension(path):

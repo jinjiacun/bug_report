@@ -286,7 +286,7 @@ class Add(QDialog):
         layout = QHBoxLayout()
 
         btn_save = QPushButton(u'保存')
-        self.connect(btn_save,SIGNAL("clicked()"),self,SLOT("accept()"))
+        #self.connect(btn_save,SIGNAL("clicked()"),self,SLOT("accept()"))
         btn_save.setFixedWidth(50)
         btn_save.clicked.connect(self.SaveForm)
         layout.addWidget(btn_save)
@@ -352,12 +352,13 @@ class Add(QDialog):
             mod_data_name_list.append(urllib.quote(item))
         mod_data['name'] = mod_data_name_list
 
+
         (status,content) = my_business.add_proejct(data,mem_data,mod_data)
         if status:
             Add.message = content
             Add.status = True
             self.parent.set_message(u'提示',content)
-            return True
+            self.accept()
         else:
             Add.message = content
             Add.status = False
@@ -387,7 +388,7 @@ class Add(QDialog):
             Add.message = content
             Add.status = True
             self.parent.set_message(u'提示',content)
-            return True
+            self.accept()
         else:
             Add.message = content
             Add.status = False
@@ -423,7 +424,7 @@ class Add(QDialog):
             Add.message = content
             Add.status = True
             self.parent.set_message(u'提示',content)
-            return True
+            self.accept()
         else:
             Add.message = content
             Add.status = False
@@ -445,7 +446,7 @@ class Add(QDialog):
             Add.message = content
             Add.status = True
             self.parent.set_message(u'提示',content)
-            return True
+            self.accept()
         else:
             Add.message = content
             Add.status = False
@@ -467,7 +468,7 @@ class Add(QDialog):
             Add.message = content
             Add.status = True
             self.parent.set_message(u'提示',content)
-            return True
+            self.accept()
         else:
             Add.message = content
             Add.status = False
@@ -506,7 +507,7 @@ class Add(QDialog):
             Add.message = content
             Add.status = True
             self.parent.set_message(u'提示',content)
-            return True
+            self.accept()
         else:
             Add.message = content
             Add.status = False
@@ -529,7 +530,7 @@ class Add(QDialog):
             Add.message = content
             Add.status = True
             self.parent.set_message(u'提示',content)
-            return True
+            self.accept()
         else:
             Add.message = content
             Add.status = False

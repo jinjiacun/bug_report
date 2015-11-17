@@ -150,11 +150,10 @@ class MainWindow(QtGui.QMainWindow):
     #工具栏处理
     def handle_add(self):
         self.add_dialog = Add(self,self.scene.table_cur_index,self.scene.table_cur_index)
-        while self.add_dialog.exec_():
+        if self.add_dialog.exec_() == QtGui.QDialog.Accepted:
             #梳理返回值
             if Add.status:
                 self.scene.change_table(self.scene.table_cur_index)
-                break
             pass
         pass
 
@@ -168,11 +167,10 @@ class MainWindow(QtGui.QMainWindow):
             pass
         id = int(item.text())
         self.edit_dialog = Edit(self,self.scene.table_cur_index,self.scene.table_cur_index,id)
-        while self.edit_dialog.exec_():
+        if self.edit_dialog.exec_() == QtGui.QDialog.Accepted:
             #梳理返回值
             if Edit.status:
                 self.scene.change_table(self.scene.table_cur_index)
-                break
             pass
         pass
 
