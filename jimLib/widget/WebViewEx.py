@@ -49,7 +49,7 @@ class WebViewEx(QtWebKit.QWebView):
         self.page().mainFrame().evaluateJavaScript(getJsValue)
 
     def insertHTML(self,content):
-        self.page().mainFrame().evaluateJavaScript(setJsValue%content)
+        self.page().mainFrame().evaluateJavaScript(setJsValue%self.message+content)
         pass
 
     @QtCore.pyqtSlot(result="int")
