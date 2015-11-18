@@ -13,7 +13,20 @@ getJsValue = """
 myWindow.showMessage(UE.getEditor('editor').getContent());
 """
 setJsValue = """
-UE.getEditor('editor').setContent('%s');
+UE.getEditor('editor').execCommand('insertHtml','%s');
+"""
+#UE.getEditor('editor').setContent('%s');
+insertImage = """
+UE.getEditor('editor').execCommand('insertImage',{
+        src: '%s',
+        width: 300,
+        height: 400,
+        border: 2,
+        hspace: 5,
+        vspace: 2,
+        alt: 'UEditor-logo',
+        title: 'clipboard'
+    });
 """
 
 class WebViewEx(QtWebKit.QWebView):
@@ -49,7 +62,8 @@ class WebViewEx(QtWebKit.QWebView):
         self.page().mainFrame().evaluateJavaScript(getJsValue)
 
     def insertHTML(self,content):
-        self.page().mainFrame().evaluateJavaScript(setJsValue%self.message+content)
+        print insertImage%content
+        self.page().mainFrame().evaluateJavaScript(insertImage%content)
         pass
 
     @QtCore.pyqtSlot(result="int")

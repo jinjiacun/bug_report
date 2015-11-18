@@ -143,7 +143,8 @@ class Add(QDialog):
         message = upload_clipboard_pic()
         self.remote_message = list(message)
         if self.remote_message[0]:
-            self.description.insertHTML('<img src="%s" alt="%s"/>'%(self.remote_message[1]['url'],self.remote_message[1]['title']))
+            #self.description.insertHTML('<img src="%s" alt="%s"/>'%(self.remote_message[1]['url'],self.remote_message[1]['title']))
+            self.description.insertHTML(self.remote_message[1]['url'])
         pass
 
     #级联关系(项目-模块)
@@ -319,7 +320,7 @@ class Add(QDialog):
         btn_paste = QPushButton(u'粘贴')
         btn_paste.setShortcut('Ctrl+V')
         btn_paste.clicked.connect(self.myClip)
-        btn_paste.setVisible(False)
+        #btn_paste.setVisible(False)
         layout.addWidget(btn_paste)
 
 

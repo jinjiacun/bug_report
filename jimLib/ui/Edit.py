@@ -441,7 +441,7 @@ class Edit(QDialog):
     #保存用户
     def SaveAdmin(self):
         data={'number':0,'admin_name':'','passwd':'','re_passwd':'','name':'','status':0,'part':0,'role':0}
-		where = {'id':0}
+        where={'id':0}
         my_business = business()
 
         #组装数据
@@ -530,18 +530,15 @@ class Edit(QDialog):
 
     #保存简历
     def SaveResume(self):
-        data={'number':'','candidates':'','telephone':'','position_id':0,'part_id':0,'accessories':0,'remartk':'','create':0}		
-		where = {'id':0}
+        data={'number':'','candidates':'','telephone':'','position_id':0,'part_id':0,'accessories':0,'remartk':'','create':0}
+        where = {'id':0}
         my_business = business()
-
         #组装数据
         data['number']      = urllib.quote(str(self.number.text()))
         data['candidates']  = urllib.quote(str(self.candidates.text()))
         data['telephone']   = urllib.quote(str(self.telephone.text()))
         data['position_id'] = 1
         data['part_id']     = 1
-		
-
 
         #附件
         if self.accessories.filename != "":
@@ -553,8 +550,8 @@ class Edit(QDialog):
                 Edit.status = False
                 self.parent.set_message(u'错误',content)
                 return False
-		else:
-			data.pop('accessories')
+        else:
+            data.pop('accessories')
 
         data['remartk']      = urllib.quote(str(self.remark.toPlainText()))
         data['create']      = get_cur_admin_id()
