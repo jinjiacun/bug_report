@@ -239,7 +239,7 @@ class business():
             return (False,result['content'])
         if 200 == result['status_code'] and 0< result['content']['record_count']:
             rows = int(str(result['content']['record_count']))
-            for row in (0,rows-1):
+            for row in range(0,rows):
                 re_list.append(result['content']['list'][row]['admin_id'])
             return (True,re_list)
         return (False,[])
@@ -257,13 +257,29 @@ class business():
             return (False,result['content'])
         if 200 == result['status_code'] and 0< result['content']['record_count']:
             rows = int(str(result['content']['record_count']))
-            for row in (0,rows-1):
+            for row in range(0,rows):
                 key = str(result['content']['list'][row]['name'])
                 id = result['content']['list'][row]['id']
                 re_list[key] = id
             return (True,re_list)
         return (False,{})
         pass
+
+    def get_project_mod_name_by_project_id(self,project_id=0):
+        method = 'Projectmodule.get_list'
+        content = {'where':{'project_id':project_id}}
+        re_list = []
+        try:
+            result = lib_post(method,content)
+        except:
+            return (False,u'查询失败')
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0<result['content']['record_count']:
+            rows = int(str(result['content']['record_count']))
+            for row in (0,rows-1):
+                re_list.append(result['content']['list'][row]['name'])
+        return (True,re_list)
 
 
     #查询bug
@@ -344,9 +360,15 @@ class business():
 
         return (False,u'查询失败')
 
-    #-----------------------修改-----------------------
+    #-----------------------修改:begin-----------------------
     #更新项目
-    def update_project(self,data={},where={}):
+    '''
+    data={'number':'','name':'','description':'','create':0}
+    where={'id':0}
+    mem_data={'project_id':0,'admin_id':[]}
+    mod_data={'project_id':0,'name':[]}
+    '''
+    def update_project(self,data={},where={},mem_data={},mod_data={}):
         method = 'Project.update'
         content = {}
         content['data'] = data
@@ -359,9 +381,92 @@ class business():
         if 500 == result['status_code']:
             return (False,result['content'])
         if 200 == result['status_code'] and 0 == result['content']['is_success']:
-            return (True,u'成功修改')
+            pass
+        else:
+            return (False,u'修改项目失败')
+        #    return (True,u'成功修改')
 
-        return (False,u'修改失败')
+        #检查项目成员
+        ##查询旧的项目成员数据
+        status,old_project_mem = self.get_project_mem_by_project_id(mem_data['project_id'])
+        if status:
+            #获取新旧列表的交集,此集合为不变元素
+            inersection = list(set(mem_data['admin_id']).intersection(set(old_project_mem)))
+            #获取旧集合和交集的差集(所得结果删除的项目成员)
+            need_delete = list(set(old_project_mem).difference(set(inersection)))
+            #调用删除
+            if 0 < len(need_delete):
+                if 1 == len(need_delete):
+                    where_str = need_delete[0]
+                else:
+                    where_str = ','.join(need_delete)
+                method = 'Projectmem.delete'
+                content={'admin_id':['in',where_str],'project_id':mem_data['project_id']}
+                result = lib_post(method,content)
+                if 500 == result['status_code']:
+                    return (False,result['content'])
+                if 200 == result['status_code'] and 0 == result['content']['is_success']:
+                    pass
+                else:
+                    return (False,u'删除项目成员失败')
+
+            #获取新集合与交集的差集(所得结果为要新增的项目成员)
+            need_add = list(set(mem_data['admin_id']).difference(set(inersection)))
+            if 0 < len(need_add):
+                method = 'Projectmem.add'
+                for item in need_add:
+                    content = {'project_id':mem_data['project_id'],'admin_id':item}
+                    result = lib_post(method, content)
+                    if 500 == result['status_code']:
+                        return (False,result['content'])
+                    if 200 == result['status_code'] and 0 == result['content']['is_success']:
+                        pass
+                    else:
+                        return (False,u'添加项目成员失败')
+
+        #检查项目模块
+        ##查询旧的项目模块
+        status,old_project_mod = self.get_project_mod_name_by_project_id(mod_data['project_id'])
+        if status:
+            tmp_list = []
+            for item in old_project_mod:
+                tmp_list.append(urllib.quote(str(item)))
+            old_project_mod = tmp_list
+            #获取新旧列表的交集,此集合为不变元素
+            inersection = list(set(mod_data['name']).intersection(set(old_project_mod)))
+            #获取旧集合和交集的差集(所得结果删除的项目模块)
+            need_delete = list(set(old_project_mod).difference(set(inersection)))
+            #调用删除
+            if 0 < len(need_delete):
+                if 1 == len(need_delete):
+                    where_str = need_delete[0]
+                else:
+                    where_str = ','.join(need_delete)
+                method = 'Projectmodule.delete'
+                content={'name':['in',where_str],'project_id':mod_data['project_id']}
+                result = lib_post(method,content)
+                if 500 == result['status_code']:
+                    return (False,result['content'])
+                if 200 == result['status_code'] and 0 == result['content']['is_success']:
+                    pass
+                else:
+                    return (False,u'删除项目模块失败')
+
+            #获取新集合与交集的差集(所得结果为要新增的项目模块)
+            need_add = list(set(mod_data['name']).difference(set(inersection)))
+            content = {'project_id':mem_data['project_id'],'name':item}
+            if 0 < len(need_add):
+                method = 'Projectmodule.add'
+                for item in need_add:
+                    result = lib_post(method, content)
+                    if 500 == result['status_code']:
+                        return (False,result['content'])
+                    if 200 == result['status_code'] and 0 == result['content']['is_success']:
+                        pass
+                    else:
+                        return (False,u'添加项目模块失败')
+
+        return (True,u'成功修改')
 
     #更新bug
     def update_bug(self,data={},where={}):
@@ -387,6 +492,26 @@ class business():
         content = {}
         content['data'] = data
         content['where'] = where
+        try:
+            result = lib_post(method,content)
+        except:
+            return (False,u'更新异常')
+
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'成功修改')
+
+        return (False,u'修改失败')
+
+    #修改密码
+    '''
+    data={'admin_name':'','passwd':''}
+    '''
+    def update_admin_passwd(self,data={}):
+        method = 'Admin.update_passwd'
+        content = {}
+        content = data
         try:
             result = lib_post(method,content)
         except:
@@ -471,7 +596,7 @@ class business():
 
         return (False,u'修改失败')
 
-    #-----------------------删除-----------------------
+    #-----------------------删除:begin-----------------------
     #删除项目
     def delete_proejct(self,where={}):
         method = 'Project.delete'
@@ -571,7 +696,7 @@ class business():
 
         return (False,u'删除失败')
 
-    #-----------------------删除-----------------------
+    #-----------------------删除:end-----------------------
 
     #查询项目
 
@@ -591,6 +716,36 @@ class business():
             if 0< int(str(result['content']['record_count'])):
                 return (True,result['content'])
         return (False,'')
+
+    #查询项目成员,返回[admin_id,admin_id,admin_id,...]
+    def get_project_mem(self,project_id=0):
+        re_list = []
+        method = 'Projectmem.get_list'
+        content={'where':{'project_id':project_id},'page_size':20}
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0<result['content']['record_count']:
+            rows = result['content']['record_count']
+            for row in range(0, rows-1):
+                re_list.append(result['content']['list'][row]['admin_id'])
+
+        return re_list
+
+    #查询项目模块
+    def get_project_mod(self,project_id=0):
+        re_list = []
+        method = 'Projectmodule.get_list'
+        content={'where':{'project_id':project_id},'page_size':20}
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0<result['content']['record_count']:
+            rows = result['content']['record_count']
+            for row in range(0, rows-1):
+                re_list.append(result['content']['list'][row]['name'])
+
+        return re_list
 
     def get_resource_name(self):
         method = 'Resource.get_list'

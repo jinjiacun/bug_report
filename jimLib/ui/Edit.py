@@ -8,6 +8,7 @@ from PyQt4.QtCore import *
 import math
 import time
 import urllib
+import base64
 from jimLib.widget.ListButton import ListButton
 from jimLib.widget.TableTextButton import TableTextButton
 from jimLib.widget.TableComButton import TableComButton
@@ -384,7 +385,7 @@ class Edit(QDialog):
         layout = QHBoxLayout()
 
         btn_save = QPushButton(u'保存')
-        self.connect(btn_save,SIGNAL("clicked()"),self,SLOT("accept()"))
+        #self.connect(btn_save,SIGNAL("clicked()"),self,SLOT("accept()"))
         btn_save.setFixedWidth(50)
         btn_save.clicked.connect(self.SaveForm)
         layout.addWidget(btn_save)
@@ -429,14 +430,80 @@ class Edit(QDialog):
 
     #保存项目
     def SaveProejct(self):
-        pass
+        data={'number':'','name':'','description':'','create':0}
+        where={'id':0}
+        mem_data={'project_id':0,'admin_id':[]}
+        mod_data={'project_id':0,'name':[]}
+        my_business = business()
+
+        #组装数据
+        data['number']        = urllib.quote(str(self.number.text()))
+        data['name']          = urllib.quote(str(self.name.text()))
+        data['description']  = urllib.quote(str(self.description.toPlainText()))
+        data['create']        = get_cur_admin_id()
+
+        where['id'] = self.id
+        mem_data['project_id'] = self.id
+        mod_data['project_id'] = self.id
+
+        #项目成员
+        mem_data['admin_id'] = self.project_mem.text()
+
+        #项目模块
+        tmp_mod_data_name_list = self.project_mod.text()
+        mod_data_name_list = []
+        for item in tmp_mod_data_name_list:
+            mod_data_name_list.append(urllib.quote(item))
+        mod_data['name'] = mod_data_name_list
+
+
+        (status,content) = my_business.update_project(data,where,mem_data,mod_data)
+        if status:
+            Edit.message = content
+            Edit.status = True
+            self.parent.set_message(u'提示',content)
+            self.accept()
+            return True
+        else:
+            Edit.message = content
+            Edit.status = False
+            self.parent.set_message(u'错误',content)
+            return False
 
     #保存bug
     def SaveBug(self):
-        time.sleep(3)
-        print self.description.text()
+        data={'number':'','title':'','level':0,'status':0,'project_id':0,'project_mod_id':0,
+            'get_member':0,'description':'','put_member':0}
+        where = {'id':0}
+        my_business = business()
 
-        pass
+        #组装数据
+        data['number']        = urllib.quote(str(self.number.text()))
+        data['title']         = urllib.quote(str(self.title))
+        data['level']         = urllib.quote(str(self.level.itemData(self.level.currentIndex()).toPyObject()))
+
+        data['status']          = urllib.quote(str(self.status.itemData(self.status.currentIndex()).toPyObject()))
+        data['project_id']      = urllib.quote(str(self.project_id.itemData(self.project_id.currentIndex()).toPyObject()))
+        data['project_mod_id'] = urllib.quote(str(self.project_mod_id.itemData(self.project_mod_id.currentIndex()).toPyObject()))
+        data['get_member']      = urllib.quote(str(self.get_member.itemData(self.get_member.currentIndex()).toPyObject()))
+        time.sleep(2)
+        data['description']  =  base64.b64encode(self.description.text())
+        data['put_member']   = get_cur_admin_id()
+
+        where['id'] = self.id
+
+        (status,content) = my_business.update_bug(data,where)
+        if status:
+            Edit.message = content
+            Edit.status = True
+            self.parent.set_message(u'提示',content)
+            self.accept()
+            return True
+        else:
+            Edit.message = content
+            Edit.status = False
+            self.parent.set_message(u'错误',content)
+            return False
 
     #保存用户
     def SaveAdmin(self):
@@ -457,20 +524,35 @@ class Edit(QDialog):
 
         where['id']        = self.id
 
-        if data['passwd'] != data['re_passwd']:
-            content = u'两次密码不一致'
-            Edit.message = content
-            Edit.status = False
-            self.parent.set_message(u'警告',content)
-            return False
+        if '' != data['passwd']:
+            if data['passwd'] != data['re_passwd']:
+                content = u'两次密码不一致'
+                Edit.message = content
+                Edit.status = False
+                self.parent.set_message(u'警告',content)
+                return False
+            #修改密码
+            tmp_data = {'admin_name':'','passwd':''}
+            tmp_data['admin_name'] = data['admin_name']
+            tmp_data['passwd']     = data['passwd']
+            (tmp_status,tmp_content) = my_business.update_admin_passwd(tmp_data)
+            if not tmp_status:
+                Edit.message = tmp_content
+                Edit.status = False
+                self.parent.set_message(u'警告',tmp_content)
+                return False
+            data.pop('passwd')
+        else:
+            data.pop('passwd')
+
         data.pop('re_passwd')
         (status,content) = my_business.update_admin(data,where)
 
-        print 'content:%s'%content
         if status:
             Edit.message = content
             Edit.status = True
             self.parent.set_message(u'提示',content)
+            self.accept()
             return True
         else:
             Edit.message = content
@@ -496,6 +578,7 @@ class Edit(QDialog):
             Edit.message = content
             Edit.status = True
             self.parent.set_message(u'提示',content)
+            self.accept()
             return True
         else:
             Edit.message = content
@@ -521,6 +604,7 @@ class Edit(QDialog):
             Edit.message = content
             Edit.status = True
             self.parent.set_message(u'提示',content)
+            self.accept()
             return True
         else:
             Edit.message = content
@@ -564,6 +648,7 @@ class Edit(QDialog):
             Edit.message = content
             Edit.status = True
             self.parent.set_message(u'提示',content)
+            self.accept()
             return True
         else:
             Edit.message = content
@@ -590,6 +675,7 @@ class Edit(QDialog):
             Edit.message = content
             Edit.status = True
             self.parent.set_message(u'提示',content)
+            self.accept()
             return True
         else:
             Edit.message = content
