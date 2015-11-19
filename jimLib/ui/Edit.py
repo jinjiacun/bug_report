@@ -340,7 +340,7 @@ class Edit(QDialog):
         index = self.part_id.findData(QVariant(my_info['part_id']))
         self.part_id.setCurrentIndex(index)
         layout.addRow(QLabel(u"<font color='red'>*</font>应聘部门:"), self.part_id)
-        self.accessories = FileUpload()
+        self.accessories = FileUpload(self,my_info['accessories_url'])
         layout.addRow(QLabel(u"<font color='red'>*</font>简历附件:"), self.accessories)
         self.remark = QTextEdit()
         self.remark.setText(my_info['remartk'])

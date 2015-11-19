@@ -139,6 +139,7 @@ def file_down(url,path):
     #with open("demo2.zip", "wb") as code:
     with open(path, "wb") as code:
         code.write(data)
+    print 'down file finish'
     pass
 
 import os.path
