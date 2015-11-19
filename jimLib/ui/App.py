@@ -11,6 +11,7 @@ from jimLib.ui.List import MyDialog
 from PyQt4 import QtCore, QtGui
 from jimLib.ui.Add import Add
 from jimLib.ui.Edit import Edit
+from jimLib.lib.io import Db_Connector
 
 class MainWindow(QtGui.QMainWindow):
     InsertTextButton = 10
@@ -343,64 +344,116 @@ class MainWindow(QtGui.QMainWindow):
          self.buttonGroup = QtGui.QButtonGroup()
          self.buttonGroup.setExclusive(False)
 
-         #########项目管理
          self.backgroundButtonGroup = QtGui.QButtonGroup()
          self.backgroundButtonGroup.buttonClicked.connect(self.backgroundButtonGroupClicked)
 
-         backgroundLayout = QtGui.QGridLayout()
-         backgroundLayout.addWidget(self.createBackgroundCellWidget(u"项目列表",
-                ':/images/background1.png'), 0, 0)
-         backgroundLayout.addWidget(self.createBackgroundCellWidget(u"问题列表",
-                ':/images/background2.png'), 1, 0)
-
-         backgroundLayout.setRowStretch(2, 10)
-         backgroundLayout.setColumnStretch(2, 10)
-
-         backgroundWidget = QtGui.QWidget()
-         backgroundWidget.setLayout(backgroundLayout)
-
          self.toolBox = QtGui.QToolBox()
          self.toolBox.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Ignored))
-         self.toolBox.addItem(backgroundWidget, u"项目管理")
-         #########项目管理
 
-         #########系统管理
-         #self.backgroundButtonGroup = QtGui.QButtonGroup()
-         #self.backgroundButtonGroup.buttonClicked.connect(self.backgroundButtonGroupClicked)
+         #查询菜单
+         team_label  = {'项目管理':False,'系统管理':False,'简历管理':False,'日志管理':True}
+         right_label = {'项目列表':False,'问题列表':False,'用户管理':False,'角色管理':False,'部门管理':False,'岗位管理':False,'简历列表':False,'招聘管理':False,'日志列表':True}
 
-         backgroundLayout = QtGui.QGridLayout()
-         backgroundLayout.addWidget(self.createBackgroundCellWidget(u"用户管理",
-                ':/images/background1.png'), 0, 0)
-         backgroundLayout.addWidget(self.createBackgroundCellWidget(u"角色管理",
-                ':/images/background2.png'), 1, 0)
-         backgroundLayout.addWidget(self.createBackgroundCellWidget(u"部门管理",
-                ':/images/background2.png'), 2, 0)
+         #查询当前需要设置的权限
+         cur_path = os.getcwd()
+         my_connector = Db_Connector(cur_path+'/Config.ini')
+         cur_team_label = my_connector.get_value_right_team()
+         cur_team_label = cur_team_label.split(',')
 
-         backgroundLayout.setRowStretch(3, 10)
-         backgroundLayout.setColumnStretch(2, 10)
+         cur_right_label = my_connector.get_value_right_lab()
+         cur_right_label = cur_right_label.split(',')
 
-         backgroundWidget = QtGui.QWidget()
-         backgroundWidget.setLayout(backgroundLayout)
+         cur_right = my_connector.get_value_right()
+         cur_right = cur_right.split(',')
 
-         self.toolBox.addItem(backgroundWidget, u"系统管理")
-         #########系统管理
-         backgroundLayout = QtGui.QGridLayout()
-         backgroundLayout.addWidget(self.createBackgroundCellWidget(u"简历列表",
-                ':/images/background1.png'), 0, 0)
-         backgroundLayout.addWidget(self.createBackgroundCellWidget(u"招聘管理",
-                ':/images/background2.png'), 1, 0)
+         if 0< len(cur_team_label):
+             for item in cur_team_label:
+                 if item in team_label:
+                     team_label[item] = True
 
-         backgroundLayout.setRowStretch(2, 10)
-         backgroundLayout.setColumnStretch(2, 10)
+         if 0< len(cur_right_label):
+             for item in cur_right_label:
+                 if item in right_label:
+                     right_label[item] = True
 
-         backgroundWidget = QtGui.QWidget()
-         backgroundWidget.setLayout(backgroundLayout)
+         print cur_team_label
+         print type(cur_team_label)
+         #查询当前需要设置的权限
 
-         self.toolBox.addItem(backgroundWidget, u"简历管理")
-         #########日志管理
+         if team_label['项目管理']:
+             #########项目管理
+             backgroundLayout = QtGui.QGridLayout()
+             row = 0
+             if right_label['项目列表']:
+                backgroundLayout.addWidget(self.createBackgroundCellWidget(u"项目列表",
+                        ':/images/background1.png'), row, 0)
+                row += 1
+
+             if right_label['问题列表']:
+                backgroundLayout.addWidget(self.createBackgroundCellWidget(u"问题列表",
+                        ':/images/background2.png'), row, 0)
+
+             backgroundLayout.setRowStretch(2, 10)
+             backgroundLayout.setColumnStretch(2, 10)
+
+             backgroundWidget = QtGui.QWidget()
+             backgroundWidget.setLayout(backgroundLayout)
+
+             self.toolBox.addItem(backgroundWidget, u"项目管理")
+             #########项目管理
+
+         if team_label['系统管理']:
+             #########系统管理
+             backgroundLayout = QtGui.QGridLayout()
+             row = 0
+             if right_label['用户管理']:
+                backgroundLayout.addWidget(self.createBackgroundCellWidget(u"用户管理",
+                        ':/images/background1.png'), row, 0)
+                row += 1
+
+             if right_label['角色管理']:
+                backgroundLayout.addWidget(self.createBackgroundCellWidget(u"角色管理",
+                          ':/images/background2.png'), row, 0)
+                row += 1
+
+             if right_label['部门管理']:
+                backgroundLayout.addWidget(self.createBackgroundCellWidget(u"部门管理",
+                        ':/images/background2.png'), row, 0)
+
+             backgroundLayout.setRowStretch(3, 10)
+             backgroundLayout.setColumnStretch(2, 10)
+
+             backgroundWidget = QtGui.QWidget()
+             backgroundWidget.setLayout(backgroundLayout)
+
+             self.toolBox.addItem(backgroundWidget, u"系统管理")
+             #########系统管理
+
+         if team_label['简历管理']:
+             #########日志管理
+             backgroundLayout = QtGui.QGridLayout()
+             row = 0
+             if right_label['简历列表']:
+                backgroundLayout.addWidget(self.createBackgroundCellWidget(u"简历列表",
+                        ':/images/background1.png'), row, 0)
+                row += 1
+
+             if right_label['招聘管理']:
+                backgroundLayout.addWidget(self.createBackgroundCellWidget(u"招聘管理",
+                        ':/images/background2.png'), row, 0)
+
+             backgroundLayout.setRowStretch(2, 10)
+             backgroundLayout.setColumnStretch(2, 10)
+
+             backgroundWidget = QtGui.QWidget()
+             backgroundWidget.setLayout(backgroundLayout)
+
+             self.toolBox.addItem(backgroundWidget, u"简历管理")
+
+        #########日志管理
          backgroundLayout = QtGui.QGridLayout()
          backgroundLayout.addWidget(self.createBackgroundCellWidget(u"日志列表",
-                ':/images/background1.png'), 0, 0)
+                    ':/images/background1.png'), 0, 0)
 
          backgroundLayout.setRowStretch(2, 10)
          backgroundLayout.setColumnStretch(2, 10)
@@ -409,6 +462,7 @@ class MainWindow(QtGui.QMainWindow):
          backgroundWidget.setLayout(backgroundLayout)
 
          self.toolBox.addItem(backgroundWidget, u"日志管理")
+         #########日志管理
 
     def createActions(self):
         self.toFrontAction = QtGui.QAction(

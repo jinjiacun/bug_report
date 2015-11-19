@@ -1,8 +1,8 @@
+# -*- coding: utf-8 -*-
 '''
 处理.ini文件的读写操作
 '''
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import sys,os
 import ConfigParser
 import re
@@ -10,6 +10,9 @@ import codecs
 from configobj import ConfigObj
 import  xml.dom.minidom
 from xml.dom.minidom import Document
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 
 class Db_Connector:
   def __init__(self, config_file_path):
@@ -52,6 +55,15 @@ class Db_Connector:
   def set_value(self, team, name, value):
     self.cf.set(team, name, value)
     self.cf.write(open(self.config_file_path, "w"))
+
+  def get_value_right_team(self):
+      return self.cf.get('userconf','right_team')
+
+  def get_value_right_lab(self):
+      return self.cf.get('userconf','right_lab')
+
+  def get_value_right(self):
+      return self.cf.get('userconf','right')
 '''
 class Db_Connector:
   def __init__(self, config_file_path):
