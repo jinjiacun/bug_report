@@ -64,6 +64,18 @@ class Db_Connector:
 
   def get_value_right(self):
       return self.cf.get('userconf','right')
+
+  def set_value_right(self,value):
+      self.cf.set('userconf','right',value)
+      self.cf.write(open(self.config_file_path, "w"))
+
+  def set_value_right_label(self,value):
+      self.cf.set('userconf','right_lab',value)
+      self.cf.write(open(self.config_file_path,"w"))
+
+  def set_value_right_team(self,value):
+      self.cf.set('userconf','right_team',value)
+      self.cf.write(open(self.config_file_path,"w"))
 '''
 class Db_Connector:
   def __init__(self, config_file_path):

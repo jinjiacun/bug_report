@@ -23,7 +23,9 @@ class business():
             return (result['content'],False,0)
         if 200 == result['status_code'] and 0 == result['content']['is_success']:
             admin_id = result['content']['id']
-            return (u'成功登录',True,admin_id)
+            role_id  = result['content']['role_id']
+            part_id  = result['content']['part_id']
+            return (u'成功登录',True,admin_id,role_id,part_id)
 
         return (u'用户名或者密码错误!',False,0)
 
@@ -725,6 +727,19 @@ class business():
                 return (True,result['content'])
         return (False,'')
 
+    def get_resource_where(self,where={}):
+        method = 'Resource.get_list'
+        content = {'where':where}
+        re_list = []
+
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code']:
+            if 0< int(str(result['content']['record_count'])):
+                return (True,result['content'])
+        return (False,'')
+
     #查询项目成员,返回[admin_id,admin_id,admin_id,...]
     def get_project_mem(self,project_id=0):
         re_list = []
@@ -809,6 +824,18 @@ class business():
     def get_dict(self):
         method = 'Map.get_map'
         content = {}
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,'参数错误')
+        elif 200 == result['status_code']:
+            return (True,result['content'])
+
+        return (False,'其他错误')
+
+    #获取权限
+    def get_right(self,role_id):
+        method = 'Role.get_info'
+        content = {'id':role_id}
         result = lib_post(method,content)
         if 500 == result['status_code']:
             return (False,'参数错误')

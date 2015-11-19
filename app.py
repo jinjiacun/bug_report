@@ -52,6 +52,8 @@ if __name__ == '__main__':
         user_name = str(loginWindow.user_name)
         #开启mqtt推送
         my_mqtt = CMqtt("debug_bug/"+user_name)
+        #重设左导航
+        mainWindow.createToolBoxEx()
         mainWindow.my_time()
         mainWindow.timer.stop()
 

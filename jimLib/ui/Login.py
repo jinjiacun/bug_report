@@ -5,6 +5,7 @@ from PyQt4 import QtCore, QtGui
 import os
 import sys
 from jimLib.lib.business import business
+from jimLib.lib.io import Db_Connector
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -76,7 +77,7 @@ class login(QtGui.QDialog):
         self.user_name = user_name
         self.passwd    = passwd
         my_business = business()
-        (message,status,admin_id) = my_business.login(self.user_name, self.passwd)
+        (message,status,admin_id,role_id,part_id) = my_business.login(self.user_name, self.passwd)
         if status:
             #发送成功消息
             self.parent.set_message(u'提示',message)
@@ -94,12 +95,44 @@ class login(QtGui.QDialog):
                 pass
             else:
                 pass
-            self.accept()
+
+            #查询权限
+            (status,content) = my_business.get_right(int(role_id))
+            if status:
+                #写权限
+                right = content['resource']
+                my_Connector = Db_Connector(os.getcwd()+'/config.ini')
+                my_Connector.set_value_right(right)
+                #写权限及其组权限
+                team = {1:'项目管理',2:'系统管理',3:'简历管理'}
+                where = {'id':['in',str(content['resource'])]}
+                right_label = []
+                team_label  = []
+                team_label_str = []
+                (status,content) = my_business.get_resource_where(where)
+                if status:
+                    rows = int(content['record_count'])
+                    if 0<rows:
+                        for row in range(0,rows):
+                            if content['list'][row]['name'] not in right_label:
+                                right_label.append(content['list'][row]['name'])
+                                if content['list'][row]['team_name'] not in team_label:
+                                    team_label.append(int(content['list'][row]['team_name']))
+                        #写right_label权限
+                        my_Connector.set_value_right_label(','.join(right_label))
+                        #写组
+                        if 0<len(team_label):
+                            for item in team_label:
+                                team_label_str.append(str(team[item]))
+                            my_Connector.set_value_right_team(','.join(team_label_str))
+                            self.accept()
+            else:
+                self.parent.set_message(u'错误',content)
+                return
         else:
             #发送错误消息
             self.parent.set_message(u'错误',message)
-            pass
-
+            return
 
     def my_exit(self):
         sys.exit()

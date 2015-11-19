@@ -350,7 +350,9 @@ class MainWindow(QtGui.QMainWindow):
          self.toolBox = QtGui.QToolBox()
          self.toolBox.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Ignored))
 
-         #查询菜单
+
+    def createToolBoxEx(self):
+        #查询菜单
          team_label  = {'项目管理':False,'系统管理':False,'简历管理':False,'日志管理':True}
          right_label = {'项目列表':False,'问题列表':False,'用户管理':False,'角色管理':False,'部门管理':False,'岗位管理':False,'简历列表':False,'招聘管理':False,'日志列表':True}
 
@@ -376,8 +378,8 @@ class MainWindow(QtGui.QMainWindow):
                  if item in right_label:
                      right_label[item] = True
 
-         print cur_team_label
-         print type(cur_team_label)
+         print team_label
+         print right_label
          #查询当前需要设置的权限
 
          if team_label['项目管理']:
