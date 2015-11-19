@@ -26,6 +26,7 @@ def lib_post(method,content):
 
 #post上传文件
 def lib_post_file(method, content,debug,path):
+    path = unicode(path,"utf-8")
     #buld post body data
     boundary = '----------%s' % hex(int(time.time() * 1000))
     data = []
