@@ -4,6 +4,7 @@ import sip
 from PyQt4 import QtCore, QtGui
 import os
 import sys
+from jimLib.lib.business import business
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -20,6 +21,12 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 class login(QtGui.QDialog):
+
+    def __init__(self,parent=None):
+        super(login, self).__init__()
+        self.parent = parent
+
+
     def setupUi(self, login):
         login.setObjectName(_fromUtf8("login"))
         login.resize(402, 222)
@@ -34,6 +41,7 @@ class login(QtGui.QDialog):
         self.b_ok = QtGui.QPushButton(login)
         self.b_ok.setGeometry(QtCore.QRect(90, 170, 75, 23))
         self.b_ok.setObjectName(_fromUtf8("b_ok"))
+        self.b_ok.clicked.connect(self.my_login)
         self.b_cancel = QtGui.QPushButton(login)
         self.b_cancel.setGeometry(QtCore.QRect(250, 170, 75, 23))
         self.b_cancel.setObjectName(_fromUtf8("b_cancel"))
@@ -46,7 +54,7 @@ class login(QtGui.QDialog):
         self.t_password.setObjectName(_fromUtf8("t_password"))
 
         self.retranslateUi(login)
-        QtCore.QObject.connect(self.b_ok, QtCore.SIGNAL(_fromUtf8("clicked()")), login.accept)
+        #QtCore.QObject.connect(self.b_ok, QtCore.SIGNAL(_fromUtf8("clicked()")), login.accept)
         QtCore.QMetaObject.connectSlotsByName(login)
         self.user_name = ''
         self.passwd = ''
@@ -67,6 +75,31 @@ class login(QtGui.QDialog):
         passwd  = self.t_password.text()
         self.user_name = user_name
         self.passwd    = passwd
+        my_business = business()
+        (message,status,admin_id) = my_business.login(self.user_name, self.passwd)
+        if status:
+            #发送成功消息
+            self.parent.set_message(u'提示',message)
+            self.parent.set_tray(1)
+            #查询我的bug
+            (status,is_success,message) = my_business.get_my_bug(admin_id)
+            #500,,参数错误 | 200,0,严重错误 | 200,1,一般错误 | 200,-1,没有错误 | 其他查询失败
+            if 500 == status:#500,,参数错误
+                pass
+            elif 200 == status and 0 == is_success:#200,0,严重错误
+                pass
+            elif 200 == status and 1 == is_success:#200,1,一般错误
+                pass
+            elif 200 == status and -1 == is_success:#200,-1,没有错误
+                pass
+            else:
+                pass
+            self.accept()
+        else:
+            #发送错误消息
+            self.parent.set_message(u'错误',message)
+            pass
+
 
     def my_exit(self):
         sys.exit()
