@@ -397,8 +397,12 @@ class business():
             #调用删除
             if 0 < len(need_delete):
                 if 1 == len(need_delete):
-                    where_str = need_delete[0]
+                    where_str = str(need_delete[0])
                 else:
+                    tmp_list = need_delete
+                    need_delete = []
+                    for item in tmp_list:
+                        need_delete.append(str(item))
                     where_str = ','.join(need_delete)
                 method = 'Projectmem.delete'
                 content={'admin_id':['in',where_str],'project_id':mem_data['project_id']}
@@ -439,8 +443,12 @@ class business():
             #调用删除
             if 0 < len(need_delete):
                 if 1 == len(need_delete):
-                    where_str = need_delete[0]
+                    where_str = str(need_delete[0])
                 else:
+                    tmp_list = need_delete
+                    need_delete = []
+                    for item in tmp_list:
+                        need_delete.append(str(item))
                     where_str = ','.join(need_delete)
                 method = 'Projectmodule.delete'
                 content={'name':['in',where_str],'project_id':mod_data['project_id']}
