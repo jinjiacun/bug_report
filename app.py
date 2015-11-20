@@ -9,13 +9,15 @@ from PyQt4 import QtGui
 from jimLib.ui.App import MainWindow
 from jimLib.ui.Login import login
 from jimLib.lib.business import business
+from multiprocessing import Process,Pipe
 
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
 class app():
-    def __init__(self):
+    def __init__(self,conn=None):
+        self.conn = conn
         pass
 
     def start(self):
@@ -36,12 +38,21 @@ class app():
             mainWindow.createToolBoxEx()
             mainWindow.my_time()
             mainWindow.timer.stop()
+            #发送消息给监控进程,以便启动mqtt服务
+            message = {'command':'send','params':{'app':'master','function':{'name':'start_app_mqtt','param':''}},'message':'启动app_mqtt'}
+            message['params']['function']['param'] = user_name
+            print message
+            self.conn.send(message)
 
         #主界面
         mainWindow.setGeometry(100, 100, 800, 500)
         mainWindow.showMaximized()
 
         sys.exit(app.exec_())
+
+    def close(self):
+        if self.conn:
+            self.conn.close()
 
 
 if __name__ == '__main__':
