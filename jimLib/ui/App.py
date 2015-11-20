@@ -315,6 +315,14 @@ class MainWindow(QtGui.QMainWindow):
     def lineButtonTriggered(self):
         self.scene.setLineColor(QtGui.QColor(self.lineAction.data()))
 
+    def handleSetting(self):
+        from jimLib.ui.Setting import Setting
+        my_setting = Setting(self)
+        my_setting.setupUi(my_setting)
+        if my_setting.exec_() == QtGui.QDialog.Accepted:
+            pass
+        pass
+
     def handleFontChange(self):
         font = self.fontCombo.currentFont()
         font.setPointSize(self.fontSizeCombo.currentText().toInt()[0])
@@ -485,6 +493,9 @@ class MainWindow(QtGui.QMainWindow):
         self.exitAction = QtGui.QAction("E&xit", self, shortcut="Ctrl+X",
                 statusTip="Quit Scenediagram example", triggered=self.close)
 
+        self.settingAction = QtGui.QAction('S&etting',self, shortcut='Ctrl+S',
+                statusTip=u"系统设置",triggered=self.handleSetting)
+
         self.boldAction = QtGui.QAction(QtGui.QIcon(':/images/bold.png'),
                 "Bold", self, checkable=True, shortcut="Ctrl+B",
                 triggered=self.handleFontChange)
@@ -503,6 +514,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def createMenus(self):
         self.fileMenu = self.menuBar().addMenu("&File")
+        self.fileMenu.addAction(self.settingAction)
         self.fileMenu.addAction(self.exitAction)
 
         self.itemMenu = self.menuBar().addMenu("&Item")
