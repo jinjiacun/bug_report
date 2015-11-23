@@ -68,6 +68,8 @@ class MyDialog(QDialog):
         #self.createWizard()
 
         self.createFilterGroupBox()
+
+
        # self.createToolGroupBox()
         #self.init_data_project()
 
@@ -120,6 +122,8 @@ class MyDialog(QDialog):
             MyDialog.table_cur_index = int(self.com_list.currentText())
         i =j=0
 
+        self.createFilterDymic()
+
         #情况内容
         self.MyTable.clear()
 
@@ -157,13 +161,74 @@ class MyDialog(QDialog):
     #筛选条件
     def createFilterGroupBox(self):
         self.filterGroupBox = QGroupBox(u"筛选条件")
-        layout = QHBoxLayout()
-        layout.addWidget(QLabel(u"项目名称:"))
-        self.txt_keyword = QLineEdit()
-        layout.addWidget(self.txt_keyword)
+        self.layout = QHBoxLayout()
+        self.filterGroupBox.setLayout(self.layout)
+
+    def createFilterDymic(self):
+        for i in reversed(range(self.layout.count())):
+            self.layout.itemAt(i).widget().deleteLater()
+
+        if 0 == MyDialog.table_cur_index:
+            self.layout.addWidget(QLabel(u"项目名称:"))
+            self.txt_keyword = QLineEdit()
+            self.layout.addWidget(self.txt_keyword)
+
+        elif 1 == MyDialog.table_cur_index:
+            self.layout.addWidget(QLabel(u"项目:"))
+            self.project_id = QComboBox()
+            self.layout.addWidget(self.project_id)
+            self.layout.addWidget(QLabel(u"模块:"))
+            self.project_mod_id = QComboBox()
+            self.layout.addWidget(self.project_mod_id)
+            self.layout.addWidget(QLabel(u"状态:"))
+            self.status = QComboBox()
+            self.layout.addWidget(self.status)
+            self.layout.addWidget(QLabel(u"分类:"))
+            self.classify = QComboBox()
+            self.layout.addWidget(self.classify)
+            self.layout.addWidget(QLabel(u"关键字:"))
+            self.txt_keyword = QLineEdit()
+            self.layout.addWidget(self.txt_keyword)
+        elif 2 == MyDialog.table_cur_index:
+            self.layout.addWidget(QLabel(u"用户帐号:"))
+            self.txt_keyword = QLineEdit()
+            self.layout.addWidget(self.txt_keyword)
+        elif 3 == MyDialog.table_cur_index:
+            self.layout.addWidget(QLabel(u"角色名称:"))
+            self.txt_keyword = QLineEdit()
+            self.layout.addWidget(self.txt_keyword)
+        elif 4 == MyDialog.table_cur_index:
+            self.layout.addWidget(QLabel(u"部门名称:"))
+            self.txt_keyword = QLineEdit()
+            self.layout.addWidget(self.txt_keyword)
+        elif 5 == MyDialog.table_cur_index:
+            self.layout.addWidget(QLabel(u"进度:"))
+            self.stage = QComboBox()
+            self.layout.addWidget(self.stage)
+            self.layout.addWidget(QLabel(u"应聘部门:"))
+            self.part_id = QComboBox()
+            self.layout.addWidget(self.part_id)
+            self.layout.addWidget(QLabel(u"应聘岗位:"))
+            self.position_id = QComboBox()
+            self.layout.addWidget(self.position_id)
+            self.layout.addWidget(QLabel(u"应聘人:"))
+            self.txt_keyword = QLineEdit()
+            self.layout.addWidget(self.txt_keyword)
+        elif 6 == MyDialog.table_cur_index:
+            self.layout.addWidget(QLabel(u"岗位名称:"))
+            self.txt_keyword = QLineEdit()
+            self.layout.addWidget(self.txt_keyword)
+        elif 7 == MyDialog.table_cur_index:
+            self.layout.addWidget(QLabel(u"系统类型:"))
+            self.system = QComboBox()
+            self.layout.addWidget(self.system)
+            self.layout.addWidget(QLabel(u"app名称:"))
+            self.txt_keyword = QLineEdit()
+            self.layout.addWidget(self.txt_keyword)
+        pass
         self.bn_select = QPushButton(u"查询")
-        layout.addWidget(self.bn_select)
-        self.filterGroupBox.setLayout(layout)
+        self.layout.addWidget(self.bn_select)
+        #self.filterGroupBox.setLayout(layout)
         self.bn_select.clicked.connect(self.action_select)
 
     #快捷工具
