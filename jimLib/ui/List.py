@@ -11,6 +11,7 @@ import urllib
 from jimLib.lib.util import lib_post
 from jimLib.lib.util import lib_format
 from jimLib.lib.util import Dict
+from jimLib.lib.business import business
 
 
 class MyDialog(QDialog):
@@ -165,6 +166,7 @@ class MyDialog(QDialog):
         self.filterGroupBox.setLayout(self.layout)
 
     def createFilterDymic(self):
+        my_business = business()
         for i in reversed(range(self.layout.count())):
             self.layout.itemAt(i).widget().deleteLater()
 
@@ -176,15 +178,31 @@ class MyDialog(QDialog):
         elif 1 == MyDialog.table_cur_index:
             self.layout.addWidget(QLabel(u"项目:"))
             self.project_id = QComboBox()
+            (status,my_dict) = my_business.get_dict()
+            self.project_id.addItem(u'全部',QVariant(0))
+            self.my_dict = my_dict
+            if my_dict.has_key('project'):
+                for (key,value) in my_dict['project'].items():
+                    self.project_id.addItem(value,QVariant(key))
             self.layout.addWidget(self.project_id)
             self.layout.addWidget(QLabel(u"模块:"))
+            self.connect(self.project_id, SIGNAL('activated(int)'), self.onActivatedModule)
             self.project_mod_id = QComboBox()
+            self.project_mod_id.addItem(u'全部',QVariant(0))
             self.layout.addWidget(self.project_mod_id)
             self.layout.addWidget(QLabel(u"状态:"))
             self.status = QComboBox()
+            self.status.addItem(u'全部',QVariant(0))
+            self.status.addItem(u'待解救',QVariant(1))
+            self.status.addItem(u'已解救',QVariant(2))
+            self.status.addItem(u'已关闭',QVariant(3))
             self.layout.addWidget(self.status)
             self.layout.addWidget(QLabel(u"分类:"))
             self.classify = QComboBox()
+            self.classify.addItem(u'全部',QVariant(0))
+            self.classify.addItem(u'指派给我的',QVariant(1))
+            self.classify.addItem(u'我提交的',QVariant(2))
+            self.classify.addItem(u'我相关的',QVariant(3))
             self.layout.addWidget(self.classify)
             self.layout.addWidget(QLabel(u"关键字:"))
             self.txt_keyword = QLineEdit()
@@ -204,12 +222,30 @@ class MyDialog(QDialog):
         elif 5 == MyDialog.table_cur_index:
             self.layout.addWidget(QLabel(u"进度:"))
             self.stage = QComboBox()
+            self.stage.addItem(u'全部',QVariant(0))
+            self.stage.addItem(u'未筛选',QVariant(1))
+            self.stage.addItem(u'未预约',QVariant(2))
+            self.stage.addItem(u'已预约',QVariant(3))
+            self.stage.addItem(u'面试',QVariant(4))
+            self.stage.addItem(u'复试',QVariant(5))
+            self.stage.addItem(u'入职',QVariant(6))
+            self.stage.addItem(u'废弃',QVariant(7))
             self.layout.addWidget(self.stage)
             self.layout.addWidget(QLabel(u"应聘部门:"))
             self.part_id = QComboBox()
+            (status,content) = my_business.get_dict()
+            self.part_id.addItem(u'全部',QVariant(0))
+            if status:
+                for (key,value) in content['part'].items():
+                    self.part_id.addItems([value])
             self.layout.addWidget(self.part_id)
             self.layout.addWidget(QLabel(u"应聘岗位:"))
             self.position_id = QComboBox()
+            self.position_id.addItem(u'全部',QVariant(0))
+            if status:
+                if content.has_key('positionhr'):
+                    for (key,value) in content['positionhr'].items():
+                        self.position_id.addItems([value])
             self.layout.addWidget(self.position_id)
             self.layout.addWidget(QLabel(u"应聘人:"))
             self.txt_keyword = QLineEdit()
@@ -221,6 +257,9 @@ class MyDialog(QDialog):
         elif 7 == MyDialog.table_cur_index:
             self.layout.addWidget(QLabel(u"系统类型:"))
             self.system = QComboBox()
+            self.system.addItem(u'全部',QVariant(0))
+            self.system.addItem(u'IOS',QVariant(1))
+            self.system.addItem(u'Android',QVariant(2))
             self.layout.addWidget(self.system)
             self.layout.addWidget(QLabel(u"app名称:"))
             self.txt_keyword = QLineEdit()
@@ -230,6 +269,21 @@ class MyDialog(QDialog):
         self.layout.addWidget(self.bn_select)
         #self.filterGroupBox.setLayout(layout)
         self.bn_select.clicked.connect(self.action_select)
+
+    #级联关系(项目-模块)
+    def onActivatedModule(self, cuindex):
+        #print 'cuindex:%d'%cuindex
+        project_id = cuindex
+        if 0 >= project_id:
+            return
+        #查询项目下面的模块
+        my_business = business()
+        (status,content) = my_business.get_project_mod_by_project_id(project_id)
+        self.project_mod_id.clear()
+        self.project_mod_id.addItem(u'全部',QVariant(0))
+        if status:
+            for (key,item) in content.items():
+                self.project_mod_id.addItem(unicode(key),QVariant(item))
 
     #快捷工具
     def createToolGroupBox(self):
