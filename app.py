@@ -61,6 +61,7 @@ class app(Process):
             message = self.conn.recv()
             print 'listen_pipe'
             print message
+            mainWindow.touch_sig(message['params'])
 
     def close(self):
         if self.conn:

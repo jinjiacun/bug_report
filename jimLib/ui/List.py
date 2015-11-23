@@ -158,18 +158,9 @@ class MyDialog(QDialog):
     def createFilterGroupBox(self):
         self.filterGroupBox = QGroupBox(u"筛选条件")
         layout = QHBoxLayout()
-
-        if MyDialog.table_cur_index == 0:
-            layout.addWidget(QLabel(u"项目名称:"))
-            self.txt_keyword = QLineEdit()
-            layout.addWidget(self.txt_keyword)
-        elif MyDialog.table_cur_index == 1:
-            layout.addWidget(QLabel(u"项目名称:"))
-            self.txt_keyword = QLineEdit()
-            layout.addWidget(self.txt_keyword)
-
-
-
+        layout.addWidget(QLabel(u"项目名称:"))
+        self.txt_keyword = QLineEdit()
+        layout.addWidget(self.txt_keyword)
         self.bn_select = QPushButton(u"查询")
         layout.addWidget(self.bn_select)
         self.filterGroupBox.setLayout(layout)
