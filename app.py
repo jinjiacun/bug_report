@@ -11,21 +11,25 @@ from jimLib.ui.Login import login
 from jimLib.lib.business import business
 from multiprocessing import Process,Pipe
 from threading import Thread
+import time
 
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
 class app(Process):
-    def __init__(self,conn=None):
+    def __init__(self,recv_conn=None,send_conn=None):
         super(app,self).__init__()
-        self.conn = conn
-        pass
+        if recv_conn:
+            self.recv_conn = recv_conn
+        if send_conn:
+            self.send_conn = send_conn
+        self.ctl = True
 
     def run(self):
         app = QtGui.QApplication(sys.argv)
 
-        mainWindow = MainWindow(self)
+        mainWindow = MainWindow(self,self.send_conn)
         #登录界面
         loginWindow = login(mainWindow)
         loginWindow.setupUi(loginWindow)
@@ -43,33 +47,34 @@ class app(Process):
             #发送消息给监控进程,以便启动mqtt服务
             message_send = {'command':'send','params':{'app':'master','function':{'name':'start_app_mqtt','param':''}},'message':'启动app_mqtt'}
             message_send['params']['function']['param'] = user_name
-            self.conn.send(message_send)
+            self.send_conn.send(message_send)
 
         #主界面
         mainWindow.setGeometry(100, 100, 800, 500)
         mainWindow.showMaximized()
 
         #注册管道侦听线程
-        t = Thread(target=self.listen_pipe,args=(mainWindow,))
-        t.start()
+        self.t = Thread(target=self.listen_pipe,args=(mainWindow,))
+        self.t.start()
         sys.exit(app.exec_())
-
-
-    #发送命令
-    def send_message(self,message):
-        self.conn.send(message)
 
     #侦听管道
     def listen_pipe(self,mainWindow):
-        while True:
-            message = self.conn.recv()
-            print 'listen_pipe'
-            print message
-            mainWindow.touch_sig(message['params'])
+        while self.ctl:
+            try:
+                message = self.recv_conn.recv()
+            except IOError,e:
+                print e.message
+            else:
+                print 'listen_pipe'
+                print message
+                mainWindow.touch_sig(message['params'])
 
     def close(self):
-        if self.conn:
-            self.conn.close()
+        self.ctl=False
+        time.sleep(2)
+        self.recv_conn.close()
+        sys.exit()
 
 
 if __name__ == '__main__':
