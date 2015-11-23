@@ -7,6 +7,8 @@ from multiprocessing import Process,Pipe
 from app_mqtt import CMqtt
 from app import app
 import time
+from threading import Thread
+import signal
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -32,6 +34,17 @@ def start_app(conn):
 #启动app_mqtt
 def start_app_mqtt(topic,conn):
     my_app_mqtt = CMqtt(topic,conn)
+
+def send_mqtt_message(parent_mqtt_conn,parent_conn_send):
+    while True:
+            message_mqtt =  parent_mqtt_conn.recv()
+            print type(message_mqtt)
+            print message_mqtt
+            #解析mqtt命令
+            #调用app的托盘效应
+            message_mqtt['to'] = 'app'
+            parent_conn_send.send(message_mqtt)
+
 
 if __name__ == '__main__':
     #启动app
@@ -60,7 +73,16 @@ if __name__ == '__main__':
             time.sleep(3)
             p_app = app(child_conn_recv,child_conn_send)
             p_app.start()
-            print 'restart'
+        #启动推送
+        if 'start_app' == message['command']:
+            params = message['params']
+            if 'master' == params['app']:
+                if params['function']:
+                    if 'start_app_mqtt' == params['function']['name']:
+                        p_app_mqtt = Process(target=start_app_mqtt,args=('debug_bug/%s'%params['function']['param'],child_mqtt_conn))
+                        p_app_mqtt.start()
+                        t = Thread(target=send_mqtt_message,args=(parent_mqtt_conn,parent_conn_send))
+                        t.start()
         '''
         if 'send' == message['command']:
             params = message['params']

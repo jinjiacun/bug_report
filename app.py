@@ -45,7 +45,7 @@ class app(Process):
             mainWindow.my_time()
             mainWindow.timer.stop()
             #发送消息给监控进程,以便启动mqtt服务
-            message_send = {'command':'send','params':{'app':'master','function':{'name':'start_app_mqtt','param':''}},'message':'启动app_mqtt'}
+            message_send = {'command':'start_app','params':{'app':'master','function':{'name':'start_app_mqtt','param':''}},'message':'启动app_mqtt'}
             message_send['params']['function']['param'] = user_name
             self.send_conn.send(message_send)
 
