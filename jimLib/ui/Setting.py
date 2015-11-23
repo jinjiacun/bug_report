@@ -259,7 +259,7 @@ class Setting(QtGui.QDialog):
 
     def ok(self):
         print 'ok'
-        pass
+        self.accept()
 
 
 

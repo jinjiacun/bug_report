@@ -16,9 +16,10 @@ from jimLib.lib.io import Db_Connector
 class MainWindow(QtGui.QMainWindow):
     InsertTextButton = 10
     emit_python_list = QtCore.pyqtSignal(object)
-    def __init__(self):
+    def __init__(self,app=None):
         super(MainWindow, self).__init__()
-
+        if app:
+            self.app = app
         self.createActions()
         self.createMenus()
         self.createToolBar()
@@ -320,8 +321,12 @@ class MainWindow(QtGui.QMainWindow):
         my_setting = Setting(self)
         my_setting.setupUi(my_setting)
         if my_setting.exec_() == QtGui.QDialog.Accepted:
-            pass
-        pass
+            #重新启动ui及其mqtt
+            message = {'command':'quit'}
+            print message
+            self.app.send_message(message)
+            print message
+            sys.exit()
 
     def handleFontChange(self):
         font = self.fontCombo.currentFont()

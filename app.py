@@ -25,7 +25,7 @@ class app(Process):
     def run(self):
         app = QtGui.QApplication(sys.argv)
 
-        mainWindow = MainWindow()
+        mainWindow = MainWindow(self)
         #登录界面
         loginWindow = login(mainWindow)
         loginWindow.setupUi(loginWindow)
@@ -54,6 +54,10 @@ class app(Process):
         t.start()
         sys.exit(app.exec_())
 
+
+    #发送命令
+    def send_message(self,message):
+        self.conn.send(message)
 
     #侦听管道
     def listen_pipe(self,mainWindow):

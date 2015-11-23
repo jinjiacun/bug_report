@@ -4,7 +4,8 @@
 import os
 import sys
 from multiprocessing import Process,Pipe
-
+from app_mqtt import CMqtt
+from app import app
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -29,25 +30,22 @@ def start_app(conn):
 
 #启动app_mqtt
 def start_app_mqtt(topic,conn):
-    from app_mqtt import CMqtt
     my_app_mqtt = CMqtt(topic,conn)
 
 if __name__ == '__main__':
     #启动app
     parent_conn,child_conn=Pipe()
     parent_mqtt_conn,child_mqtt_conn = Pipe()
-    from app import app
+
     p_app = app(child_conn)
     p_app.start()
     ctl_app = True
     ctl_app_mqtt = True
-    #p_app = Process()
-    #p_app.start()
-    #p_app.join()
-    #print parent_conn.recv()
     while ctl_app:
         message = parent_conn.recv()
         if 'send' == message['command']:
+            pass
+            '''
             params = message['params']
             if 'master' == params['app']:
                 if params['function']:
@@ -64,9 +62,18 @@ if __name__ == '__main__':
                             #调用app的托盘效应
                             message_mqtt['to'] = 'app'
                             parent_conn.send(message_mqtt)
+             '''
+        #退出
+        if 'quit' == message['command']:
+            print 'app close'
+            #p_app_mqtt.close()
+            p_app.close()
+            break
+        #重启
+        if 'restart' == message['command']:
+            break;
 
-
-    #p_app.join()
-    #p_app_mqtt.join()
-    #sys.exit()
+    p_app.join()
+    p_app_mqtt.join()
+    sys.exit()
 
