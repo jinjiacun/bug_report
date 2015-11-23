@@ -10,17 +10,19 @@ from jimLib.ui.App import MainWindow
 from jimLib.ui.Login import login
 from jimLib.lib.business import business
 from multiprocessing import Process,Pipe
+from threading import Thread
 
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-class app():
+class app(Process):
     def __init__(self,conn=None):
+        super(app,self).__init__()
         self.conn = conn
         pass
 
-    def start(self):
+    def run(self):
         app = QtGui.QApplication(sys.argv)
 
         mainWindow = MainWindow()
@@ -39,16 +41,26 @@ class app():
             mainWindow.my_time()
             mainWindow.timer.stop()
             #发送消息给监控进程,以便启动mqtt服务
-            message = {'command':'send','params':{'app':'master','function':{'name':'start_app_mqtt','param':''}},'message':'启动app_mqtt'}
-            message['params']['function']['param'] = user_name
-            print message
-            self.conn.send(message)
+            message_send = {'command':'send','params':{'app':'master','function':{'name':'start_app_mqtt','param':''}},'message':'启动app_mqtt'}
+            message_send['params']['function']['param'] = user_name
+            self.conn.send(message_send)
 
         #主界面
         mainWindow.setGeometry(100, 100, 800, 500)
         mainWindow.showMaximized()
 
+        #注册管道侦听线程
+        t = Thread(target=self.listen_pipe,args=(mainWindow,))
+        t.start()
         sys.exit(app.exec_())
+
+
+    #侦听管道
+    def listen_pipe(self,mainWindow):
+        while True:
+            message = self.conn.recv()
+            print 'listen_pipe'
+            print message
 
     def close(self):
         if self.conn:
