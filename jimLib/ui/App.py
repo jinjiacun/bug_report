@@ -87,10 +87,16 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(self.refresh, QtCore.SIGNAL("triggered()"), self.handle_refresh)
         self.toolbar.addAction(self.refresh)
 
+        #反馈
+        self.feedback = QtGui.QAction(QtGui.QIcon('images/tool_Favs1.png'), u'反馈',self)
+        self.connect(self.feedback, QtCore.SIGNAL("triggered()"), self.handle_feedback)
+        self.toolbar.addAction(self.feedback)
+
         #进度
         self.schedule = QtGui.QAction(QtGui.QIcon('images/tool_re.png'), u'进度',self)
         self.connect(self.schedule, QtCore.SIGNAL("triggered()"), self.handle_schedule)
         self.toolbar.addAction(self.schedule)
+
         pass
 
     #设置消息
@@ -193,6 +199,9 @@ class MainWindow(QtGui.QMainWindow):
 
     def handle_refresh(self):
         print 'refresh'
+        pass
+
+    def handle_feedback(self):
         pass
 
     def handle_schedule(self):
