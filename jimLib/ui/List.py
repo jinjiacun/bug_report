@@ -116,7 +116,7 @@ class MyDialog(QDialog):
         pass
 
     #切换列表
-    def change_table(self, index=0, where={}):
+    def change_table(self, index=0, where={},is_clean=True):
         #MyDialog.table_cur_index = str(self.com_list.currentText())
         if index>=0:
             MyDialog.table_cur_index = index
@@ -124,7 +124,7 @@ class MyDialog(QDialog):
             MyDialog.table_cur_index = int(self.com_list.currentText())
         i =j=0
 
-        self.createFilterDymic()
+        self.createFilterDymic(is_clean)
 
         #情况内容
         self.MyTable.clear()
@@ -168,10 +168,13 @@ class MyDialog(QDialog):
         self.layout = QHBoxLayout()
         self.filterGroupBox.setLayout(self.layout)
 
-    def createFilterDymic(self):
+    def createFilterDymic(self,is_clean=True):
         my_business = business()
-        for i in reversed(range(self.layout.count())):
-            self.layout.itemAt(i).widget().deleteLater()
+        if is_clean:
+            for i in reversed(range(self.layout.count())):
+                self.layout.itemAt(i).widget().deleteLater()
+        else:
+            return
 
         if 0 == MyDialog.table_cur_index:
             self.layout.addWidget(QLabel(u"项目名称:"))
@@ -271,7 +274,7 @@ class MyDialog(QDialog):
             self.system.addItem(u'IOS',QVariant(1))
             self.system.addItem(u'Android',QVariant(2))
             self.layout.addWidget(self.system)
-            self.layout.addWidget(QLabel(u"app名称:"))
+            self.layout.addWidget(QLabel(u"应用名称:"))
             self.txt_keyword = QLineEdit()
             self.layout.addWidget(self.txt_keyword)
         self.bn_select = QPushButton(u"查询")
@@ -376,19 +379,44 @@ class MyDialog(QDialog):
                 keyword = urllib.quote(str(self.txt_keyword).toPyObject())
                 where['number'] = ['like','$%s$'%keyword]
         elif 2 == MyDialog.table_cur_index:#用户列表
-            pass
+            if '' != str(self.txt_keyword.text()).strip():
+                keyword = str(self.txt_keyword.text()).strip()
+                where['admin_name'] = ['like','$%s$'%keyword]
         elif 3 == MyDialog.table_cur_index:#角色列表
-            pass
+            if '' != str(self.txt_keyword.text()).strip():
+                keyword = str(self.txt_keyword.text()).strip()
+                where['name'] = ['like','$%s$'%keyword]
         elif 4 == MyDialog.table_cur_index:#部门列表
-            pass
+            if '' != str(self.txt_keyword.text()).strip():
+                keyword = str(self.txt_keyword.text()).strip()
+                where['name'] = ['like','$%s$'%keyword]
         elif 5 == MyDialog.table_cur_index:#简历列表
-            pass
+            if 0 < int(str(self.stage.itemData(self.stage.currentIndex()).toPyObject())):
+                where['stage'] = urllib.quote(str(self.stage.itemData(self.stage.currentIndex()).toPyObject()))
+            if 0 < int(str(self.part_id.itemData(self.part_id.currentIndex()).toPyObject())):
+                where['part_id'] = urllib.quote(str(self.part_id.itemData(self.part_id.currentIndex()).toPyObject()))
+            if 0 < int(str(self.position_id.itemData(self.position_id.currentIndex()).toPyObject())):
+                where['position_id'] = urllib.quote(str(self.position_id.itemData(self.position_id.currentIndex()).toPyObject()))
+            if '' != str(self.txt_keyword.text()).strip():
+                keyword = str(self.txt_keyword.text()).strip()
+                where['candidates'] = urllib.quote(str(self.txt_keyword.text()).strip())
         elif 6 == MyDialog.table_cur_index:#简历岗位
-            pass
+            if '' != str(self.txt_keyword.text()).strip():
+                keyword = str(self.txt_keyword.text()).strip()
+                where['name'] = ['like','$%s$'%keyword]
         elif 7 == MyDialog.table_cur_index:#系统日志
-            pass
+            if 0 < int(str(self.system.itemData(self.system.currentIndex()).toPyObject())):
+                where['system'] = ['like','$%s$'%urllib.quote(str(self.system.currentText()))]
+            if '' != str(self.txt_keyword.text()).strip():
+                keyword = str(self.txt_keyword.text()).strip()
+                if where.has_key('system'):
+                    where['_logic'] = 'or'
+                    where['_complex'] = {'system':where['system'],'app_name':['like','$%s$'%urllib.quote(keyword)]}
+                    where.pop('system')
+                else:
+                    where['app_name'] = ['like','$%s$'%keyword]
         #调用数据列表
-        self.change_table(MyDialog.table_cur_index,where)
+        self.change_table(MyDialog.table_cur_index,where,False)
 
 if __name__ == '__main__':
     import sys
