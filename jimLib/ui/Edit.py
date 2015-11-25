@@ -168,7 +168,7 @@ class Edit(QDialog):
         self.title = QTextEdit()
         self.title.setPlainText(my_info['title'])
         layout.addRow(QLabel(u"<font color='red'>*</font>问题描述:"), self.title)
-        self.description = WebViewEx(self,htmlspecialchars_decode(base64.b64decode(str(my_info['description']))))
+        self.description = WebViewEx(self,unicode(htmlspecialchars_decode(base64.b64decode(str(my_info['description'])))))
         layout.addRow(QLabel(u"操作过程:"), self.description)
         self.formGroupBox.setLayout(layout)
         self.formGroupBox.resize(600,700)
@@ -488,7 +488,9 @@ class Edit(QDialog):
         data['project_mod_id'] = urllib.quote(str(self.project_mod_id.itemData(self.project_mod_id.currentIndex()).toPyObject()))
         data['get_member']      = urllib.quote(str(self.get_member.itemData(self.get_member.currentIndex()).toPyObject()))
         time.sleep(2)
-        data['description']  =  base64.b64encode(str(self.description.text()))
+        description = self.description.text()
+        data['description']  =  urllib.quote(base64.b64encode(str(description)))
+        #urllib.quote(base64.b64encode(str(description)))
         data['put_member']   = get_cur_admin_id()
 
         where['id'] = self.id

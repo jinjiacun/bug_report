@@ -288,11 +288,7 @@ def decode_base64(data):
 
 
 import re
-try:
-    from htmlentitydefs import entitydefs
-except ImportError:  # Python 3
-    from html.entities import entitydefs
-
+from htmlentitydefs import entitydefs
 
 def htmlspecialchars_decode_func(m, defs=entitydefs):
     try:
