@@ -70,7 +70,7 @@ class MyDialog(QDialog):
         #self.createWizard()
 
         self.createFilterGroupBox()
-
+        self.createPageGroupBox()
 
        # self.createToolGroupBox()
         #self.init_data_project()
@@ -83,6 +83,7 @@ class MyDialog(QDialog):
         layout = QVBoxLayout()
         #layout.addWidget(self.wizardGroupBox)
         layout.addWidget(self.filterGroupBox)
+        layout.addWidget(self.pageGroupBox)
         #layout.addWidget(self.toolGroupBox)
         layout.addWidget(self.MyTable)
         self.setLayout(layout)
@@ -279,7 +280,30 @@ class MyDialog(QDialog):
             self.layout.addWidget(self.txt_keyword)
         self.bn_select = QPushButton(u"查询")
         self.layout.addWidget(self.bn_select)
+        self.layout.addWidget(QSplitter())
         self.bn_select.clicked.connect(self.action_select)
+
+    #创建分页组
+    def createPageGroupBox(self):
+        self.pageGroupBox = QGroupBox(u"分页")
+        layout = QHBoxLayout()
+        btn_prefer = QPushButton(u'上一页')
+        layout.addWidget(btn_prefer)
+        btn_next = QPushButton(u'下一页')
+        layout.addWidget(btn_next)
+        label = QLabel(u'转到第:')
+        layout.addWidget(label)
+        txt_page_index = QLineEdit()
+        txt_page_index.setFixedWidth(70)
+        layout.addWidget(txt_page_index)
+        label = QLabel(u'页')
+        cmb_page = QComboBox()
+        layout.addWidget(cmb_page)
+        btn_go = QPushButton('G&o')
+        layout.addWidget(btn_go)
+        layout.addWidget(QSplitter())
+        self.pageGroupBox.setLayout(layout)
+        pass
 
     #级联关系(项目-模块)
     def onActivatedModule(self, cuindex):

@@ -399,7 +399,7 @@ class Edit(QDialog):
         btn_close.setFixedWidth(50)
         btn_close.clicked.connect(self.Close)
         layout.addWidget(btn_close)
-
+        layout.addWidget(QSplitter())
         self.horizontalGroupBox.setLayout(layout)
         pass
 

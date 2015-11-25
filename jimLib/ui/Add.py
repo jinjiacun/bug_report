@@ -329,7 +329,7 @@ class Add(QDialog):
         btn_paste.clicked.connect(self.myClip)
         #btn_paste.setVisible(False)
         layout.addWidget(btn_paste)
-
+        layout.addWidget(QSplitter())
 
         self.horizontalGroupBox.setLayout(layout)
         pass
