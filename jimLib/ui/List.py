@@ -10,6 +10,7 @@ import time
 import urllib
 from jimLib.lib.util import lib_post
 from jimLib.lib.util import lib_format
+from jimLib.lib.util import get_cur_admin_id
 from jimLib.lib.util import Dict
 from jimLib.lib.business import business
 
@@ -115,7 +116,7 @@ class MyDialog(QDialog):
         pass
 
     #切换列表
-    def change_table(self, index=0):
+    def change_table(self, index=0, where={}):
         #MyDialog.table_cur_index = str(self.com_list.currentText())
         if index>=0:
             MyDialog.table_cur_index = index
@@ -139,6 +140,8 @@ class MyDialog(QDialog):
         #绑定数据
         method  = Dict.module_list[MyDialog.table_cur_index]+'.get_list'
         content = {'page_size':10}
+        if 0< len(where):
+            content['where'] = where
         result = lib_post(method, content)
         if 200 == result['status_code']:
             rows = int(result['content']['record_count'])
@@ -179,7 +182,7 @@ class MyDialog(QDialog):
             self.layout.addWidget(QLabel(u"项目:"))
             self.project_id = QComboBox()
             (status,my_dict) = my_business.get_dict()
-            self.project_id.addItem(u'全部',QVariant(0))
+            self.project_id.addItem(u'----项目----',QVariant(0))
             self.my_dict = my_dict
             if my_dict.has_key('project'):
                 for (key,value) in my_dict['project'].items():
@@ -188,23 +191,26 @@ class MyDialog(QDialog):
             self.layout.addWidget(QLabel(u"模块:"))
             self.connect(self.project_id, SIGNAL('activated(int)'), self.onActivatedModule)
             self.project_mod_id = QComboBox()
-            self.project_mod_id.addItem(u'全部',QVariant(0))
+            self.project_mod_id.setFixedWidth(150)
+            self.project_mod_id.addItem(u'----项目模块----',QVariant(0))
             self.layout.addWidget(self.project_mod_id)
             self.layout.addWidget(QLabel(u"状态:"))
             self.status = QComboBox()
-            self.status.addItem(u'全部',QVariant(0))
+            self.status.addItem(u'----状态----',QVariant(0))
+            self.status.setFixedWidth(100)
             self.status.addItem(u'待解救',QVariant(1))
             self.status.addItem(u'已解救',QVariant(2))
             self.status.addItem(u'已关闭',QVariant(3))
             self.layout.addWidget(self.status)
             self.layout.addWidget(QLabel(u"分类:"))
             self.classify = QComboBox()
-            self.classify.addItem(u'全部',QVariant(0))
+            self.classify.addItem(u'----分类----',QVariant(0))
+            self.classify.setFixedWidth(100)
             self.classify.addItem(u'指派给我的',QVariant(1))
             self.classify.addItem(u'我提交的',QVariant(2))
             self.classify.addItem(u'我相关的',QVariant(3))
             self.layout.addWidget(self.classify)
-            self.layout.addWidget(QLabel(u"关键字:"))
+            self.layout.addWidget(QLabel(u"编号关键字:"))
             self.txt_keyword = QLineEdit()
             self.layout.addWidget(self.txt_keyword)
         elif 2 == MyDialog.table_cur_index:
@@ -222,7 +228,8 @@ class MyDialog(QDialog):
         elif 5 == MyDialog.table_cur_index:
             self.layout.addWidget(QLabel(u"进度:"))
             self.stage = QComboBox()
-            self.stage.addItem(u'全部',QVariant(0))
+            self.stage.addItem(u'----进度----',QVariant(0))
+            self.stage.setFixedWidth(100)
             self.stage.addItem(u'未筛选',QVariant(1))
             self.stage.addItem(u'未预约',QVariant(2))
             self.stage.addItem(u'已预约',QVariant(3))
@@ -234,14 +241,16 @@ class MyDialog(QDialog):
             self.layout.addWidget(QLabel(u"应聘部门:"))
             self.part_id = QComboBox()
             (status,content) = my_business.get_dict()
-            self.part_id.addItem(u'全部',QVariant(0))
+            self.part_id.addItem(u'----部门----',QVariant(0))
+            self.part_id.setFixedWidth(100)
             if status:
                 for (key,value) in content['part'].items():
                     self.part_id.addItems([value])
             self.layout.addWidget(self.part_id)
             self.layout.addWidget(QLabel(u"应聘岗位:"))
             self.position_id = QComboBox()
-            self.position_id.addItem(u'全部',QVariant(0))
+            self.position_id.addItem(u'----应聘岗位----',QVariant(0))
+            self.position_id.setFixedWidth(150)
             if status:
                 if content.has_key('positionhr'):
                     for (key,value) in content['positionhr'].items():
@@ -257,30 +266,32 @@ class MyDialog(QDialog):
         elif 7 == MyDialog.table_cur_index:
             self.layout.addWidget(QLabel(u"系统类型:"))
             self.system = QComboBox()
-            self.system.addItem(u'全部',QVariant(0))
+            self.system.addItem(u'----系统类型----',QVariant(0))
+            self.system.setFixedWidth(150)
             self.system.addItem(u'IOS',QVariant(1))
             self.system.addItem(u'Android',QVariant(2))
             self.layout.addWidget(self.system)
             self.layout.addWidget(QLabel(u"app名称:"))
             self.txt_keyword = QLineEdit()
             self.layout.addWidget(self.txt_keyword)
-        pass
         self.bn_select = QPushButton(u"查询")
         self.layout.addWidget(self.bn_select)
-        #self.filterGroupBox.setLayout(layout)
         self.bn_select.clicked.connect(self.action_select)
 
     #级联关系(项目-模块)
     def onActivatedModule(self, cuindex):
         #print 'cuindex:%d'%cuindex
         project_id = cuindex
+        if 0 == project_id:
+            self.project_mod_id.clear()
+            self.project_mod_id.addItem(u'----项目模块----',QVariant(0))
         if 0 >= project_id:
             return
         #查询项目下面的模块
         my_business = business()
         (status,content) = my_business.get_project_mod_by_project_id(project_id)
         self.project_mod_id.clear()
-        self.project_mod_id.addItem(u'全部',QVariant(0))
+        self.project_mod_id.addItem(u'----项目模块----',QVariant(0))
         if status:
             for (key,item) in content.items():
                 self.project_mod_id.addItem(unicode(key),QVariant(item))
@@ -340,48 +351,44 @@ class MyDialog(QDialog):
     #----------------------------action------------------------
     #查询action
     def action_select(self):
-        keyword = unicode(self.txt_keyword.text().toUtf8(),'utf8','ignore').encode('utf8')
-        #keyword = '测试'
-        #unicode(self.txt_keyword.text().toUtf8(),'utf8','ignore').encode('utf8')
-        #keyword = unicode(str(keyword))
-        #keyword = urllib.quote(keyword.encode('utf-8'))
-        method  = 'Project.get_list'
-        content = {'page_size':20,'where':{'name':['like','$'+urllib.quote(keyword)+'$']}}
-        result  = lib_post(method, content)
-        row_count = 0
-        if 200 == result['status_code']:
-            cur_row_count = self.MyTable.rowCount()
-            self.MyTable.setRowCount(0)
-            self.MyTable.clearContents()
-            for i in range(0,cur_row_count):
-                self.MyTable.removeRow(i)
-            row_count = int(result['content']['record_count'])
-            self.MyTable.setRowCount(int(result['content']['record_count']))
-            for i in range(0, row_count):
-                #编号
-                newItem = QTableWidgetItem(result['content']['list'][i]['number'])
-                newItem.setTextAlignment(Qt.AlignHCenter|Qt.AlignVCenter)
-                self.MyTable.setItem(i, 0, newItem)
-
-                #项目名称
-                newItem = QTableWidgetItem(result['content']['list'][i]['name'])
-                newItem.setTextAlignment(Qt.AlignHCenter|Qt.AlignVCenter)
-                self.MyTable.setItem(i, 1, newItem)
-
-                #创建人
-                newItem = QTableWidgetItem(result['content']['list'][i]['create'])
-                newItem.setTextAlignment(Qt.AlignHCenter|Qt.AlignVCenter)
-                self.MyTable.setItem(i, 2, newItem)
-
-                #最后更新日期
-                newItem = QTableWidgetItem(lib.timestamp_datetime(result['content']['list'][i]['last_time']))
-                newItem.setTextAlignment(Qt.AlignHCenter|Qt.AlignVCenter)
-                self.MyTable.setItem(i, 3, newItem)
-
-                #项目描述
-                newItem = QTableWidgetItem(result['content']['list'][i]['description'])
-                newItem.setTextAlignment(Qt.AlignHCenter|Qt.AlignVCenter)
-                self.MyTable.setItem(i, 4, newItem)
+        where = {}
+        if 0 == MyDialog.table_cur_index:#项目列表
+            if '' != str(self.txt_keyword.text()).strip():
+                keyword = urllib.quote(str(self.txt_keyword.text()))
+                where['name'] = ['like','$%s$'%keyword]
+        elif 1 == MyDialog.table_cur_index:#bug列表
+            if 0 < int(str(self.project_id.itemData(self.project_id.currentIndex()).toPyObject())):
+                where['project_id'] = urllib.quote(str(self.project_id.itemData(self.project_id.currentIndex()).toPyObject()))
+            if 0 < int(str(self.project_mod_id.itemData(self.project_mod_id.currentIndex()).toPyObject())):
+                where['project_mod_id'] = urllib.quote(str(self.project_mod_id.itemData(self.project_mod_id.currentIndex()).toPyObject()))
+            if 0 < int(str(self.status.itemData(self.status.currentIndex()).toPyObject())):
+                where['status'] = urllib.quote(str(self.status.itemData(self.status.currentIndex()).toPyObject()))
+            if 0 < int(str(self.classify.itemData(self.classify.currentIndex()).toPyObject())):
+                my_class = str(self.classify.itemData(self.classify.currentIndex()).toPyObject())
+                if 1 == my_class:#指派给我
+                    where['get_member'] = urllib.quote(get_cur_admin_id())
+                elif 2 == my_class:#我提交
+                    where['put_member'] = urllib.quote(get_cur_admin_id())
+                elif 3 == my_class:#我相关的(我提交或者我接受的)
+                    where['_logic'] = 'or'
+                    where['_complex'] = {'get_member':urllib.quote(get_cur_admin_id()),'put_member':urllib.quote(get_cur_admin_id())}
+            if '' != str(self.txt_keyword.text()).strip():
+                keyword = urllib.quote(str(self.txt_keyword).toPyObject())
+                where['number'] = ['like','$%s$'%keyword]
+        elif 2 == MyDialog.table_cur_index:#用户列表
+            pass
+        elif 3 == MyDialog.table_cur_index:#角色列表
+            pass
+        elif 4 == MyDialog.table_cur_index:#部门列表
+            pass
+        elif 5 == MyDialog.table_cur_index:#简历列表
+            pass
+        elif 6 == MyDialog.table_cur_index:#简历岗位
+            pass
+        elif 7 == MyDialog.table_cur_index:#系统日志
+            pass
+        #调用数据列表
+        self.change_table(MyDialog.table_cur_index,where)
 
 if __name__ == '__main__':
     import sys

@@ -151,6 +151,13 @@ class Add(QDialog):
     def onActivatedModule(self, cuindex):
         #print 'cuindex:%d'%cuindex
         project_id = cuindex
+
+        #清楚所属模块和受理人
+        if 0 == project_id:
+            self.project_mod_id.clear()
+            self.get_member.clear()
+            self.project_mod_id.addItem(u'请选择项目模块',QVariant(0))
+            self.get_member.addItem(u'请选择受理人',QVariant(0))
         if 0 >= project_id:
             return
         #查询项目下面的模块
