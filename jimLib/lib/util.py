@@ -4,6 +4,8 @@ import urllib
 import json
 import sys
 import time
+import re
+from htmlentitydefs import entitydefs
 
 #post模拟提交数据
 def lib_post(method,content):
@@ -318,6 +320,17 @@ class Dict():
 def get_cur_admin_id():
     pass
     return 1
+
+def htmlspecialchars_decode_func(m, defs=entitydefs):
+    try:
+        return defs[m.group(1)]
+    except KeyError:
+        return m.group(0)  # use as is
+
+
+def htmlspecialchars_decode(string):
+    pattern = re.compile("&(\w+?);")
+    return pattern.sub(htmlspecialchars_decode_func, string)
 
 if __name__ == '__main__':
     #test post

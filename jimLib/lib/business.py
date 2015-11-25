@@ -468,6 +468,7 @@ class business():
             if 0 < len(need_add):
                 method = 'Projectmodule.add'
                 for item in need_add:
+                    content['name'] = item
                     result = lib_post(method, content)
                     if 500 == result['status_code']:
                         return (False,result['content'])

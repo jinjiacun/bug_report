@@ -18,6 +18,7 @@ from jimLib.widget.WebViewEx import WebViewEx
 from jimLib.lib.business import business
 from jimLib.lib.util import Dict
 from jimLib.lib.util import get_cur_admin_id
+from jimLib.lib.util import htmlspecialchars_decode
 
 class Edit(QDialog):
     title = ''
@@ -167,7 +168,7 @@ class Edit(QDialog):
         self.title = QTextEdit()
         self.title.setPlainText(my_info['title'])
         layout.addRow(QLabel(u"<font color='red'>*</font>问题描述:"), self.title)
-        self.description = WebViewEx(self,my_info['description'])
+        self.description = WebViewEx(self,htmlspecialchars_decode(base64.b64decode(str(my_info['description']))))
         layout.addRow(QLabel(u"操作过程:"), self.description)
         self.formGroupBox.setLayout(layout)
         self.formGroupBox.resize(600,700)
@@ -479,7 +480,7 @@ class Edit(QDialog):
 
         #组装数据
         data['number']        = urllib.quote(str(self.number.text()))
-        data['title']         = urllib.quote(str(self.title))
+        data['title']         = urllib.quote(str(self.title.toPlainText()))
         data['level']         = urllib.quote(str(self.level.itemData(self.level.currentIndex()).toPyObject()))
 
         data['status']          = urllib.quote(str(self.status.itemData(self.status.currentIndex()).toPyObject()))
@@ -487,7 +488,7 @@ class Edit(QDialog):
         data['project_mod_id'] = urllib.quote(str(self.project_mod_id.itemData(self.project_mod_id.currentIndex()).toPyObject()))
         data['get_member']      = urllib.quote(str(self.get_member.itemData(self.get_member.currentIndex()).toPyObject()))
         time.sleep(2)
-        data['description']  =  base64.b64encode(self.description.text())
+        data['description']  =  base64.b64encode(str(self.description.text()))
         data['put_member']   = get_cur_admin_id()
 
         where['id'] = self.id
