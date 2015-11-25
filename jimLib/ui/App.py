@@ -87,7 +87,7 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(self.refresh, QtCore.SIGNAL("triggered()"), self.handle_refresh)
         self.toolbar.addAction(self.refresh)
 
-        #刷新
+        #进度
         self.schedule = QtGui.QAction(QtGui.QIcon('images/tool_re.png'), u'进度',self)
         self.connect(self.schedule, QtCore.SIGNAL("triggered()"), self.handle_schedule)
         self.toolbar.addAction(self.schedule)
