@@ -32,7 +32,7 @@ class Edit(QDialog):
         mainLayout = QVBoxLayout()
         self.parent = parent
         self.id = id
-
+        self.tab_index = 0
         Edit.title  = Dict.title_list[title_index]
         Edit.module = Dict.module_list[module_index]
         Edit.title_index  = title_index
@@ -60,6 +60,7 @@ class Edit(QDialog):
         elif 'Positionhr' == Edit.module:
             self.EditPositionhrForm()
 
+        self.tab.currentChanged.connect(self.my_switch)
         mainLayout.addWidget(self.horizontalGroupBox)
         mainLayout.addWidget(self.tab)
         #mainLayout.addWidget(self.formGroupBox)
@@ -68,6 +69,10 @@ class Edit(QDialog):
         self.setFixedHeight(800)
         self.setWindowFlags(Qt.Window)
         self.setWindowTitle(Edit.title)
+
+    #tab切换
+    def my_switch(self,index):
+        self.tab_index = index
 
     #编辑项目
     def EditProjectForm(self):
@@ -185,10 +190,15 @@ class Edit(QDialog):
         #反馈信息
         layout = QFormLayout()
         self.feedback_record = QTableWidget()
+        self.feedback_record.setColumnCount(5)
         self.feedback_record.setHorizontalHeaderLabels([u'序号',u'反馈人',u'反馈时间',u'问题状态',u'反馈内容'])
-        layout.addRow(QLabel(u'反馈记录'),)
-        self.status = QComboBox()
-        layout.addRow(QLabel(u'问题状态'),self.status)
+        layout.addRow(QLabel(u'反馈记录'),self.feedback_record)
+        self.status_ex = QComboBox()
+        self.status_ex.addItem(u'----状态----',QVariant(0))
+        self.status_ex.addItem(u'待解决',QVariant(1))
+        self.status_ex.addItem(u'已解决',QVariant(2))
+        self.status_ex.addItem(u'已关闭',QVariant(3))
+        layout.addRow(QLabel(u'问题状态'),self.status_ex)
         self.feedback_content = QTextEdit()
         layout.addRow(QLabel(u'反馈'),self.feedback_content)
         self.ext_form.setLayout(layout)
@@ -521,40 +531,49 @@ class Edit(QDialog):
 
     #保存bug
     def SaveBug(self):
-        data={'number':'','title':'','level':0,'status':0,'project_id':0,'project_mod_id':0,
-            'get_member':0,'description':'','put_member':0}
-        where = {'id':0}
+        if 0 == self.tab_index:
+            data={'number':'','title':'','level':0,'status':0,'project_id':0,'project_mod_id':0,
+                'get_member':0,'description':'','put_member':0}
+            where = {'id':0}
+        elif 1 == self.tab_index:
+            data={'number':'','title':'','level':0,'status':0,'project_id':0,'project_mod_id':0,
+                'get_member':0,'description':'','put_member':0}
+            where = {'id':0}
         my_business = business()
 
-        #组装数据
-        data['number']        = urllib.quote(str(self.number.text()))
-        data['title']         = urllib.quote(str(self.title.toPlainText()))
-        data['level']         = urllib.quote(str(self.level.itemData(self.level.currentIndex()).toPyObject()))
+        if 0 == self.tab_index:
+            #组装数据
+            data['number']        = urllib.quote(str(self.number.text()))
+            data['title']         = urllib.quote(str(self.title.toPlainText()))
+            data['level']         = urllib.quote(str(self.level.itemData(self.level.currentIndex()).toPyObject()))
 
-        data['status']          = urllib.quote(str(self.status.itemData(self.status.currentIndex()).toPyObject()))
-        data['project_id']      = urllib.quote(str(self.project_id.itemData(self.project_id.currentIndex()).toPyObject()))
-        data['project_mod_id'] = urllib.quote(str(self.project_mod_id.itemData(self.project_mod_id.currentIndex()).toPyObject()))
-        data['get_member']      = urllib.quote(str(self.get_member.itemData(self.get_member.currentIndex()).toPyObject()))
-        time.sleep(2)
-        description = self.description.text()
-        data['description']  =  urllib.quote(base64.b64encode(str(description)))
-        #urllib.quote(base64.b64encode(str(description)))
-        data['put_member']   = get_cur_admin_id()
+            data['status']          = urllib.quote(str(self.status.itemData(self.status.currentIndex()).toPyObject()))
+            data['project_id']      = urllib.quote(str(self.project_id.itemData(self.project_id.currentIndex()).toPyObject()))
+            data['project_mod_id'] = urllib.quote(str(self.project_mod_id.itemData(self.project_mod_id.currentIndex()).toPyObject()))
+            data['get_member']      = urllib.quote(str(self.get_member.itemData(self.get_member.currentIndex()).toPyObject()))
+            time.sleep(2)
+            description = self.description.text()
+            data['description']  =  urllib.quote(base64.b64encode(str(description)))
+            #urllib.quote(base64.b64encode(str(description)))
+            data['put_member']   = get_cur_admin_id()
 
-        where['id'] = self.id
+            where['id'] = self.id
 
-        (status,content) = my_business.update_bug(data,where)
-        if status:
-            Edit.message = content
-            Edit.status = True
-            self.parent.set_message(u'提示',content)
-            self.accept()
-            return True
-        else:
-            Edit.message = content
-            Edit.status = False
-            self.parent.set_message(u'错误',content)
-            return False
+            (status,content) = my_business.update_bug(data,where)
+            if status:
+                Edit.message = content
+                Edit.status = True
+                self.parent.set_message(u'提示',content)
+                self.accept()
+                return True
+            else:
+                Edit.message = content
+                Edit.status = False
+                self.parent.set_message(u'错误',content)
+                return False
+
+        elif 1 == self.tab_index:
+            pass
 
     #保存用户
     def SaveAdmin(self):

@@ -128,6 +128,19 @@ class business():
 
         return (False,u'添加失败')
 
+    #添加bug反馈
+    '''
+    '''
+    def add_bug_feedback(self,data={}):
+        method = 'Bugfeedback.add'
+        content = data
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'添加成功')
+
+        return (False,u'添加失败')
 
     #添加用户
     '''data={'number':0,'admin_name':'','passwd':'','name':'','status':0,'part':0,'role':0}
