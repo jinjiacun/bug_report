@@ -39,8 +39,12 @@ class Edit(QDialog):
         Edit.module_index = module_index
 
 
+
         self.AddToolBar()
-        self.formGroupBox = QGroupBox(u"表单:")
+        self.tab = QTabWidget()
+        self.basic_form = QWidget()
+        self.ext_form = QWidget()
+        #self.formGroupBox = QGroupBox(u"表单:")
         if 'Project' == Edit.module:
             self.EditProjectForm()
         elif 'Bug' == Edit.module:
@@ -56,9 +60,9 @@ class Edit(QDialog):
         elif 'Positionhr' == Edit.module:
             self.EditPositionhrForm()
 
-
         mainLayout.addWidget(self.horizontalGroupBox)
-        mainLayout.addWidget(self.formGroupBox)
+        mainLayout.addWidget(self.tab)
+        #mainLayout.addWidget(self.formGroupBox)
         self.setLayout(mainLayout)
         self.setFixedWidth(1000)
         self.setFixedHeight(800)
@@ -110,10 +114,13 @@ class Edit(QDialog):
                 data.append(item)
         self.project_mod = TableTextButton(self,data)
         layout.addRow(QLabel(u"<font color='red'>*</font>模块:"), self.project_mod)
-        self.formGroupBox.setLayout(layout)
+        self.basic_form.setLayout(layout)
+        self.tab.addTab(self.basic_form,u'基本信息')
+        #self.formGroupBox.setLayout(layout)
 
     #编辑bug
     def EditBugForm(self):
+        #基本信息
         layout = QFormLayout()
         my_business = business()
         (status,my_info) = my_business.get_bug_one_by_id(self.id)
@@ -170,9 +177,22 @@ class Edit(QDialog):
         layout.addRow(QLabel(u"<font color='red'>*</font>问题描述:"), self.title)
         self.description = WebViewEx(self,unicode(htmlspecialchars_decode(base64.b64decode(str(my_info['description'])))))
         layout.addRow(QLabel(u"操作过程:"), self.description)
-        self.formGroupBox.setLayout(layout)
-        self.formGroupBox.resize(600,700)
-        self.resize(600, 700)
+        self.basic_form.setLayout(layout)
+        self.tab.addTab(self.basic_form,u'基本信息')
+        #self.formGroupBox.setLayout(layout)
+        #self.formGroupBox.resize(600,700)
+        #self.resize(600, 700)
+        #反馈信息
+        layout = QFormLayout()
+        self.feedback_record = QTableWidget()
+        self.feedback_record.setHorizontalHeaderLabels([u'序号',u'反馈人',u'反馈时间',u'问题状态',u'反馈内容'])
+        layout.addRow(QLabel(u'反馈记录'),)
+        self.status = QComboBox()
+        layout.addRow(QLabel(u'问题状态'),self.status)
+        self.feedback_content = QTextEdit()
+        layout.addRow(QLabel(u'反馈'),self.feedback_content)
+        self.ext_form.setLayout(layout)
+        self.tab.addTab(self.ext_form,u'反馈信息')
 
     #级联关系(项目-模块)
     def onActivatedModule(self, cuindex):
@@ -247,7 +267,9 @@ class Edit(QDialog):
         index = self.role.findData(QVariant(my_info['role']))
         self.role.setCurrentIndex(index)
         layout.addRow(QLabel(u"<font color='red'>*</font>角色:"), self.role)
-        self.formGroupBox.setLayout(layout)
+        #self.formGroupBox.setLayout(layout)
+        self.basic_form.setLayout(layout)
+        self.tab.addTab(self.basic_form,u'基本信息')
 
     #编辑角色
     def EditRoleForm(self):
@@ -282,7 +304,9 @@ class Edit(QDialog):
             check_data.append(int(str(item)))
         self.resource = MulCheckedBox(self,source_name_list,check_data)
         layout.addRow(QLabel(u"<font color='red'>*</font>权限:"), self.resource)
-        self.formGroupBox.setLayout(layout)
+        #self.formGroupBox.setLayout(layout)
+        self.basic_form.setLayout(layout)
+        self.tab.addTab(self.basic_form,u'基本信息')
 
     #编辑部门
     def EditPartForm(self):
@@ -302,7 +326,9 @@ class Edit(QDialog):
         self.name = QLineEdit()
         self.name.setText(my_info['name'])
         layout.addRow(QLabel(u"<font color='red'>*</font>部门名称:"), self.name)
-        self.formGroupBox.setLayout(layout)
+        #self.formGroupBox.setLayout(layout)
+        self.basic_form.setLayout(layout)
+        self.tab.addTab(self.basic_form,u'基本信息')
 
     #编辑简历
     def EditResumeForm(self):
@@ -346,7 +372,27 @@ class Edit(QDialog):
         self.remark = QTextEdit()
         self.remark.setText(my_info['remartk'])
         layout.addRow(QLabel(u"备注:"), self.remark)
-        self.formGroupBox.setLayout(layout)
+        #self.formGroupBox.setLayout(layout)
+        self.basic_form.setLayout(layout)
+        self.tab.addTab(self.basic_form,u'基本信息')
+        layout = QFormLayout()
+        layout.addRow(QLabel(u'编号:'),self.number)
+        self.stage = QComboBox()
+        layout.addRow(QLabel(u'进度:'),self.stage)
+        my_widget = QWidget()
+        my_layout = QHBoxLayout()
+        self.status_ctl = QRadioButton(u'关闭')
+        my_layout.addWidget(self.status_ctl)
+        self.status_time = QRadioButton()
+        my_layout.addWidget(self.status_time)
+        self.time        = QTimeEdit()
+        my_layout.addWidget(self.time)
+        my_layout.addWidget(QSplitter())
+        my_widget.setLayout(my_layout)
+        layout.addRow(QLabel(u'状态/时间:'),my_widget)
+        self.ext_form.setLayout(layout)
+        self.tab.addTab(self.ext_form,u'进度修改')
+
 
     #编辑招聘岗位
     def EditPositionhrForm(self):
@@ -378,7 +424,9 @@ class Edit(QDialog):
         self.description = QTextEdit()
         self.description.setText(my_info['description'])
         layout.addRow(QLabel(u"<font color='red'>*</font>要求:"), self.description)
-        self.formGroupBox.setLayout(layout)
+        #self.formGroupBox.setLayout(layout)
+        self.basic_form.setLayout(layout)
+        self.tab.addTab(self.basic_form,u'基本信息')
 
     def AddToolBar(self):
         self.horizontalGroupBox = QGroupBox(u"操作")
