@@ -435,7 +435,8 @@ class Edit(QDialog):
         my_layout.addWidget(self.status_ctl)
         self.status_time = QRadioButton()
         my_layout.addWidget(self.status_time)
-        self.time        = QTimeEdit()
+        self.time = QDateTimeEdit()
+        self.time.setCalendarPopup(True)
         my_layout.addWidget(self.time)
         my_layout.addWidget(QSplitter())
         self.my_widget.setLayout(my_layout)
@@ -744,31 +745,62 @@ class Edit(QDialog):
 
     #保存简历
     def SaveResume(self):
-        data={'number':'','candidates':'','telephone':'','position_id':0,'part_id':0,'accessories':0,'remartk':'','create':0}
-        where = {'id':0}
+        if 0 == self.tab_index:
+            data={'number':'','candidates':'','telephone':'','position_id':0,'part_id':0,'accessories':0,'remartk':'','create':0}
+            where = {'id':0}
+        elif 1 == self.tab_index:
+            data={'stage':0,'last':0,'last_time':0,'status':0,'stage_time':0}
+            where={'id':0}
+
         my_business = business()
-        #组装数据
-        data['number']      = urllib.quote(str(self.number.text()))
-        data['candidates']  = urllib.quote(str(self.candidates.text()))
-        data['telephone']   = urllib.quote(str(self.telephone.text()))
-        data['position_id'] = 1
-        data['part_id']     = 1
 
-        #附件
-        if self.accessories.filename != "":
-            (status,content) = my_business.file_upload(str(self.accessories.filename))
-            if status:
-                data['accessories'] = int(content['content']['id'])
+        if 0 == self.tab_index:
+            #组装数据
+            data['number']      = urllib.quote(str(self.number.text()))
+            data['candidates']  = urllib.quote(str(self.candidates.text()))
+            data['telephone']   = urllib.quote(str(self.telephone.text()))
+            data['position_id'] = 1
+            data['part_id']     = 1
+
+            #附件
+            if self.accessories.filename != "":
+                (status,content) = my_business.file_upload(str(self.accessories.filename))
+                if status:
+                    data['accessories'] = int(content['content']['id'])
+                else:
+                    Edit.message = content
+                    Edit.status = False
+                    self.parent.set_message(u'错误',content)
+                    return False
             else:
-                Edit.message = content
-                Edit.status = False
-                self.parent.set_message(u'错误',content)
-                return False
-        else:
-            data.pop('accessories')
+                data.pop('accessories')
 
-        data['remartk']      = urllib.quote(str(self.remark.toPlainText()))
-        data['create']      = get_cur_admin_id()
+            data['remartk']      = urllib.quote(str(self.remark.toPlainText()))
+            data['create']      = get_cur_admin_id()
+        elif 1 == self.tab_index:
+            #未筛选,未预约,废弃(1,2,7)
+            stage_index = int(self.stage.itemData(self.stage.currentIndex()).toPyObject())
+            if stage_index in [1,2,7]:
+                data['stage'] = stage_index
+                data['last'] = get_cur_admin_id()
+                data['last_time'] = int(time.time())
+                data.remove('status')
+                data.remove('stage_time')
+            else:
+                if self.status.isChecked():#关闭
+                    data['status']     = 1
+                    data['stage']      = stage_index
+                    data['last']       = get_cur_admin_id()
+                    data['last_time']  = int(time.time())
+                    data.remove('stage_time')
+                else:
+                    data['stage']       = stage_index
+                    data['stage_time'] = 0
+                    data['last']        = get_cur_admin_id()
+                    data['last_time']  = int(time.time())
+                    data.remove('status')
+            #
+
 
         where['id'] = self.id
 
