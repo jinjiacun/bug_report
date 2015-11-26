@@ -173,8 +173,6 @@ class MainWindow(QtGui.QMainWindow):
             #梳理返回值
             if Edit.status:
                 self.scene.change_table(self.scene.table_cur_index)
-            pass
-        pass
 
     def handle_delete(self):
         reply = QtGui.QMessageBox.question(self, 'Message',\

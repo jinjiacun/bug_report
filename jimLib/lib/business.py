@@ -128,6 +128,19 @@ class business():
 
         return (False,u'添加失败')
 
+    #添加bug反馈
+    '''data= {'content':'','status_remark':'','bug_id':0,'create':0}
+    '''
+    def add_bug_feedback(self,data={}):
+        method = 'Bugfeedback.add'
+        content = data
+        result = lib_post(method,content)
+        if 500 == result['status_code']:
+            return (False,result['content'])
+        if 200 == result['status_code'] and 0 == result['content']['is_success']:
+            return (True,u'添加成功')
+
+        return (False,u'添加失败')
 
     #添加用户
     '''data={'number':0,'admin_name':'','passwd':'','name':'','status':0,'part':0,'role':0}
@@ -283,6 +296,18 @@ class business():
                 re_list.append(result['content']['list'][row]['name'])
         return (True,re_list)
 
+    #查询bug反馈通过bug的id
+    def get_feedback_by_bug_id(self,bug_id):
+        method = 'Bugfeedback.get_list'
+        content = {'where':{'bug_id':bug_id}}
+        try:
+            result = lib_post(method,content)
+        except:
+            return (False,u'查询异常')
+        if 200 == result['status_code']:
+            return (True,result['content'])
+
+        return (False,u'查询失败')
 
     #查询bug
     def get_bug_one_by_id(self,id):

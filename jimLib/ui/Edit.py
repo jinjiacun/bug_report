@@ -32,7 +32,7 @@ class Edit(QDialog):
         mainLayout = QVBoxLayout()
         self.parent = parent
         self.id = id
-
+        self.tab_index = 0
         Edit.title  = Dict.title_list[title_index]
         Edit.module = Dict.module_list[module_index]
         Edit.title_index  = title_index
@@ -60,6 +60,7 @@ class Edit(QDialog):
         elif 'Positionhr' == Edit.module:
             self.EditPositionhrForm()
 
+        self.tab.currentChanged.connect(self.my_switch)
         mainLayout.addWidget(self.horizontalGroupBox)
         mainLayout.addWidget(self.tab)
         #mainLayout.addWidget(self.formGroupBox)
@@ -68,6 +69,10 @@ class Edit(QDialog):
         self.setFixedHeight(800)
         self.setWindowFlags(Qt.Window)
         self.setWindowTitle(Edit.title)
+
+    #tab切换
+    def my_switch(self,index):
+        self.tab_index = index
 
     #编辑项目
     def EditProjectForm(self):
@@ -183,15 +188,40 @@ class Edit(QDialog):
         #self.formGroupBox.resize(600,700)
         #self.resize(600, 700)
         #反馈信息
-        layout = QFormLayout()
+        self.ext_layout = QFormLayout()
         self.feedback_record = QTableWidget()
+        self.feedback_record.setColumnCount(5)
         self.feedback_record.setHorizontalHeaderLabels([u'序号',u'反馈人',u'反馈时间',u'问题状态',u'反馈内容'])
-        layout.addRow(QLabel(u'反馈记录'),)
-        self.status = QComboBox()
-        layout.addRow(QLabel(u'问题状态'),self.status)
+        (status,content) = my_business.get_feedback_by_bug_id(self.id)
+        if status:
+            rows = int(content['record_count'])
+            self.feedback_record.setRowCount(rows)
+            for i in range(0,rows):
+                new_item = QTableWidgetItem(str(content['list'][i]['id']))
+                self.feedback_record.setItem(i,0,new_item)
+
+                new_item = QTableWidgetItem(content['list'][i]['create'])
+                self.feedback_record.setItem(i,1,new_item)
+
+                new_item = QTableWidgetItem(content['list'][i]['add_time'])
+                self.feedback_record.setItem(i,2,new_item)
+
+                new_item = QTableWidgetItem(htmlspecialchars_decode(content['list'][i]['status_remark']))
+                self.feedback_record.setItem(i,3,new_item)
+
+                new_item = QTableWidgetItem(content['list'][i]['content'])
+                self.feedback_record.setItem(i,4,new_item)
+
+        self.ext_layout.addRow(QLabel(u'反馈记录'),self.feedback_record)
+        self.status_ex = QComboBox()
+        self.status_ex.addItem(u'----状态----',QVariant(0))
+        self.status_ex.addItem(u'待解决',QVariant(1))
+        self.status_ex.addItem(u'已解决',QVariant(2))
+        self.status_ex.addItem(u'已关闭',QVariant(3))
+        self.ext_layout.addRow(QLabel(u'问题状态'),self.status_ex)
         self.feedback_content = QTextEdit()
-        layout.addRow(QLabel(u'反馈'),self.feedback_content)
-        self.ext_form.setLayout(layout)
+        self.ext_layout.addRow(QLabel(u'反馈'),self.feedback_content)
+        self.ext_form.setLayout(self.ext_layout)
         self.tab.addTab(self.ext_form,u'反馈信息')
 
     #级联关系(项目-模块)
@@ -216,6 +246,15 @@ class Edit(QDialog):
         if status:
             for item in content:
                 self.get_member.addItem(unicode(self.my_dict['admin'][str(item)]),QVariant(item))
+
+    #进度改变
+    def onStageChange(self,curindex):
+        if curindex in [1,2,7]:
+            self.my_label.setVisible(False)
+            self.my_widget.setVisible(False)
+        else:
+            self.my_label.setVisible(True)
+            self.my_widget.setVisible(True)
 
     #编辑用户
     def EditAdminForm(self):
@@ -376,10 +415,21 @@ class Edit(QDialog):
         self.basic_form.setLayout(layout)
         self.tab.addTab(self.basic_form,u'基本信息')
         layout = QFormLayout()
+        self.number = QLabel(my_info['number'])
         layout.addRow(QLabel(u'编号:'),self.number)
         self.stage = QComboBox()
+        self.stage.addItem(u'----进度----',QVariant(0))
+        self.stage.addItem(u'未筛选',QVariant(1))
+        self.stage.addItem(u'未预约',QVariant(2))
+        self.stage.addItem(u'已预约',QVariant(3))
+        self.stage.addItem(u'面试',QVariant(4))
+        self.stage.addItem(u'复试',QVariant(5))
+        self.stage.addItem(u'入职',QVariant(6))
+        self.stage.addItem(u'废弃',QVariant(7))
+        self.connect(self.stage, SIGNAL('activated(int)'), self.onStageChange)
         layout.addRow(QLabel(u'进度:'),self.stage)
-        my_widget = QWidget()
+        self.my_widget = QWidget()
+        self.my_widget.setVisible(False)
         my_layout = QHBoxLayout()
         self.status_ctl = QRadioButton(u'关闭')
         my_layout.addWidget(self.status_ctl)
@@ -388,8 +438,10 @@ class Edit(QDialog):
         self.time        = QTimeEdit()
         my_layout.addWidget(self.time)
         my_layout.addWidget(QSplitter())
-        my_widget.setLayout(my_layout)
-        layout.addRow(QLabel(u'状态/时间:'),my_widget)
+        self.my_widget.setLayout(my_layout)
+        self.my_label = QLabel(u'状态/时间:')
+        self.my_label.setVisible(False)
+        layout.addRow(self.my_label,self.my_widget)
         self.ext_form.setLayout(layout)
         self.tab.addTab(self.ext_form,u'进度修改')
 
@@ -521,40 +573,67 @@ class Edit(QDialog):
 
     #保存bug
     def SaveBug(self):
-        data={'number':'','title':'','level':0,'status':0,'project_id':0,'project_mod_id':0,
-            'get_member':0,'description':'','put_member':0}
-        where = {'id':0}
+        if 0 == self.tab_index:
+            data={'number':'','title':'','level':0,'status':0,'project_id':0,'project_mod_id':0,
+                'get_member':0,'description':'','put_member':0}
+            where = {'id':0}
+        elif 1 == self.tab_index:
+            data= {'content':'','status_remark':'','bug_id':0,'create':0}
         my_business = business()
 
-        #组装数据
-        data['number']        = urllib.quote(str(self.number.text()))
-        data['title']         = urllib.quote(str(self.title.toPlainText()))
-        data['level']         = urllib.quote(str(self.level.itemData(self.level.currentIndex()).toPyObject()))
+        if 0 == self.tab_index:
+            #组装数据
+            data['number']        = urllib.quote(str(self.number.text()))
+            data['title']         = urllib.quote(str(self.title.toPlainText()))
+            data['level']         = urllib.quote(str(self.level.itemData(self.level.currentIndex()).toPyObject()))
 
-        data['status']          = urllib.quote(str(self.status.itemData(self.status.currentIndex()).toPyObject()))
-        data['project_id']      = urllib.quote(str(self.project_id.itemData(self.project_id.currentIndex()).toPyObject()))
-        data['project_mod_id'] = urllib.quote(str(self.project_mod_id.itemData(self.project_mod_id.currentIndex()).toPyObject()))
-        data['get_member']      = urllib.quote(str(self.get_member.itemData(self.get_member.currentIndex()).toPyObject()))
-        time.sleep(2)
-        description = self.description.text()
-        data['description']  =  urllib.quote(base64.b64encode(str(description)))
-        #urllib.quote(base64.b64encode(str(description)))
-        data['put_member']   = get_cur_admin_id()
+            data['status']          = urllib.quote(str(self.status.itemData(self.status.currentIndex()).toPyObject()))
+            data['project_id']      = urllib.quote(str(self.project_id.itemData(self.project_id.currentIndex()).toPyObject()))
+            data['project_mod_id'] = urllib.quote(str(self.project_mod_id.itemData(self.project_mod_id.currentIndex()).toPyObject()))
+            data['get_member']      = urllib.quote(str(self.get_member.itemData(self.get_member.currentIndex()).toPyObject()))
+            time.sleep(2)
+            description = self.description.text()
+            data['description']  =  urllib.quote(base64.b64encode(str(description)))
+            #urllib.quote(base64.b64encode(str(description)))
+            data['put_member']   = get_cur_admin_id()
 
-        where['id'] = self.id
+            where['id'] = self.id
 
-        (status,content) = my_business.update_bug(data,where)
-        if status:
-            Edit.message = content
-            Edit.status = True
-            self.parent.set_message(u'提示',content)
-            self.accept()
-            return True
-        else:
-            Edit.message = content
-            Edit.status = False
-            self.parent.set_message(u'错误',content)
-            return False
+            (status,content) = my_business.update_bug(data,where)
+            if status:
+                Edit.message = content
+                Edit.status = True
+                self.parent.set_message(u'提示',content)
+                self.accept()
+                return True
+            else:
+                Edit.message = content
+                Edit.status = False
+                self.parent.set_message(u'错误',content)
+                return False
+
+        elif 1 == self.tab_index:
+            data['content'] = urllib.quote(str(self.feedback_content.toPlainText()))
+            data['create'] = get_cur_admin_id()
+            data['bug_id'] = self.id
+            status = str(self.status.itemData(self.status.currentIndex()).toPyObject())
+            status_ex = str(self.status_ex.itemData(self.status.currentIndex()).toPyObject())
+            if status == status_ex:
+                data['status_remark'] = urllib.quote(str(self.status_ex.currentText()))
+            else:
+                data['status_remark'] = urllib.quote("%s=>%s"%(str(self.status.currentText()),str(self.status_ex.currentText())))
+            (status,content) = my_business.add_bug_feedback(data)
+            if status:
+                Edit.message = content
+                Edit.status  = True
+                self.parent.set_message(u'提示',content)
+                self.accept()
+                return True
+            else:
+                Edit.message = content
+                Edit.status = False
+                self.parent.set_message(u'错误',content)
+                return False
 
     #保存用户
     def SaveAdmin(self):
