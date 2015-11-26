@@ -15,6 +15,34 @@ from jimLib.lib.util import Dict
 from jimLib.lib.business import business
 
 
+class KUnit:
+    #调试类
+    @staticmethod
+    def run(name,C):
+
+        if name == "__main__":
+            import sys
+            app = QApplication(sys.argv)
+
+            obj = C()
+            obj.show()
+            sys.exit(app.exec_())
+
+class KTabBar(QTabBar):
+
+    #自定义tabbar,实现双击关闭
+    def __init__(self,parent = None):
+        QTabBar.__init__(self,parent)
+
+    def mouseDoubleClickEvent(self, event):
+
+        #获取点击的tab
+        tabId = self.tabAt(event.pos())
+        #发送关闭信号和tabid
+        self.emit(SIGNAL("tabCloseRequested(int)"),self.tabAt(event.pos()))
+
+        QTabBar.mouseDoubleClickEvent(self, event)
+
 class MyDialog(QDialog):
     #数据列表
     table_list = {'Project':['id',u'编号',u'项目名称',u'创建人',u'最后更新时间',u'项目描述'],
@@ -76,21 +104,42 @@ class MyDialog(QDialog):
         #self.init_data_project()
 
 #        self.com_list.setCurrentIndex(2)
+        self.MyTable = []
+        for i in range(0,10):
+            self.MyTable.append(QTableWidget())
+            #self.MyTable[i].setAlternatingRowColors(True)
 
-        self.MyTable = QTableWidget()
-        self.MyTable.setAlternatingRowColors(True)
-
+        self.tab = QTabWidget()
         layout = QVBoxLayout()
         #layout.addWidget(self.wizardGroupBox)
         layout.addWidget(self.filterGroupBox)
         layout.addWidget(self.pageGroupBox)
         #layout.addWidget(self.toolGroupBox)
-        layout.addWidget(self.MyTable)
+        self.tab.setTabBar(KTabBar())
+        self.tab.setTabsClosable(True)
+        self.tab.addTab(self.MyTable[0],u'项目列表')
+        self.tab.addTab(self.MyTable[1],u'问题列表')
+        self.tab.addTab(self.MyTable[2],u'用户列表')
+        self.tab.addTab(self.MyTable[3],u'角色列表')
+        self.tab.addTab(self.MyTable[4],u'部门列表')
+        self.tab.addTab(self.MyTable[5],u'招聘列表')
+        self.tab.addTab(self.MyTable[6],u'岗位列表')
+        self.tab.addTab(self.MyTable[7],u'日志列表')
+        layout.addWidget(self.tab)
         self.setLayout(layout)
+
+        #双击关闭
+        #self.connect(self.tabwidget, SIGNAL("tabCloseRequested(int)"),self.closeTab)
+
 
         self.init_dict()
 
         self.setWindowFlags(Qt.Window)
+
+    def closeTab(self,tabId):
+        pass
+        #关闭置顶信号槽
+        #self.tabwidget.removeTab(tabId)
 
     #初始化字典
     def init_dict(self):
