@@ -426,14 +426,28 @@ class Edit(QDialog):
         self.stage.addItem(u'复试',QVariant(5))
         self.stage.addItem(u'入职',QVariant(6))
         self.stage.addItem(u'废弃',QVariant(7))
+        index = self.stage.findData(QVariant(my_info['stage']))
+        self.stage.setCurrentIndex(index)
         self.connect(self.stage, SIGNAL('activated(int)'), self.onStageChange)
+        
         layout.addRow(QLabel(u'进度:'),self.stage)
         self.my_widget = QWidget()
-        self.my_widget.setVisible(False)
+        if my_info['stage'] in [0,1,2,7]:
+            self.my_widget.setVisible(False)
+        else:
+            self.my_widget.setVisible(True)
         my_layout = QHBoxLayout()
         self.status_ctl = QRadioButton(u'关闭')
+        if 1 == my_info['status']:
+            self.status_ctl.setChecked(True)
+        else:
+            self.status_ctl.setChecked(False)
         my_layout.addWidget(self.status_ctl)
         self.status_time = QRadioButton()
+        if 1 == my_info['status']:
+            self.status_time.setChecked(False)
+        else:
+            self.status_time.setChecked(True)
         my_layout.addWidget(self.status_time)
         self.time = QDateTimeEdit()
         self.time.setCalendarPopup(True)
@@ -441,7 +455,10 @@ class Edit(QDialog):
         my_layout.addWidget(QSplitter())
         self.my_widget.setLayout(my_layout)
         self.my_label = QLabel(u'状态/时间:')
-        self.my_label.setVisible(False)
+        if my_info['stage'] in [0,1,2,7]:
+            self.my_label.setVisible(False)
+        else:
+            self.my_label.setVisible(True)
         layout.addRow(self.my_label,self.my_widget)
         self.ext_form.setLayout(layout)
         self.tab.addTab(self.ext_form,u'进度修改')
@@ -784,23 +801,20 @@ class Edit(QDialog):
                 data['stage'] = stage_index
                 data['last'] = get_cur_admin_id()
                 data['last_time'] = int(time.time())
-                data.remove('status')
-                data.remove('stage_time')
+                data.pop('status')
+                data.pop('stage_time')
             else:
-                if self.status.isChecked():#关闭
+                if self.status_ctl.isChecked():#关闭
                     data['status']     = 1
                     data['stage']      = stage_index
                     data['last']       = get_cur_admin_id()
                     data['last_time']  = int(time.time())
-                    data.remove('stage_time')
                 else:
                     data['stage']       = stage_index
-                    data['stage_time'] = 0
+                    date_time = self.time.dateTime().toPyDateTime()
+                    data['stage_time'] = time.mktime(date_time.timetuple())
                     data['last']        = get_cur_admin_id()
                     data['last_time']  = int(time.time())
-                    data.remove('status')
-            #
-
 
         where['id'] = self.id
 
