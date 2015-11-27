@@ -93,13 +93,13 @@ class MyDialog(QDialog):
 
     def __init__(self, parent=None):
         super(MyDialog, self).__init__(parent)
-
+        self.max_index = -1
+        self.lbookmark = {}
         #引导
         #self.createWizard()
 
         self.createFilterGroupBox()
         self.createPageGroupBox()
-
        # self.createToolGroupBox()
         #self.init_data_project()
 
@@ -110,6 +110,7 @@ class MyDialog(QDialog):
             #self.MyTable[i].setAlternatingRowColors(True)
 
         self.tab = QTabWidget()
+        self.tab.currentChanged.connect(self.tab_change)
         layout = QVBoxLayout()
         #layout.addWidget(self.wizardGroupBox)
         layout.addWidget(self.filterGroupBox)
@@ -117,6 +118,7 @@ class MyDialog(QDialog):
         #layout.addWidget(self.toolGroupBox)
         self.tab.setTabBar(KTabBar())
         self.tab.setTabsClosable(True)
+        '''
         self.tab.addTab(self.MyTable[0],u'项目列表')
         self.tab.addTab(self.MyTable[1],u'问题列表')
         self.tab.addTab(self.MyTable[2],u'用户列表')
@@ -125,16 +127,26 @@ class MyDialog(QDialog):
         self.tab.addTab(self.MyTable[5],u'招聘列表')
         self.tab.addTab(self.MyTable[6],u'岗位列表')
         self.tab.addTab(self.MyTable[7],u'日志列表')
+        '''
         layout.addWidget(self.tab)
         self.setLayout(layout)
 
         #双击关闭
-        #self.connect(self.tabwidget, SIGNAL("tabCloseRequested(int)"),self.closeTab)
+        #self.connect(self.tab, SIGNAL("tabCloseRequested(int)"),self.closeTab)
 
 
         self.init_dict()
 
         self.setWindowFlags(Qt.Window)
+
+    def tab_change(self,index):
+        if 0< len(self.lbookmark):
+            for (key,value) in self.lbookmark.items():#value为标签索引
+                if value == index:
+                    self.change_table(key)
+                    break
+            pass
+        pass
 
     def closeTab(self,tabId):
         pass
@@ -170,6 +182,15 @@ class MyDialog(QDialog):
         #MyDialog.table_cur_index = str(self.com_list.currentText())
         if index>=0:
             MyDialog.table_cur_index = index
+            #self.tab.setCurrentIndex(index)
+            if self.max_index <8:
+                if self.lbookmark.has_key(index):
+                    self.tab.setCurrentIndex(self.lbookmark[index])
+                else:
+                    self.max_index += 1
+                    self.lbookmark[index] = self.max_index
+                    self.tab.addTab(self.MyTable[index],Dict.menu_list[index])
+                    self.tab.setCurrentIndex(self.lbookmark[index])
         else:
             MyDialog.table_cur_index = int(self.com_list.currentText())
         i =j=0
@@ -177,14 +198,14 @@ class MyDialog(QDialog):
         self.createFilterDymic(is_clean)
 
         #情况内容
-        self.MyTable.clear()
+        #self.MyTable.clear()
 
-        self.MyTable.setColumnCount(len(self.table_list[Dict.module_list[MyDialog.table_cur_index]]))
-        self.MyTable.setHorizontalHeaderLabels(self.table_list[Dict.module_list[MyDialog.table_cur_index]])
+        self.MyTable[index].setColumnCount(len(self.table_list[Dict.module_list[MyDialog.table_cur_index]]))
+        self.MyTable[index].setHorizontalHeaderLabels(self.table_list[Dict.module_list[MyDialog.table_cur_index]])
 
         #设置列宽度
         for width in MyDialog.table_width_list[Dict.module_list[MyDialog.table_cur_index]]:
-            self.MyTable.setColumnWidth(i, MyDialog.table_width_list[Dict.module_list[MyDialog.table_cur_index]].__getitem__(i))
+            self.MyTable[index].setColumnWidth(i, MyDialog.table_width_list[Dict.module_list[MyDialog.table_cur_index]].__getitem__(i))
             i += 1
 
         #绑定数据
@@ -198,7 +219,7 @@ class MyDialog(QDialog):
             i = 0
             if rows >10:
                 rows = 10
-            self.MyTable.setRowCount(rows)
+            self.MyTable[index].setRowCount(rows)
             for i in range(0, rows):
                 j = 0
                 for field in MyDialog.table_field_list[Dict.module_list[MyDialog.table_cur_index]]:
@@ -208,7 +229,7 @@ class MyDialog(QDialog):
                     newItem = QTableWidgetItem(itemValue)
                     #newItem.setText(itemValue)
                     newItem.setTextAlignment(Qt.AlignHCenter|Qt.AlignVCenter)
-                    self.MyTable.setItem(i, j, newItem)
+                    self.MyTable[index].setItem(i, j, newItem)
                     j += 1
                 i += 1
 

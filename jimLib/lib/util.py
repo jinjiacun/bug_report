@@ -305,6 +305,8 @@ def htmlspecialchars_decode(string):
 class Dict():
     #项目列表
     title_list  = [u'添加项目',u'添加bug',u'添加用户',u'添加角色',u'添加部门',u'添加简历',u'添加招聘']
+    etitle_list  = [u'编辑项目',u'编辑bug',u'编辑用户',u'编辑角色',u'编辑部门',u'编辑简历',u'编辑招聘']
+    menu_list  = [u'项目列表',u'问题列表',u'用户管理',u'角色管理',u'部门管理',u'简历列表',u'招聘管理']
     module_list = ['Project' ,'Bug'      ,'Admin'    ,'Role'     ,'Part'     ,'Resume'   ,'Positionhr']
     prefix_list = ['XM-'     ,'WT-','YH-'  ,'JS-' ,'BM-' ,'JL-'    ,''        ]
     name_list = []
