@@ -95,6 +95,8 @@ class MyDialog(QDialog):
         super(MyDialog, self).__init__(parent)
         self.max_index = -1
         self.lbookmark = []
+        self.page_size = 2
+        self.page = [1,1,1,1,1,1,1,1]
         #引导
         #self.createWizard()
 
@@ -212,7 +214,7 @@ class MyDialog(QDialog):
         self.createFilterDymic(is_clean)
 
         #情况内容
-        #self.MyTable.clear()
+        self.MyTable[index].clear()
 
         self.MyTable[index].setColumnCount(len(self.table_list[Dict.module_list[MyDialog.table_cur_index]]))
         self.MyTable[index].setHorizontalHeaderLabels(self.table_list[Dict.module_list[MyDialog.table_cur_index]])
@@ -224,15 +226,26 @@ class MyDialog(QDialog):
 
         #绑定数据
         method  = Dict.module_list[MyDialog.table_cur_index]+'.get_list'
-        content = {'page_size':10}
+        content = {'page_size':self.page_size,'page_index':self.page[index]}
         if 0< len(where):
             content['where'] = where
         result = lib_post(method, content)
         if 200 == result['status_code']:
-            rows = int(result['content']['record_count'])
+            rows = len(result['content']['list'])
+            record_count = int(result['content']['record_count'])
+            self.record_count.setText(unicode(record_count))
+            page_count = record_count/self.page_size
+            if 0 <> record_count%self.page_size:
+                page_count += 1
+            self.cmb_page.clear()
+            for i in range(0,page_count):
+                self.cmb_page.addItem(unicode(i+1),QVariant(i+1))
             i = 0
-            if rows >10:
-                rows = 10
+            if rows >self.page_size:
+                rows = self.page_size
+            if is_clean:
+                self.btn_prefix.setEnabled(True)
+                self.btn_next.setEnabled(True)
             self.MyTable[index].setRowCount(rows)
             for i in range(0, rows):
                 j = 0
@@ -371,23 +384,59 @@ class MyDialog(QDialog):
     def createPageGroupBox(self):
         self.pageGroupBox = QGroupBox(u"分页")
         layout = QHBoxLayout()
-        btn_prefer = QPushButton(u'上一页')
-        layout.addWidget(btn_prefer)
-        btn_next = QPushButton(u'下一页')
-        layout.addWidget(btn_next)
+        self.btn_prefix = QPushButton(u'上一页')
+        layout.addWidget(self.btn_prefix)
+        self.btn_prefix.clicked.connect(self.page_prefix)
+        self.btn_next = QPushButton(u'下一页')
+        layout.addWidget(self.btn_next)
+        self.btn_next.clicked.connect(self.page_next)
         label = QLabel(u'转到第:')
         layout.addWidget(label)
         txt_page_index = QLineEdit()
         txt_page_index.setFixedWidth(70)
         layout.addWidget(txt_page_index)
-        label = QLabel(u'页')
-        cmb_page = QComboBox()
-        layout.addWidget(cmb_page)
+        label = QLabel(u'页,总共')
+        layout.addWidget(label)
+        self.record_count = QLabel()
+        layout.addWidget(self.record_count)
+        label = QLabel(u'条记录')
+        layout.addWidget(label)
+        self.cmb_page = QComboBox()
+        layout.addWidget(self.cmb_page)
         btn_go = QPushButton('G&o')
         layout.addWidget(btn_go)
         layout.addWidget(QSplitter())
         self.pageGroupBox.setLayout(layout)
         pass
+
+    #上一页
+    def page_prefix(self):
+        record_count = int(self.record_count.text())
+        self.page[self.table_cur_index] -= 1
+        if self.page[self.table_cur_index]<1:
+            self.page[self.table_cur_index] = 1
+            self.btn_prefix.setEnabled(False)
+        self.change_table(self.table_cur_index)
+
+        if 1 == self.page[self.table_cur_index]:
+            self.btn_prefix.setEnabled(False)
+            self.btn_next.setEnabled(True)
+
+    def page_next(self):
+        record_count = int(self.record_count.text())
+        page_count = record_count/self.page_size
+        if 0 <> record_count%self.page_size:
+            page_count += 1
+        self.page[self.table_cur_index] += 1
+        if page_count>= self.page[self.table_cur_index]:
+            self.btn_next.setEnabled(True)
+            self.change_table(self.table_cur_index)
+
+        if page_count <= self.page[self.table_cur_index]:
+            self.page[self.table_cur_index] = page_count
+            self.btn_prefix.setEnabled(True)
+            self.btn_next.setEnabled(False)
+
 
     #级联关系(项目-模块)
     def onActivatedModule(self, cuindex):
