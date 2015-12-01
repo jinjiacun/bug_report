@@ -94,7 +94,7 @@ class MyDialog(QDialog):
     def __init__(self, parent=None):
         super(MyDialog, self).__init__(parent)
         self.max_index = -1
-        self.lbookmark = {}
+        self.lbookmark = []
         #引导
         #self.createWizard()
 
@@ -132,7 +132,7 @@ class MyDialog(QDialog):
         self.setLayout(layout)
 
         #双击关闭
-        #self.connect(self.tab, SIGNAL("tabCloseRequested(int)"),self.closeTab)
+        self.connect(self.tab, SIGNAL("tabCloseRequested(int)"),self.closeTab)
 
 
         self.init_dict()
@@ -141,17 +141,25 @@ class MyDialog(QDialog):
 
     def tab_change(self,index):
         if 0< len(self.lbookmark):
-            for (key,value) in self.lbookmark.items():#value为标签索引
-                if value == index:
-                    self.change_table(key)
+            i = 0
+            for value in self.lbookmark:#value为table索引
+                if i == index:
+                    self.change_table(value)
                     break
-            pass
-        pass
+                i += 1
 
     def closeTab(self,tabId):
-        pass
+        #移除
+        index = 0
+        #后面的序列号前移动
+        for i in self.lbookmark:
+            if index == tabId:
+                self.lbookmark.remove(i)
+                break
+            index += 1
+        self.max_index -= 1
         #关闭置顶信号槽
-        #self.tabwidget.removeTab(tabId)
+        self.tab.removeTab(tabId)
 
     #初始化字典
     def init_dict(self):
@@ -183,14 +191,20 @@ class MyDialog(QDialog):
         if index>=0:
             MyDialog.table_cur_index = index
             #self.tab.setCurrentIndex(index)
-            if self.max_index <8:
-                if self.lbookmark.has_key(index):
-                    self.tab.setCurrentIndex(self.lbookmark[index])
-                else:
-                    self.max_index += 1
-                    self.lbookmark[index] = self.max_index
-                    self.tab.addTab(self.MyTable[index],Dict.menu_list[index])
-                    self.tab.setCurrentIndex(self.lbookmark[index])
+            #if self.max_index <8:
+            if index in self.lbookmark:
+                item = 0
+                for i in self.lbookmark:
+                    if i == index:
+                        self.tab.setCurrentIndex(item)
+                    item += 1
+            else:
+                self.max_index += 1
+                #self.max_index = self.max_index % 8
+                self.lbookmark.append(index)
+                #self.lbookmark[index] =
+                self.tab.addTab(self.MyTable[index],Dict.menu_list[index])
+                self.tab.setCurrentIndex(self.tab.count()-1)
         else:
             MyDialog.table_cur_index = int(self.com_list.currentText())
         i =j=0
